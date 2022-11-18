@@ -18,9 +18,12 @@ fn main() {
     // get_asset_registry();
     // lookup_token_by_symbol("rMRK".to_string());
 
-    test_adj_list();
+    // test_adj_list();
     // println!("teest")
-
+    // build_adj_lists();
+    // test_list_2();
+    // test_pointer();
+    build_graph();
 }
 
 

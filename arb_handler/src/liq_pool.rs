@@ -10,13 +10,13 @@ use crate::{asset_registry::AssetRegistry, token::Token};
 
 
 pub struct LiqPoolList{
-    liq_pools: Vec<LiqPool>
+    pub liq_pools: Vec<LiqPool>
 }
 
 #[derive(Debug)]
 pub struct LiqPool{
-    tokens: Vec<Token>,
-    liquidity: Vec<u128>
+    pub tokens: Vec<Token>,
+    pub liquidity: Vec<u128>
 }
 
 impl LiqPool{
@@ -34,6 +34,12 @@ impl LiqPool{
         println!("Actual Value: {}", actual_vals[0]);
         println!("TOKEN 2: {:#?}", &self.tokens[1]);
         println!("Actual Value: {}", actual_vals[1]);
+    }
+
+    pub fn get_pool_tokens(&self){
+        // let token_1 = &self.tokens[0];
+        println!("Token 1: {}", &self.tokens[0].symbol);
+        println!("Token 2: {}", &self.tokens[1].symbol)
     }
 
     pub fn get_actual_values(&self) -> Vec<u128>{

@@ -1,6 +1,7 @@
 use crate::token;
-use crate::token_node::{TokenNode, TokenNodeOption, TokenNodeIterator};
+use crate::adj_list_node::{AdjListNode, AdjListNodeOption, TokenNodeIterator};
 
+// use std::borrow::Borrow;
 // use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -12,7 +13,7 @@ use std::rc::Rc;
 //Implementing a Linked List from scratch
 #[derive(PartialEq, Debug)]
 pub struct AdjacencyList{
-    list_head: TokenNodeOption,
+    pub list_head: AdjListNodeOption,
     pub length: usize,
 }
 
@@ -22,7 +23,7 @@ impl AdjacencyList{
     }
 
     pub fn new(token_symbol: String) -> Self{
-        let new_head = TokenNode::new(token_symbol);
+        let new_head = AdjListNode::new_head(token_symbol);
 
         AdjacencyList { 
             list_head: Some(new_head), 
@@ -30,8 +31,8 @@ impl AdjacencyList{
         }
     }
 
-    pub fn push_end(&mut self, token_symbol: String){
-        let new_token = TokenNode::new(token_symbol);
+    pub fn push_end(&mut self, token_symbol: String, weight: (u128,u128)){
+        let new_token = AdjListNode::new(token_symbol, weight);
         let tail_node = self.get_tail();
         match tail_node {
             //link tail node to new node
@@ -49,7 +50,7 @@ impl AdjacencyList{
         }
     }
 
-    pub fn pop_end(&mut self) -> TokenNodeOption {
+    pub fn pop_end(&mut self) -> AdjListNodeOption {
         let current_tail = self.get_tail();
         match current_tail{
             //Get previous node and remove its link to current tail
@@ -75,8 +76,29 @@ impl AdjacencyList{
         current_tail
     }
 
+    pub fn pop_end_2(&mut self) -> AdjListNodeOption{
+        let old_tail = self.get_tail().take().map(|old_tail| {
+            // let old_tail_display = old_tail.
+            println!("Self.get_tail.take() = {:?}", old_tail.borrow().token_symbol);
+            // let mut iter = self.node_iterator();
+            // let mut temp = iter.next();
+            let new_tail = &old_tail.borrow().prev;
+            match new_tail{
+                Some(new_tail) => {println!("Pop Node"); new_tail.borrow_mut().next = None; self.length -= 1;},
+                None => {
+                    println!("Removing head");
+                        self.list_head = None;
+                        self.length -= 1;
+                }
+            }
+            old_tail.clone()
+        });
+        println!("old_tail = {}", old_tail.clone().unwrap().borrow().token_symbol);
+        old_tail
+    }
+
     //Search list for token symbol
-    pub fn search(&self, token_symbol: String) -> TokenNodeOption{
+    pub fn search(&self, token_symbol: String) -> AdjListNodeOption{
         for node in self.node_iterator(){
             if token_symbol == node.borrow().token_symbol{
                 return Some(Rc::clone(&node));
@@ -135,7 +157,7 @@ impl AdjacencyList{
     }
 
     //Get tail using .fold(), could also use .last()
-    pub fn get_tail(&self) -> TokenNodeOption {
+    pub fn get_tail(&self) -> AdjListNodeOption {
         let mut iter = self.node_iterator();
         let tail_node = iter.fold(None, |acc, x|Some(x));
         tail_node
@@ -159,7 +181,7 @@ impl AdjacencyList{
     }
 
     //Create a token node iterator starting at the list head
-    fn node_iterator(&self) -> TokenNodeIterator{
+    pub fn node_iterator(&self) -> TokenNodeIterator{
         match &self.list_head{
             Some(head) => {
                 TokenNodeIterator::new(Some(Rc::clone(head)))
@@ -180,7 +202,15 @@ impl AdjacencyList{
         }
         // println!("Token head: {}", self.list_head.borrow_mut().token_symbol)
         for node in self.node_iterator() {
-            println!("the data is {}", node.borrow_mut().token_symbol);
+            println!("Edge to {}. [{},{}]", node.borrow().token_symbol, node.borrow().weight.0, node.borrow().weight.1);
+        }
+    }
+
+    pub fn get_list_head_symbol(&self) -> String{
+        let head = &self.list_head;
+        match head{
+            Some(head) => head.borrow().token_symbol.to_string(),
+            None => panic!("No list head symbol"),
         }
     }
 
@@ -188,7 +218,7 @@ impl AdjacencyList{
 }
 
 //print current token symbol and symbol of prev and next
-pub fn print_token(token: TokenNodeOption){
+pub fn print_token(token: AdjListNodeOption){
     match token{
         Some(token) => {
             let token = token.borrow();
