@@ -2,6 +2,7 @@
 // mod token;
 
 use arb_handler::*;
+use std::collections::HashMap;
 // use asset_registry::AssetRegistry;
 use std::fs::File;
 use std::io::prelude::*;
@@ -13,17 +14,9 @@ use std::path::Path;
 // use liq_pool::LiqPool;
 
 fn main() {
-    
-    // get_liq_pools();
-    // get_asset_registry();
-    // lookup_token_by_symbol("rMRK".to_string());
 
-    // test_adj_list();
-    // println!("teest")
-    // build_adj_lists();
-    // test_list_2();
-    // test_pointer();
-    build_graph();
+    cross_chain();
+
 }
 
 

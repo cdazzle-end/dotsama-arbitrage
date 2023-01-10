@@ -1,36 +1,536 @@
-use crate::token::{self, Token};
-use crate::adj_list_node::{AdjListNode, AdjListNodeOption, TokenNodeIterator};
-use crate::{LiqPoolList, AdjacencyList};
-// use std::cell::RefCell;
-// use std::rc::Rc;
-// use std::borrow::Borrow;
-// use std::borrow::Borrow;
-use std::cell::RefCell;
-use std::collections::VecDeque;
-use std::ops::Index;
-use std::rc::Rc;
+use crate::asset_registry::AssetLocation;
+use crate::token::{self, TokenData};
+// use crate::adj_list_node::{AdjListNode, AdjListNodeOption, TokenNodeIterator};
+use crate::{LiqPoolRegistry, asset_registry, liq_pool_registry};
+use num::{BigInt, ToPrimitive};
+use num::bigint::ToBigInt;
+use num::BigRational;
+use num;
+// use num::rational::BigRational;
 
-type GraphNodeRef = Rc<RefCell<GraphNode>>;
-pub type GraphNodeOption = Option<GraphNodeRef>;
+
+use std::cell::RefCell;
+use std::collections::{VecDeque, HashMap};
+// use std::intrinsics::powf64;
+use std::rc::Rc;
+use crate::{asset_registry::{AssetRegistry, Asset}};
+use crate::adjacency_table::AdjacencyTable;
+
+type AssetPointer = Rc<RefCell<Asset>>;
+// type TableBucket = Vec<Vec<AssetPointer>>;
+type GraphNodePointer = Rc<RefCell<GraphNode>>;
 
 pub struct TokenGraph{
-    token_nodes: Vec<GraphNodeRef>,
-    adj_list_table: AdjacencyTable
+    // pub adjacency_table: AdjacencyTable,
+    // pub token_nodes: Vec<
+    pub node_map: HashMap<String, Vec<GraphNodePointer>>
 }
 
-pub struct AdjacencyTable{
-    table: Vec<AdjacencyList>,
-    tokens: Vec<String>,
-    // weight: Vec<Vec<(u128, u128)>>,
+impl TokenGraph{
+    pub fn build_graph(asset_registry: &AssetRegistry, adjacency_table: AdjacencyTable) -> TokenGraph{
+        let mut graph_nodes: Vec<GraphNodePointer> = Vec::new();
+        //Map of all graph nodes
+        let mut node_map: HashMap<String, Vec<GraphNodePointer>> = HashMap::new();
+        // let assets = asset_registry.get_all_assets();
+
+        //Create a graph node for every asset
+        for asset in asset_registry.get_all_assets(){
+            let new_node = Rc::new(RefCell::new(GraphNode{
+                asset: Rc::clone(&asset),
+                adjacent_nodes: Vec::new(),
+                asset_key: asset.borrow().token_data.get_map_key(),
+                pred: None,
+                distance: 0,
+                time_d: 0,
+                time_f: 0,
+                color: Color::White,
+                best_path_value: 0,
+                best_path_value_display: 0.0,
+                path_edges: Vec::new(),
+                best_path: Vec::new(),
+                path_values: Vec::new(),
+            }));
+            graph_nodes.push(Rc::clone(&new_node));
+            let bucket = node_map.entry(new_node.borrow().asset_key.clone()).or_insert(Vec::new());
+            bucket.push(new_node);
+        }
+
+        //For each node, get adjacent assets. Find the node that corresponds to each adjacent asset. Add adjacent asset's node to current node
+        for current_node in graph_nodes{
+
+            let node_asset = current_node.borrow().asset.clone();
+            //Get adjacent assets & liquidity for current node
+            for adjacent_asset in adjacency_table.get_adjacent_assets(node_asset){
+                //Find node that corresponds to adjacent asset. Add it to current node's adjacency list
+                let bucket = node_map.get(&adjacent_asset.0.borrow().token_data.get_map_key()).unwrap();
+                for potential_adjacent_node in bucket{
+                    if adjacent_asset.0.borrow().token_data.get_map_key() == potential_adjacent_node.borrow().asset_key{
+                        // println!("{} - {}", adjacent_asset.1.0, adjacent_asset.1.1);
+                        current_node.borrow_mut().adjacent_nodes.push((Rc::clone(potential_adjacent_node), (adjacent_asset.1.0, adjacent_asset.1.1)));
+                    }
+                }
+            }
+
+            //If asset is cross chain, get it's cross chain assets and add them as adjacent nodes
+            let current_node_location = current_node.borrow().asset.borrow().asset_location.clone();
+            match current_node_location{
+                Some(asset_location) => {
+                    for cross_chain_asset in asset_registry.get_cross_chain_assets(asset_location){
+                        let bucket = node_map.get(&cross_chain_asset.borrow().token_data.get_map_key()).unwrap();
+                        for graph_node in bucket{
+                            if cross_chain_asset.borrow().token_data.get_map_key() == graph_node.borrow().asset.borrow().token_data.get_map_key(){
+                                current_node.borrow_mut().adjacent_nodes.push((Rc::clone(graph_node), (0,0)));
+                            }
+                        }
+                    }
+                },
+                None => ()
+            }
+            // for related_asset in asset_registry.get_cross_chain_assets(Rc::clone(&node.borrow().asset.clone())){
+            //     let bucket = node_map.get(&related_asset.borrow().token_data.get_map_key()).unwrap();
+            //     for graph_node in bucket{
+            //         if related_asset.borrow().token_data.get_map_key() == graph_node.borrow().asset.borrow().token_data.get_map_key(){
+            //             node.borrow_mut().adjacent_nodes.push(Rc::clone(graph_node));
+            //         }
+            //     }
+            // }
+        }
+
+        TokenGraph{ node_map }
+    }
+
+    pub fn get_evm_tokens(&self){
+
+    }
+
+    //Get node through asset key
+    pub fn get_node(&self, asset_key: String) -> GraphNodePointer{
+        let bucket = self.node_map.get(&asset_key).unwrap();
+        for node in bucket{
+            if node.borrow().asset_key == asset_key{
+                return Rc::clone(node);
+            }
+        }
+        panic!("Could not find node with asset key: {}", asset_key);
+    }
+    
+    pub fn get_swap_pair(&self, asset_key_1: String, asset_key_2: String){
+        let asset_1 = self.get_node(asset_key_1);
+        let adjacent_node = asset_1.borrow().get_adjacent_node(asset_key_2);
+
+
+    }
+
+    pub fn display_graph(&self){
+        let index = 0;
+        let first_node;
+        for val in self.node_map.values(){
+            first_node = val[0].borrow();
+            print!("{}: ", first_node.asset_key);
+            for adj_node in &first_node.adjacent_nodes{
+                print!("{} -> ", adj_node.0.borrow().asset_key)
+            }
+            break;
+        }
+    }
+
+    pub fn random_bfs(&self, asset_registry: &AssetRegistry){
+        let starting_node = &self.node_map.values().next().unwrap()[0];
+        starting_node.borrow_mut().color = Color::Gray;
+        let mut node_queue: VecDeque<GraphNodePointer> = VecDeque::new();
+        node_queue.push_back(Rc::clone(&starting_node));
+        while !node_queue.is_empty(){
+            let current_node = node_queue.pop_front().unwrap_or_else(||panic!("Queue should not be empty"));
+            println!("{} {} -> Pop", current_node.borrow().asset.borrow().token_data.get_map_key(), current_node.borrow().asset.borrow().token_data.get_asset_name());
+            for adjacent_node in &current_node.borrow().adjacent_nodes{
+                if adjacent_node.0.borrow().color == Color::White{
+                    adjacent_node.0.borrow_mut().color = Color::Gray;
+                    adjacent_node.0.borrow_mut().distance = current_node.borrow().distance + 1;
+                    adjacent_node.0.borrow_mut().pred = Some(Rc::clone(&current_node));
+                    println!("{} {} -> Gray/In queue", adjacent_node.0.borrow().asset.borrow().token_data.get_map_key(), adjacent_node.0.borrow().asset.borrow().token_data.get_asset_name());
+                    node_queue.push_back(Rc::clone(&adjacent_node.0));
+                    
+                }
+            }
+            current_node.borrow_mut().color = Color::Black;
+            println!("{} {} -> Black", current_node.borrow().get_asset_key(), current_node.borrow().get_asset_name());
+        }
+    }
+
+    pub fn random_dfs(&self){
+        let mut time: u32 = 0;
+        for(key, bucket) in &self.node_map{
+            for node in bucket{
+                if node.borrow().color == Color::White{
+                    dfs_visit(Rc::clone(&node), &mut time);
+                }
+            }
+        }
+    }
+
+    //Cannot travel to node if it already exists in current path
+    pub fn find_best_paths_2(&self, asset_key_1: String, asset_key_2: String, input_amount: f64){
+        let starting_node = &self.get_node(asset_key_1);
+        
+        let formatted_input = &input_amount * f64::powi(10.0, starting_node.borrow().get_asset_decimals() as i32);
+        starting_node.borrow_mut().best_path_value = formatted_input as u128;
+        starting_node.borrow_mut().path_values.push(input_amount);
+        starting_node.borrow_mut().best_path.push(Rc::clone(&starting_node));
+
+        let mut node_queue = VecDeque::new();
+        node_queue.push_back(Rc::clone(starting_node));
+        while !node_queue.is_empty(){
+            println!("queue length: {}", node_queue.len());
+            let current_node = node_queue.pop_front().unwrap();
+            let current_node_display = current_node.borrow().best_path_value_display();
+            println!("Current node: {} - {} - {}", current_node.borrow().asset_key, current_node.borrow().get_asset_name(), current_node_display);
+            print!("Path: ");
+            for path_node in &current_node.borrow().best_path{
+                print!("{} {} ->", path_node.borrow().get_asset_key(), path_node.borrow().best_path_value_display());
+            }
+            println!("");
+            println!("");
+            for adjacent_node in &current_node.borrow().adjacent_nodes{
+                if current_node.borrow().get_asset_location() != None && current_node.borrow().get_asset_location() == adjacent_node.0.borrow().get_asset_location(){
+                    if current_node.borrow().best_path_value > adjacent_node.0.borrow().best_path_value{
+                        // let test = current_node.borrow().best_path.contains(&adjacent_node.0);
+                        let mut test= false;
+                        for path_node in &current_node.borrow().best_path{
+                            if path_node.borrow().get_asset_key() == adjacent_node.0.borrow().get_asset_key(){
+                                test = true;
+                            }
+                        }
+                        println!("Contains adj node already: {}", test);
+                        adjacent_node.0.borrow_mut().best_path_value = current_node.borrow().best_path_value;
+                        adjacent_node.0.borrow_mut().best_path = current_node.borrow().best_path.clone();
+                        adjacent_node.0.borrow_mut().best_path.push(Rc::clone(&adjacent_node.0));
+                        adjacent_node.0.borrow_mut().path_values = current_node.borrow().path_values.clone();
+                        adjacent_node.0.borrow_mut().path_values.push(current_node.borrow().best_path_value_display());
+                        if !test{
+                            node_queue.push_back(Rc::clone(&adjacent_node.0));
+                        }
+                        
+                    }
+                    
+                } else {
+                    let (path_value,_) = calculate_edge(&self, &current_node, adjacent_node, current_node.borrow().best_path_value);
+                    if path_value > adjacent_node.0.borrow().best_path_value{
+                        let mut test= false;
+                        for path_node in &current_node.borrow().best_path{
+                            if path_node.borrow().get_asset_key() == adjacent_node.0.borrow().get_asset_key(){
+                                test = true;
+                            }
+                        }
+                        println!("found better path");
+                        println!("");
+                        println!("");
+                        adjacent_node.0.borrow_mut().best_path_value = path_value;
+                        adjacent_node.0.borrow_mut().best_path = current_node.borrow().best_path.clone();
+                        adjacent_node.0.borrow_mut().best_path.push(Rc::clone(&adjacent_node.0));
+                        adjacent_node.0.borrow_mut().path_values = current_node.borrow().path_values.clone();
+                        let formatted_path_value = adjacent_node.0.borrow().best_path_value_display().clone();
+                        adjacent_node.0.borrow_mut().path_values.push(formatted_path_value);
+                        
+                        println!("Step 1");
+                        if !test{
+                            println!("step 2");
+                            node_queue.push_back(Rc::clone(&adjacent_node.0));
+                        }
+                        
+                    }
+                }
+            }
+        }
+
+        //Print finalized paths for each node
+        for node_bucket in self.node_map.values(){
+            for node in node_bucket{
+                if !node.borrow().best_path.is_empty(){
+                    // println!("Node: {} {}", node.borrow().asset_key, node.borrow().get_asset_name());
+                    // print!("Path: ");
+                    // for path_node in &node.borrow().best_path{
+                    //     print!("{} {}-> ", path_node.borrow().get_asset_key(), path_node.borrow().best_path_value_display())
+                    // }
+                    node.borrow().display_path();
+                    println!("");
+                    println!("");
+                }
+            }
+        }
+    }
+
+    pub fn find_best_path(&self, asset_key_1: String, asset_key_2: String, input_amount: f64){
+        let starting_node = &self.get_node(asset_key_1);
+        let token_1_decimals = starting_node.borrow().asset.borrow().token_data.get_asset_decimals() as u32;
+
+        //Convert input amount to u128
+        let converted_input_amount = (input_amount.clone() * f64::powi(10 as f64, token_1_decimals as i32)) as u128;
+        let mut current_input_amount = converted_input_amount.clone();
+
+        //Set input
+        starting_node.borrow_mut().best_path_value = converted_input_amount;
+        starting_node.borrow_mut().best_path.push(Rc::clone(starting_node));
+
+        let mut node_queue: VecDeque<GraphNodePointer> = VecDeque::new();
+        // let node_paths: Vec< = Vec::new();
+        node_queue.push_front(Rc::clone(starting_node));
+        while !node_queue.is_empty(){
+            let current_node = node_queue.pop_front().unwrap();
+            let current_node_display = current_node.borrow().best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, current_node.borrow().get_asset_decimals() as i32);
+            println!("Current node: {} - {} - {}", current_node.borrow().asset_key, current_node.borrow().get_asset_name(), current_node_display);
+            // print!("Path: ");
+            // for path_node in &current_node.borrow().best_path{
+            //     print!("{} {} ->", path_node.borrow().get_asset_key(), path_node.borrow().best_path_value_display);
+            // }
+            println!("");
+            // println!("");
+            for adjacent_node in &current_node.borrow().adjacent_nodes{
+                if current_node.borrow().asset_key != adjacent_node.0.borrow().asset_key{
+                    // println!("Adjacent node: {}, {:?}", adjacent_node.0.borrow().asset_key, adjacent_node.1);
+
+                    //Cross chain node. If current value is greater than cross chain's value, replace its path with new path
+                    if current_node.borrow().get_asset_location() != None && current_node.borrow().get_asset_location() == adjacent_node.0.borrow().get_asset_location(){
+                        if current_node.borrow().best_path_value > adjacent_node.0.borrow().best_path_value {
+                            let mut new_path = Vec::new();
+                            for node in &current_node.borrow().best_path{
+                                new_path.push(Rc::clone(&node));
+                            }
+                            new_path.push(Rc::clone(&adjacent_node.0));
+                            adjacent_node.0.borrow_mut().best_path_value = current_node.borrow().best_path_value;
+                            
+                            let adjacent_node_decimals = adjacent_node.0.borrow().asset.borrow().token_data.get_asset_decimals().clone();
+                            adjacent_node.0.borrow_mut().best_path_value_display = current_node.borrow().best_path_value as f64/ f64::powi(10.0, adjacent_node_decimals as i32); 
+                            adjacent_node.0.borrow_mut().best_path = new_path;
+                            node_queue.push_back(Rc::clone(&adjacent_node.0));
+                        }
+                    } else{
+                        
+                        //Calculate swap value. If value is greater, replace that nodes path with new path. Add token to queue
+                        //check if current pair exists in path nodes
+                        //get liquidity for current node - adjacent node
+                        let binding = current_node.borrow();
+                        let existing_path_edge = binding.get_path_edge(current_node.borrow().get_asset_key(), adjacent_node.0.borrow().get_asset_key());
+                        let (liq_current, liq_adjacent) = match existing_path_edge{
+                            Some(((current, current_liq), (adjacent, adjacent_liq))) => (current_liq, adjacent_liq),
+                            None => (&adjacent_node.1.0, &adjacent_node.1.1)
+                        };
+
+                        let adjacent_node_input = (Rc::clone(&adjacent_node.0), (liq_current.clone(), liq_adjacent.clone()));
+
+                        let (edge_value, (new_current_node_liquidity, new_adjacent_node_liquidity)) = calculate_edge(&self, &current_node, &adjacent_node_input, current_node.borrow().best_path_value);
+
+                        //get new liquidity
+
+                        //update liquidity in path nodes
+                        if edge_value > adjacent_node.0.borrow().best_path_value{
+                            
+                            let mut new_path = Vec::new();
+                            let mut path_edges = Vec::new();
+                            for node in &current_node.borrow().best_path{
+                                new_path.push(Rc::clone(&node));
+                                
+                            }
+                            for edge in &current_node.borrow().path_edges{
+                                path_edges.push(edge.clone())
+                            }
+                            new_path.push(Rc::clone(&adjacent_node.0));
+                            path_edges.push(((current_node.borrow().asset_key.clone(), new_current_node_liquidity), (adjacent_node.0.borrow().asset_key.clone(), new_adjacent_node_liquidity)));
+
+                            adjacent_node.0.borrow_mut().best_path_value = edge_value;
+                            let adjacent_node_decimals = adjacent_node.0.borrow().asset.borrow().token_data.get_asset_decimals().clone();
+                            adjacent_node.0.borrow_mut().best_path_value_display = edge_value as f64/ f64::powi(10.0, adjacent_node_decimals as i32); 
+                            adjacent_node.0.borrow_mut().best_path = new_path;
+                            adjacent_node.0.borrow_mut().path_edges = path_edges;
+                            node_queue.push_back(Rc::clone(&adjacent_node.0));
+                        }
+                    }
+
+                }
+                
+                
+            }
+
+        }
+        
+    }
+
+
+
 }
 
-#[derive(Debug)]
+//returns the output amount of adjacent node and resulting liquidity for each asset
+pub fn calculate_edge(token_graph: &TokenGraph, primary_node: &GraphNodePointer, adjacent_node: &(GraphNodePointer, (u128, u128)), input_amount: u128) -> (u128, (u128,u128)){
+    let node_1 = primary_node;
+    let (node_2, (node_1_liquidity, node_2_liquidity)) = adjacent_node;
+
+    let node_1_liquidity = node_1_liquidity.to_bigint().unwrap();
+    let node_2_liquidity = node_2_liquidity.to_bigint().unwrap();
+
+    let token_1_decimals = node_1.borrow().get_asset_decimals() as u32;
+    let token_2_decimals = node_2.borrow().get_asset_decimals() as u32;
+
+    //Convert input amount to u128
+    // let converted_input_amount = (input_amount.clone() * f64::powi(10 as f64, token_1_decimals as i32)) as u128;
+    let converted_input_amount = input_amount;
+
+    let increments = 5000;
+    let token_1_increment:u128 = converted_input_amount / increments;
+    let swap_fee = (token_1_increment.clone() as f64 * (0.003)) as u128;
+    let token_1_increment_minus_swap = token_1_increment - (swap_fee);
+    
+    let mut token_1_changing_liquidity = node_1_liquidity.clone();
+    let mut token_2_changing_liquidity = node_2_liquidity.clone();
+    // / u128::pow(10, token_2_decimals)
+    let mut total_slippage = 0.to_bigint().unwrap();
+    let mut total_token_2_output = 0.to_bigint().unwrap();
+    let mut i = 0;
+
+    while i < increments{
+        // let token_2_clone = token_2_changing_liquidity.clone();
+        let token_2_out = token_2_changing_liquidity.clone() * token_1_increment_minus_swap / (token_1_changing_liquidity.clone() + token_1_increment_minus_swap);
+        let slip = (&token_2_out/token_2_changing_liquidity.clone()) * &token_2_out;
+        total_token_2_output += &token_2_out - &slip;
+        token_2_changing_liquidity -= &token_2_out - &slip;
+        token_1_changing_liquidity += token_1_increment_minus_swap;
+        total_slippage += &slip;
+        i += 1;
+        // println!("{}", token_2_out);
+    }
+
+    // println!("Swap fee: {}", swap_fee);
+    // println!("Token 1 decimals: {}", token_1_decimals);
+    // println!("Input converted: {}", converted_input_amount);
+    
+
+    //Convert output to readable decimals
+    // let total_token_2_converted = total_token_2_output.clone() / f64::powi(10.0, token_2_decimals as i32);
+    let total_token_2_converted = BigRational::from(total_token_2_output.clone() / 10.to_bigint().unwrap().pow(token_2_decimals));
+    let total_token_2_float = total_token_2_converted.to_f64();
+    // let total_token_2_converted = 10.to_bigint().unwrap().pow(token_2_decimals);
+    // println!("Total 2 converted: {}", total_token_2_converted);
+    // total_token_2_converted
+    
+    let total_token_2_output_decimals = total_token_2_output.to_f64().unwrap().clone() / f64::powi(10.0, token_2_decimals as i32);
+    // println!("Total out: {}", total_token_2_output_decimals);
+
+    (total_token_2_output.to_u128().unwrap(),(token_1_changing_liquidity.to_u128().unwrap(),token_2_changing_liquidity.to_u128().unwrap()))
+    
+}
+
+    pub fn dfs_visit(node: GraphNodePointer, time: &mut u32){
+        *time = *time + 1;
+        node.borrow_mut().time_d = time.clone();
+        node.borrow_mut().color = Color::Gray;
+        println!("({}) {} {} -> Gray", time, node.borrow().get_asset_key(), node.borrow().get_asset_name());
+        for adjacent_node in &node.borrow().adjacent_nodes{
+            if adjacent_node.0.borrow().color == Color::White{
+                adjacent_node.0.borrow_mut().pred = Some(Rc::clone(&node));
+                dfs_visit(Rc::clone(&adjacent_node.0), time);
+            }
+        }
+        node.borrow_mut().color = Color::Black;
+        *time = *time + 1;
+        node.borrow_mut().time_f = time.clone();
+        println!("({}) {} {} -> Black", time, node.borrow().asset.borrow().token_data.get_map_key(), node.borrow().asset.borrow().token_data.get_asset_name());
+
+    }
+
+#[derive(Debug, PartialEq)]
 pub struct GraphNode{
-    pub symbol: String,
-    pub pred: GraphNodeOption,
+    pub asset: AssetPointer,
+    pub adjacent_nodes: Vec<(GraphNodePointer, (u128, u128))>,
+    pub asset_key: String,
+    pub pred: Option<GraphNodePointer>,
     pub distance: u32,
     pub color: Color,
-    pub adj_list: Rc<RefCell<AdjacencyList>>,
+    pub time_d: u32,
+    pub time_f: u32,
+    pub best_path_value: u128,
+    pub best_path_value_display: f64,
+    pub path_edges: Vec<((String,u128),(String, u128))>,
+    pub best_path: Vec<GraphNodePointer>,
+    pub path_values: Vec<f64>,
+}
+
+impl GraphNode{
+    pub fn get_adjacent_node(&self, asset_key: String) -> &(GraphNodePointer, (u128,u128)){
+        for node in &self.adjacent_nodes{
+            let adj_node = node.0.borrow();
+            if adj_node.asset_key == asset_key{
+                return node;
+            }
+        }
+        panic!("Could not get adjacent node with key: {}", asset_key);
+    }
+
+    pub fn get_asset_name(&self) -> String{
+        self.asset.borrow().token_data.get_asset_name()
+    }
+
+    pub fn get_asset_key(&self) -> String{
+        self.asset.borrow().token_data.get_map_key()
+    }
+
+    pub fn get_asset_decimals(&self) -> u64{
+        self.asset.borrow().token_data.get_asset_decimals()
+    }
+
+    pub fn get_asset_location(&self) -> Option<AssetLocation>{
+        self.asset.borrow().asset_location.clone()
+    }
+
+    //Get the lastest path edge
+    pub fn get_path_edge(&self, asset_key_1: String, asset_key_2: String) -> Option<(((&String, &u128), (&String, &u128)))>{
+        // let mut v = Vec::new();
+        for edge in self.path_edges.iter().rev(){
+            // v.push(1);
+            let ((node_1, liquidity_1), (node_2, liquidity_2)) = edge;
+            if &asset_key_1 == node_1 && &asset_key_2 == node_2{
+                println!("found liq 1: {} {} {} {}", node_1, liquidity_1, node_2, liquidity_2);
+                return Some(((node_1, liquidity_1), (node_2, liquidity_2)))
+            } else if &asset_key_1 == node_2 && &asset_key_2 == node_1{
+                println!("found liq 2: {} {} {} {}", node_1, liquidity_1, node_2, liquidity_2);
+                return Some(((node_2, liquidity_2), (node_1, liquidity_1)))
+            }
+
+        }
+        // for x in 
+        // for x in v.iter().re
+        return None
+    }
+
+    pub fn best_path_value_display(&self) -> f64 {
+        self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, self.get_asset_decimals() as i32)
+    }
+
+    pub fn path_contains(&self, node: GraphNodePointer) -> bool {
+        for path_node in &self.best_path{
+            if path_node.borrow().get_asset_key() == node.borrow().get_asset_key(){
+                return true
+            }
+        }
+        return false
+    }
+
+    pub fn display_path(&self){
+        println!("Node: {} {}", &self.get_asset_key(), &self.get_asset_name());
+        print!("Path: ");
+        for (i, path_node) in self.best_path.iter().enumerate(){
+            // let display_value = &self.path_values[i].to_f64().unwrap().clone() 
+            print!("{} {} ->", path_node.borrow().get_asset_key(), &self.path_values[i]);
+        }
+    }
+
+    // pub fn add_path_edge
+
+}
+
+// impl GraphNodePointer{
+
+// }
+
+struct NodePath{
+    pub nodes: Vec<GraphNodePointer>,
 }
 
 #[derive(PartialEq, Debug)]
@@ -40,216 +540,86 @@ pub enum Color{
     Black
 }
 
-impl TokenGraph {
-    pub fn new() -> Self{
-        let liq_pools = LiqPoolList::build_from_json();
-        let table = AdjacencyTable::build_from_liqpool_list(liq_pools);
-        TokenGraph { token_nodes: Vec::new(), adj_list_table: table }
-    }
-    pub fn build_graph(&mut self){
-        let liq_pools = LiqPoolList::build_from_json();
-        let table = AdjacencyTable::build_from_liqpool_list(liq_pools);
-        let mut graph_nodes: Vec<GraphNodeRef> = Vec::new();
-        for list in table.table{
-            let token = list.get_list_head_symbol();
-            let graph_node = Rc::new(RefCell::new(GraphNode{
-                symbol: token,
-                pred: None,
-                distance: 0,
-                color: Color::White,
-                adj_list: Rc::new(RefCell::new(list))
-            }));
-            graph_nodes.push(graph_node);
-        }
-        self.token_nodes = graph_nodes;
-        // println!("GRAPH NODES: {:?}", self.token_nodes);
-        
-        // self.adj_list_table = table;
-        // TokenGraph { token_nodes: graph_nodes, adj_list_table: table }
-    }
-    pub fn get_graph_node(&self, symbol: String) -> GraphNodeRef{
-        for node in &self.token_nodes{
-            if node.borrow().symbol == symbol{
-                return Rc::clone(node)
-            }
-        }
-        panic!("Cant find graph node")
-    }
+// pub fn node_hash_map()
 
-    pub fn print_graph_tokens(&self){
-        println!("GRAPH NODES");
-        for node in &self.token_nodes{
-            println!("NODE {}, Adj List: ", node.borrow().symbol);
-            node.borrow().adj_list.borrow().print_items();
-            println!("")
-        }
+pub fn calculate_swap(token_graph: &TokenGraph, asset_1_key: String, asset_2_key: String, input_amount: f64) -> f64{
+    let binding = token_graph.get_node(asset_1_key);
+    let node_1 = binding.borrow();
+    for adjacent_node in &node_1.adjacent_nodes{
+        println!("RMRK - {}", adjacent_node.0.borrow().asset_key);
+        println!("{:?}", adjacent_node.1)
     }
+    // let node_2 = token_graph.get_node(asset_2_key);
+    // token_graph.get_swap_pair(asset_key_1, asset_key_2)
+    let (node_2, (node_1_liquidity, node_2_liquidity)) = node_1.get_adjacent_node(asset_2_key);
 
-    pub fn BFS(&mut self, symbol: String){
-        let source_node = self.get_graph_node(symbol);
-        source_node.borrow_mut().color = Color::Gray;
-        let mut node_queue: VecDeque<GraphNodeRef> = VecDeque::new();
-        node_queue.push_back(source_node);
-        while !node_queue.is_empty(){
-            let node = node_queue.pop_front().unwrap_or_else(||panic!("Queue should not be empty"));
-            println!("{} -> Pop", node.borrow().symbol);
-            for adj in node.borrow().adj_list.borrow().node_iterator(){
-                let adj_node = self.get_graph_node(adj.borrow().token_symbol.clone());
-                if adj_node.borrow().color == Color::White{
-                    adj_node.borrow_mut().color = Color::Gray;
-                    adj_node.borrow_mut().distance = node.borrow().distance + 1;
-                    adj_node.borrow_mut().pred = Some(Rc::clone(&node));
-                    println!("{} -> Gray/In queue", adj_node.borrow().symbol);
-                    node_queue.push_back(adj_node)
-                }
-            }
-            node.borrow_mut().color = Color::Black;
-            println!("{} -> Black", node.borrow().symbol);
-        }
+    
 
+    let token_1_decimals = node_1.asset.borrow().token_data.get_asset_decimals() as u32;
+    let token_2_decimals = node_2.borrow().asset.borrow().token_data.get_asset_decimals() as u32;
+
+    //Convert input amount to u128
+    let converted_input_amount = (input_amount.clone() * f64::powi(10 as f64, token_1_decimals as i32)) as u128;
+
+    let increments = 5000;
+    let token_1_increment:u128 = (converted_input_amount / increments);
+    let swap_fee = (token_1_increment.clone() as f64 * (0.003)) as u128;
+    let token_1_increment_minus_swap = token_1_increment - (swap_fee);
+    
+    let mut token_1_changing_liquidity = node_1_liquidity.clone();
+    let mut token_2_changing_liquidity = node_2_liquidity.clone();
+    // / u128::pow(10, token_2_decimals)
+    let mut total_slippage = 0;
+    let mut total_token_2_output = 0;
+    let mut i = 0;
+
+    println!("Token 1: {} - Token 2: {}", node_1.asset_key, node_2.borrow().asset_key);
+    println!("{} - {}", node_1_liquidity, node_2_liquidity);
+    println!("{} - {}", token_1_changing_liquidity, token_2_changing_liquidity);
+    while i < increments{
+        let token_2_out = token_2_changing_liquidity * token_1_increment_minus_swap / (token_1_changing_liquidity + token_1_increment_minus_swap);
+        let slip = (token_2_out/token_2_changing_liquidity) * token_2_out;
+        total_token_2_output += token_2_out - slip;
+        token_2_changing_liquidity -= (token_2_out - slip) as u128;
+        token_1_changing_liquidity += token_1_increment_minus_swap as u128;
+        total_slippage += slip;
+        i += 1;
+        // println!("{}", token_2_out);
     }
 
-    //BFS path
-    pub fn print_path(&self, token_1: String, token_2: String) {
-        println!("1 {} 2 {}", &token_1, &token_2);
-        let token_1 = self.get_graph_node(token_1);
-        let token_2 = self.get_graph_node(token_2);
-        if token_2.borrow().symbol == token_1.borrow().symbol{
-            println!("{}", token_1.borrow().symbol);
-        } else {
-            match &token_2.borrow().pred{
-                None => println!("NO TOKEN PATH"),
-                Some(token_2_pred) => {
-                    self.print_path(token_1.borrow().symbol.clone(), token_2_pred.borrow().symbol.clone());
-                    println!("{}", token_2.borrow().symbol)
-                }
-            }
-        }
+    println!("Swap fee: {}", swap_fee);
+    println!("Token 1 decimals: {}", token_1_decimals);
+    println!("Input converted: {}", converted_input_amount);
+    println!("Total out: {}", total_token_2_output);
 
-}
+    //Convert output to readable decimals
+    let total_token_2_converted = total_token_2_output.clone() as f64 / f64::powi(10.0, token_2_decimals as i32);
+    println!("Total 2 converted: {}", total_token_2_converted);
+    total_token_2_converted
+    
 }
 
-// impl GraphNode{
+// function rmrk_to_kusd(kusdL, rmrkL, rmrkSupply) {
+//     // const rmrkSupply = 100;
+//     const increments = rmrkSupply / 5000;
+//     let i = 0;
+//     let kusdChangingLiq = kusdL;
+//     let rmrkChangingLiq = rmrkL;
+//     let totalSlip = 0;
+//     let totalKusd = 0;
+//     const rmrkInput = increments - (increments * 0.003)
+//     while (i < (rmrkSupply / increments)) {
+//         let kusdOut = kusdChangingLiq * rmrkInput / (rmrkChangingLiq + rmrkInput);
+//         let slip = (kusdOut / kusdChangingLiq) * kusdOut;
+//         totalKusd += kusdOut - slip;
+//         kusdChangingLiq -= kusdOut - slip;
+//         rmrkChangingLiq += rmrkInput;
+//         totalSlip += slip;
 
+//         i++;
+//     }
+//     console.log("out kusd: ", totalKusd)
+//     console.log("slip: ", totalSlip)
+//     // console.log("total: ", total);
+//     return totalKusd;
 // }
-
-impl AdjacencyTable{
-    pub fn new() -> Self{
-        let table: Vec<AdjacencyList> = Vec::new();
-        let tokens: Vec<String> = Vec::new();
-        // let weight: Vec<Vec<(u128, u128)>> = Vec::new();
-        AdjacencyTable { table, tokens }
-    }
-
-    //Go through each liq_pool, add token pairs to graph
-    pub fn build_from_liqpool_list(liqpools: LiqPoolList) -> AdjacencyTable{
-        let adj_lists: Vec<AdjacencyList> = Vec::new();
-        let mut table = AdjacencyTable::new();
-        let already_added: Vec<String> = Vec::new();
-        for pool in liqpools.liq_pools{
-            // pool.display_liq_pool();
-            pool.get_pool_tokens();
-            let token_1 = &pool.tokens[0].symbol;
-            let token_2 = &pool.tokens[1].symbol;
-            let liq_1 = &pool.liquidity[0];
-            let liq_2 = &pool.liquidity[0];
-            let weight = (liq_1.clone(), liq_2.clone());
-            // if already_added.contains(token_1){
-
-            // }
-
-            table.add_token_pair(token_1.to_string(), token_2.to_string(), weight);
-        }
-        // AdjacencyTable { table: self.table, tokens: self.tokens }
-        table
-    }
-
-    //Take a token pair, add to their respective adjacency lists
-    pub fn add_token_pair(&mut self, token_1: String, token_2: String, weight: (u128, u128)){
-        // Add token_1 Adj List
-        println!("Adding tokens {}, {}", token_1, token_2);
-
-        //Get list that matches token_1 from table
-        if self.tokens.contains(&token_1){
-            
-            let token_1_list = self.get_list_by_token(token_1.clone());
-            
-            token_1_list.push_end(token_2.to_string(), weight);
-            // println!("Adding to token 2: {} to token 1 {} list", token_2, token_1);
-            // let target_list = &mut self.table[found];
-            // target_list.push_end(token_2);
-            // token_1_list.push_end(token_2.clone());
-
-        //Or create new list with Token 1, push new list to table, add Token 1 to self.tokens
-        } else {
-            
-            
-            let mut new_list = AdjacencyList::new(token_1.clone());
-            new_list.push_end(token_2.clone(), weight);
-            self.table.push(new_list);
-            self.tokens.push(token_1.clone());
-            // println!("Create new list with token 1: {}", token_1);
-        }
-    
-
-        //Add token_2 Adj List
-
-        //Get list that matches token_2 from table
-        let reverse_weight: (u128, u128) = (weight.1, weight.0);
-        if self.tokens.contains(&token_2){
-            
-            let token_2_list = self.get_list_by_token(token_2.clone());
-            token_2_list.push_end(token_1.clone(), reverse_weight);
-            // println!("Adding to token 1: {} to token 2 {} list", token_1, token_2);
-            // let mut token_2_list = self.get_list_by_token(token_2);
-            // token_2_list.push_end(token_1);
-        } else {
-            //Create new list with Token 2, push new list to table, add Token 2 to self.tokens
-            
-            let mut new_list = AdjacencyList::new(token_2.clone());
-            new_list.push_end(token_1.clone(), reverse_weight);
-            self.table.push(new_list);
-            self.tokens.push(token_2.clone());
-            // println!("Create new list with token 2: {}", token_2);
-            // self.table.push(new_list);
-        }
-    }
-
-    //only if confirmed the specific list exists, get list by token symbol
-    pub fn get_list_by_token(&mut self, token: String) -> &mut AdjacencyList{
-        let len = self.table.len();
-        let mut index = 0;
-        while index < len{
-        // for mut list in &self.table{
-            let list = &self.table[index];
-            let list_head = list.get_list_head_symbol();
-            if list_head == token{
-                let list = &mut self.table[index];
-                return list
-            }
-            index += 1;
-        }
-        panic!("Could not retrieve adj list by token")
-    }
-
-    // pub fn get_list_head_from_token(&self, symbol: String) -> Rc<RefCell<AdjacencyList>>{
-    //     for list in self.table{
-    //         if symbol == list.get_list_head_symbol(){
-    //             return Rc::new(RefCell::new(list))
-    //         }
-    //     }
-    //     panic!("Could not match symbol to list in table")
-    // }
-    
-    pub fn display_table(&self){
-        println!("TOKEN GRAPH");
-        println!("TOKENS: {:?}", self.tokens);
-        // for token in &self.tokens{
-        //     println!("token {}", token);
-        // }
-        for list in &self.table{
-            println!("NEW LIST: {}", list.get_list_head_symbol());
-            list.print_items()
-        }
-    }
-}

@@ -1,0 +1,112 @@
+[{"KAR": {
+     "Xcm": {
+        "parents": "1"
+        "interior": {
+          "X2": [
+            {
+              "Parachain": "2,000"
+            }
+            {
+              "GeneralKey": "0x0080"
+            }
+          ]
+        }
+      }
+    }
+
+"KUSD" : {
+    "Xcm": {
+        "parents": "1"
+        "interior": {
+          "X2": [
+            {
+              "Parachain": "2,000"
+            }
+            {
+              "GeneralKey": "0x0081"
+            }
+          ]
+        }
+      }
+    }
+
+"KSM" : {
+    "Xcm": {
+        "parents": "1"
+        "interior": "Here"
+      }
+    }
+
+"BNC" : {
+    "Xcm": {
+        "parents": "1"
+        "interior": {
+          "X2": [
+            {
+              "Parachain": "2,001"
+            }
+            {
+              "GeneralKey: "0x0001"
+            }
+          ]
+        }
+      }
+    }
+
+VSKSM : {
+    Xcm: {
+        parents: 1
+        interior: {
+            X2: [
+            {
+                Parachain: 2,001
+            }
+            {
+                GeneralKey: 0x0404
+            }
+            ]
+        }
+      }
+    }
+PHA : {
+    Xcm: {
+        parents: 1
+        interior: {
+          X1: {
+            Parachain: 2,004
+          }
+        }
+      }
+    }
+      
+KINT : {
+    Xcm: {
+        parents: 1
+        interior: {
+          X2: [
+            {
+              Parachain: 2,092
+            }
+            {
+              GeneralKey: 0x000c
+            }
+          ]
+        }
+      }
+    }
+
+KBTC : {
+    Xcm: {
+        parents: 1
+        interior: {
+          X2: [
+            {
+              Parachain: 2,092
+            }
+            {
+              GeneralKey: 0x000b
+            }
+          ]
+        }
+      }
+      }

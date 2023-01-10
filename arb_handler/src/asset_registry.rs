@@ -1,92 +1,305 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+// use core::num::dec2flt::parse;
+use std::hash::{Hasher, Hash};
 use std::{path::Path, fs::File, io::Read};
 use std::str;
 use std::collections::HashMap;
 use serde_json::Value;
+// use std::iter::Map;
 
-use crate::token::{Token, AssetKeyType};
+// use crate::evm_reader::EvmReader;
+use crate::token::{Token, AssetKeyType, TokenData};
+// use crate::liq_pool::LiqPool;
+type AssetPointer = Rc<RefCell<Asset>>;
 
-
-
+#[derive(Debug)]
 pub struct AssetRegistry{
-    pub asset_list: Vec<Token>
+    // pub asset_list: Vec<Asset>, //SHOULDNT NEED ASSET LIST, USE ASSET MAP
+    pub asset_map: HashMap<String, Vec<AssetPointer>>, //ASSET KEY: CHAIN_ID + LOCAL_ID
+    pub location_map: HashMap<AssetLocation, Vec<AssetPointer>>
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Asset{
+    pub token_data: TokenData,
+    pub asset_location: Option<AssetLocation>,
+}
+impl Asset{
+    pub fn new(token_data: TokenData, asset_location: Option<AssetLocation>) -> Asset{
+        Asset{token_data, asset_location}
+    }
+}
+
+#[derive(PartialEq, Eq, Hash, Clone, Debug)]
+pub struct AssetLocation{
+    pub here: bool,
+    pub xtype: String,
+    pub properties: Option<Vec<String>>,
+}
+impl AssetLocation{
+    pub fn new(here: bool, xtype: String, properties: Option<Vec<String>>) -> AssetLocation{
+        AssetLocation{
+            here, xtype, properties
+        }
+    }
+}
+
+
 impl AssetRegistry{
-    pub fn build_asset_registry_from_file() -> AssetRegistry{
-        let path_string = r"..\kar\kar_asset_registry_2";
-        let path = Path::new(path_string);
-        let mut buf: Vec<u8> = Vec::new();
-        let mut file = File::open(path).unwrap_or_else(|err| panic!("problem opening file: Error {:?}", err));
-        file.read_to_end(&mut buf).unwrap_or_else(|err| panic!("problem reading activity map into buffer {:?}", err));
-        let parsed: Value = serde_json::from_str(str::from_utf8(&buf).unwrap()).unwrap();
 
-        let mut token_list: Vec<Token> = Vec::new();
-        // let mut token_map = HashMap::new();
-        
-
-        let mut x = 0;
-        while x < parsed.as_array().unwrap().len() {
-            // println!("{}", parsed[x]);
-
-            let token = Token::new(
-                parse_asset_key_type(&parsed[x]["asset_key"][0]),
-                parsed[x]["asset_data"]["name"].as_str().unwrap().to_string(),
-                parsed[x]["asset_data"]["symbol"].as_str().unwrap().to_string(),
-                parsed[x]["asset_data"]["decimals"].as_str().unwrap().parse().unwrap(),
-                parsed[x]["asset_data"]["minimalBalance"].as_str().unwrap().replace(",", "").parse().unwrap()
-            );
-            token_list.push(token);
-            // token_map.insert(token.asset_key, token);
-            x+=1;
+    pub fn build_sub_asset_registry_from_file() -> AssetRegistry{
+        let chains = vec!["kar", "bnc", "movr"];
+        let mut parsed_files = Vec::new();
+        for chain in chains{
+            let path_string = r"..\".to_owned() + chain + r"\asset_registry";
+            let mut buf: Vec<u8> = Vec::new();
+            let mut file = File::open(Path::new(&path_string)).unwrap_or_else(|err| panic!("problem opening file: Error {:?}", err));
+            file.read_to_end(&mut buf).unwrap_or_else(|err| panic!("problem reading activity map into buffer {:?}", err));
+            let parsed: Value = serde_json::from_str(str::from_utf8(&buf).unwrap()).unwrap();
+            parsed_files.push(parsed);
         }
-        
-        AssetRegistry {asset_list: token_list}
-    }
+        // let mut token_list: Vec<Token> = Vec::new();
+        let mut asset_list: Vec<Asset> = Vec::new();
+        let mut asset_map: HashMap<String, Vec<AssetPointer>> = HashMap::new();
+        let mut asset_location_map = HashMap::new();
+        for parsed in parsed_files{
+            let asset_reg_objects = parsed.as_object().unwrap()["assetRegistryObjects"].as_array().unwrap();
+            let chain_id = parsed.as_object().unwrap()["parachainId"].as_str();
+            let mut x = 0;
+            while x < asset_reg_objects.len() {
+                // println!("{}", asset_reg_objects[x]);
+                let asset = asset_reg_objects[x]["asset"].as_object().unwrap();
+                let asset_location = asset_reg_objects[x]["assetLocation"].as_object().unwrap();
+                // println!("{:?}", chain_id);
+                let token;
+                if chain_id.unwrap().to_string() == "2,023".to_string(){
+                    token = TokenData::new_evm(
+                    asset["evmAddress"].as_str().unwrap().to_string().to_ascii_lowercase(),
+                    asset["name"].as_str().unwrap().to_string(),
+                    asset["symbol"].as_str().unwrap().to_string(),
+                    asset["decimals"].as_str().unwrap().parse().unwrap(),
+                    chain_id.unwrap().to_string().replace(",", ""),
+                    true,
+                    Some(asset["localId"].to_string())
+                );
+                } else{
+                    token = TokenData::new_sub(
+                    parse_asset_key_type(&asset["localId"]),
+                    asset["name"].as_str().unwrap().to_string(),
+                    asset["symbol"].as_str().unwrap().to_string(),
+                    asset["decimals"].as_str().unwrap().parse().unwrap(),
+                    asset["minimalBalance"].as_str().unwrap().replace(",", "").parse().unwrap(),
+                    chain_id.unwrap().to_string().replace(",", ""),
+                    None
+                    // asset["evmAddress"].as_str()
+                );
+                
+                }
+                
+                
 
-    // pub fn get_token_from_key(&self, key: String) -> {
-    //     self.asset_list.
-    // }
+                let location = &asset_location["location"];
+                let mut here = false;
+                // let mut xtype;
+                if location.is_object(){
+                    let location = asset_location["location"].as_object().unwrap();
+                    let keys = location.keys();
+                    let mut properties: Vec<String> = Vec::new();
+                    let mut xtype = location["xtype"].as_str().unwrap();
+                    for k in keys.rev(){
+                        if k != "xtype"{
+                            let property = k.as_str().to_string() + ":" + &location[k].as_str().unwrap().replace(',', "");
+                            properties.push(property);
+                        }
+                    }
+                    properties.sort();
+                    let map_key = token.get_map_key();
+                    let asset_location = AssetLocation::new(here, xtype.to_string(), Some(properties));
+                    let current_asset = Asset::new(token, Some(asset_location.clone()));
+                    let asset_pointer = Rc::new(RefCell::new(current_asset));
 
-    // pub fn liq_pool_token_lookup(&self, token_string: String){
-    //     //split the string
-    //     let string_parts: Vec<&str> = token_string.rsplit(":").collect();
-    //     let clean_string_parts = clean_tokens(string_parts);
-    //     match clean_string_parts[0].as_str() {
-    //         "foreignAsset" => println!("FA"),
-    //         "token" => println!("NA"),
-    //         "stableAssetPoolToken" => println!("SA"),
-    //         _ => println!("No token found")
-    //     }
-    // }
+                    asset_location_map.entry(asset_location.clone()).or_insert(Vec::new()).push(Rc::clone(&asset_pointer));
+                    asset_map.entry(map_key).or_insert(Vec::new()).push(asset_pointer);
+                    // asset_list.push(current_asset);
+                } else {
+                    //LOCATION IS HERE
+                    here = true;
+                    // let xtype = "X0";
+                    let asset_location = AssetLocation::new(here, "X0".to_string(), None);
+                    let map_key = token.clone().get_map_key();
+                    let current_asset = Asset::new(token, Some(asset_location.clone()));
+                    let asset_pointer = Rc::new(RefCell::new(current_asset));
 
-    //lookup a token using the token type and token id
-    pub fn asset_lookup(&self, token_type: String, token_id: String) -> &Token{
-        //Convert token type into AssetTypeKey
-        let key_to_lookup = match token_type.as_str() {
-            "NativeAssetId" => AssetKeyType::NativeAssetId{token: token_id},
-            "ForeignAssetId" => AssetKeyType::ForeignAssetId(token_id),
-            "StableAssetId" => AssetKeyType::StableAssetId(token_id),
-            "Erc20" => AssetKeyType::Erc20(token_id),
-            _ => panic!("Error matching asset key type")
-        };
-        // println!("KEY LOOKUP: {:#?}", key_to_lookup);
-        for token in &self.asset_list{
-            if key_to_lookup == token.asset_key{
-                let matched_token = token;
-                return matched_token;
+                    asset_location_map.entry(asset_location.clone()).or_insert(Vec::new()).push(Rc::clone(&asset_pointer));
+                    asset_map.entry(map_key).or_insert(Vec::new()).push(asset_pointer);
+                    // asset_list.push(current_asset);
+                }
+                
+                x+=1;
             }
         }
-        panic!("Couldnt match token")
+        
+        // asset_location_map.insert(k, v)
+        
+        println!("map: {:?}", asset_map.values().len());
+        // println!("{:?}", chain_id);
+        
+        AssetRegistry {asset_map: asset_map, location_map: asset_location_map}
     }
 
-    pub fn asset_lookup_by_symbol(&self, symbol: String) -> &Token {
-        for token in &self.asset_list{
-            if symbol.to_ascii_lowercase() == token.symbol.to_ascii_lowercase(){
-                let matched_token = token;
-                return matched_token;
+    //Get assets with that share the same XCM location of a specific asset
+    pub fn get_cross_chain_assets(&self, asset_location: AssetLocation) -> Vec<AssetPointer>{
+        let location_bucket = &self.location_map.get(&asset_location);
+        let mut related_assets = Vec::new();
+        match location_bucket{
+            Some(bucket) => {
+                for asset in bucket.iter(){
+                    if Some(&asset_location) == asset.borrow().asset_location.as_ref(){
+                        related_assets.push(Rc::clone(&asset));
+                    }
+                }
+            },
+            None => (),
+        }
+        related_assets
+    }
+
+    pub fn asset_map_lookup(&self, chain_input: String, id: String) -> Rc<RefCell<Asset>>{
+        let map_key = chain_input.clone() + &id;
+        let asset_bucket = self.asset_map.get(&map_key).unwrap();
+        for asset in asset_bucket{
+            match asset.borrow().token_data.clone(){
+                TokenData::SubToken { local_id, chain,.. } => {
+                    if chain_input == chain && id == local_id.get_key_string(){
+                        // kl
+                        return Rc::clone(asset)
+                        // return asset
+                    }
+                },
+                TokenData::EvmToken { contract_address , chain, ..} => {
+                    if chain_input == chain && id == contract_address {
+                        return Rc::clone(asset)
+                    }
+                }
+            };
+            // let asset_id = asset.token_data.get_local_id_evm()
+        }
+        panic!("Couldnt find asset in map");
+    }
+
+    pub fn add_evm_tokens(&mut self){
+        let chains = vec!["movr"];
+        let evm_chain_ids = vec!["2023"];
+        let mut parsed_files = Vec::new();
+        for chain in chains{
+            let path_string = r"..\".to_owned() + chain + r"\token_registry";
+            let mut buf: Vec<u8> = Vec::new();
+            let mut file = File::open(Path::new(&path_string)).unwrap_or_else(|err| panic!("problem opening file: Error {:?}", err));
+            file.read_to_end(&mut buf).unwrap_or_else(|err| panic!("problem reading activity map into buffer {:?}", err));
+            let parsed: Value = serde_json::from_str(str::from_utf8(&buf).unwrap()).unwrap();
+            parsed_files.push(parsed);
+        }
+
+        let mut asset_list: Vec<Asset> = Vec::new();
+        let chain_id = "2023".to_string();
+
+        //List of substrate tokens that have EVM counterpart
+        let mut cross_chain_assets = Vec::new();
+        for bucket in self.asset_map.values(){
+            for asset in bucket{
+                if evm_chain_ids.contains(&asset.borrow().token_data.get_chain().as_str()){
+                    cross_chain_assets.push(asset.borrow().token_data.get_contract_address().unwrap())
+                }
             }
         }
-        panic!("Couldnt match symbol to token")
+        // let mut asset_location_map = HashMap::new();
+        for parsed in parsed_files{
+            // println!("{:?}", parsed);
+            let assets = parsed.as_array().unwrap();
+            for asset in assets{
+                let asset_value = asset.as_object().unwrap();
+                let evm_address = asset_value["address"].as_str().unwrap().to_string().to_ascii_lowercase();
+                // let mut is_cross_chain = false;
+                // let mut local_id = None;
+                if !cross_chain_assets.contains(&evm_address) {
+                    let token = TokenData::new_evm(
+                    evm_address, 
+                    asset_value["name"].as_str().unwrap().to_string(), 
+                    asset_value["symbol"].as_str().unwrap().to_string(), 
+                    asset_value["decimals"].as_u64().unwrap(), 
+                    chain_id.clone(), 
+                    false, 
+                    None
+                    );
+
+                    // self.asset_list.push(Asset::new(token.clone(), None));
+
+                    let map_key = token.clone().get_map_key();
+                    let asset_pointer = Rc::new(RefCell::new(Asset::new(token, None)));
+                    let asset_vec = self.asset_map.entry(map_key).or_insert(Vec::new());
+                    asset_vec.push(asset_pointer);
+                }
+            }
+            
+        }
+    }
+    pub fn display_registry(&self){
+        let mut vcount = 0;
+        let mut assets = Vec::new();
+        for(key,value) in &self.asset_map{
+            // print!("Key: {:?} --", key);
+            for val in value{
+                // print!(" Value: {}", val.borrow().token_data.get_map_key());
+                let display_string = val.borrow().token_data.get_map_key() + " " + &val.borrow().token_data.get_asset_name();
+                assets.push(display_string);
+                vcount += value.len();
+            }
+        }
+        assets.sort();
+        for key in assets{
+            println!("Registry value: {}", key)
+        }
+        println!("{}", &self.asset_map.keys().len());
+        println!("{}", vcount);
+    }
+
+    pub fn cross_chain_assets(&self){
+        let map = &self.location_map;
+
+        let mut vcount = 0;
+        for(key,values) in map{
+            println!("Key: {:?}", key);
+            for val in values{
+                println!("Value: {:?}", val);
+                vcount += 1;
+            }
+        }
+        println!("{:?}", self.location_map.keys().len());
+        println!("{:?}", vcount)
+    }
+
+    pub fn get_all_assets(&self) -> Vec<AssetPointer>{
+        let mut all_assets = Vec::new();
+        for bucket in self.asset_map.values(){
+            for asset in bucket{
+                all_assets.push(Rc::clone(&asset));
+            }
+        }
+        all_assets
+    }
+
+    //Get list of all evm sub tokens addresses
+    pub fn get_substrate_evm_tokens(&self) -> Vec<String> {
+        let mut evm_token_addresses = Vec::new();
+        for bucket in self.asset_map.values(){
+            for asset in bucket{
+                if asset.borrow().token_data.is_evm_sub_token(){
+                    evm_token_addresses.push(asset.borrow().token_data.get_contract_address().unwrap());
+                }
+            }
+        }
+        evm_token_addresses
     }
 }
 
@@ -99,11 +312,22 @@ pub fn clean_tokens(token_string: Vec<&str>) -> Vec<String>{
     c_tokens
 }
 
+pub fn remove_comma(string: String) -> String{
+    string.replace(',', "")
+}
+
 fn parse_asset_key_type(value: &Value) -> AssetKeyType{
     let mut keys = value.as_object().unwrap().keys();
     
     match keys.next() {
-        Some(x) if x == "NativeAssetId" => AssetKeyType::NativeAssetId{token:value["NativeAssetId"]["Token"].as_str().unwrap().to_string()},
+        Some(x) if x == "NativeAssetId" => {
+            let native_id = value["NativeAssetId"].as_object().unwrap();
+            let native_key = native_id.keys().next().unwrap();
+            let native_id_value = native_id.get_key_value(native_key).unwrap().1;
+            let native_string = "\"".to_string() + &native_key.to_string() + "\":" + &native_id_value.to_string();
+            // println!("{}", native_string);
+            AssetKeyType::NativeAssetId(native_string)
+        },
         Some(x) if x == "ForeignAssetId" => AssetKeyType::ForeignAssetId(value["ForeignAssetId"].as_str().unwrap().to_string()),
         Some(x) if x == "StableAssetId" => AssetKeyType::StableAssetId(value["StableAssetId"].as_str().unwrap().to_string()),
         Some(x) if x == "Erc20" => AssetKeyType::Erc20(value["Erc20"].as_str().unwrap().to_string()),

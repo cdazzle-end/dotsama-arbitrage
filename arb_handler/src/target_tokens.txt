@@ -1,0 +1,5 @@
+2000{ForeignAssetId:0} RMRK
+2001{NativeAssetId:{"Token":"RMRK"} RMRK Token
+20230xffffffff893264794d9d57e1e0e21e0042af5a0a xcRMRK
+2000{NativeAssetId:{"Token":"KSM"} Kusama
+2000{NativeAssetId:{"Token":"KUSD"} Acala Dollar
