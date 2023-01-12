@@ -37,16 +37,20 @@ pub fn build_sub_assets(){
 pub fn cross_chain(){
     let mut registry = AssetRegistry::build_sub_asset_registry_from_file();
     registry.add_evm_tokens();
-    registry.display_registry();
+    // registry.display_registry();
+    registry.add_exchange_tokens();
+    registry.display_exchange_tokens();
+    // registry.cross_chain_assets();
     // registry.cross_chain_assets();
     
     let mut liq_pool_registry = LiqPoolRegistry::build_sub_liqpool_registry(&registry);
+    // liq_pool_registry.display_kucoin_pools();
     let adj_table = AdjacencyTable::build_adjacency_table(&liq_pool_registry);
-    let token_graph = TokenGraph::build_graph(&registry, adj_table);
+    let token_graph = TokenGraph::build_graph(registry, adj_table);
     let input_amount = 15 as f64;
     let key_1 = r"2000{ForeignAssetId:0}".to_string();
     let key_2 = r#"2000{NativeAssetId:{"Token":"KUSD"}"#.to_string();
-    // calculate_swap(&token_graph, key_1, key_2, input_amount);
+    // // calculate_swap(&token_graph, key_1, key_2, input_amount);
     token_graph.find_best_paths_2(key_1, key_2, input_amount);
 
 }

@@ -18,6 +18,9 @@ pub struct LiqPoolRegistry{
 #[derive(Debug)]
 pub struct LiqPool{
     pub chain: String,
+    pub exchange: Option<String>,
+    pub prices: Option<(u64, u64)>,
+    pub price_decimals: Option<(u64,u64)>,
     pub contract_address: Option<String>,
     pub assets: Vec<AssetPointer>,
     pub liquidity: Vec<u128>,
@@ -27,9 +30,12 @@ pub struct LiqPool{
 //TO DO: maybe make chain a custom ENUM
 
 impl LiqPool{
-    pub fn new(chain: String, contract_address: Option<String>, assets: Vec<AssetPointer>, liquidity: Vec<u128>, is_evm: bool) -> LiqPool{
+    pub fn new(chain: String, exchange: Option<String>, prices: Option<(u64, u64)>, price_decimals: Option<(u64,u64)>, contract_address: Option<String>, assets: Vec<AssetPointer>, liquidity: Vec<u128>, is_evm: bool) -> LiqPool{
         LiqPool {
             chain,
+            exchange,
+            prices,
+            price_decimals,
             contract_address,
             assets,
             liquidity,
@@ -37,11 +43,24 @@ impl LiqPool{
         }
     }
 
+    pub fn get_formatted_price(&self) -> (f64, f64){
+        let decimals = self.price_decimals.unwrap();
+        let bid = self.prices.unwrap().0 as f64/ f64::powi(10.0, decimals.0 as i32);
+        let ask = self.prices.unwrap().1 as f64/ f64::powi(10.0, decimals.1 as i32);
+        (bid, ask)
+    }
+
     pub fn display_liq_pool(&self){
         if self.is_evm{
             println!("Pool address: {}", self.contract_address.clone().unwrap());
             println!("{:?} {} -- {:?} {}", self.assets[0].borrow().token_data.get_map_key(), self.assets[0].borrow().token_data.get_asset_name(), self.assets[1].borrow().token_data.get_map_key(), self.assets[1].borrow().token_data.get_asset_name());
             println!("{} -- {}", self.liquidity[0], self.liquidity[1])
+        } else if self.exchange != None{
+            println!("Kucoin LP");
+            println!("{:?} {} -- {:?} {}", self.assets[0].borrow().token_data.get_map_key(), self.assets[0].borrow().token_data.get_asset_name(), self.assets[1].borrow().token_data.get_map_key(), self.assets[1].borrow().token_data.get_asset_name());
+            let formatted_prices = self.get_formatted_price();
+            println!("Bid: {} -- Ask: {}", formatted_prices.0, formatted_prices.1)
+            
         }else{
             println!("SUB");
             println!("{} -- {}", self.assets[0].borrow().token_data.get_map_key(), self.assets[1].borrow().token_data.get_map_key());
@@ -85,12 +104,12 @@ impl LiqPoolRegistry{
                 if contract_address == "None".to_string(){
                     let asset_0 = asset_registry.asset_map_lookup(chain_id.to_string(), parse_asset_key_type(&assets[0]).get_key_string());
                     let asset_1 = asset_registry.asset_map_lookup(chain_id.to_string(), parse_asset_key_type(&assets[1]).get_key_string());
-                    let liq_pool = LiqPool::new(chain_id.to_string(), None, vec![asset_0, asset_1], vec![liquidity_0, liquidity_1], false);
+                    let liq_pool = LiqPool::new(chain_id.to_string(),None, None, None, None, vec![asset_0, asset_1], vec![liquidity_0, liquidity_1], false);
                     liq_pools.push(liq_pool);
                 } else {
                     let asset_0 = asset_registry.asset_map_lookup(chain_id.to_string(), assets[0].as_str().unwrap().to_string().to_ascii_lowercase());
                     let asset_1 = asset_registry.asset_map_lookup(chain_id.to_string(), assets[1].as_str().unwrap().to_string().to_ascii_lowercase());
-                    let liq_pool = LiqPool::new(chain_id.to_string(), Some(contract_address), vec![asset_0, asset_1], vec![liquidity_0, liquidity_1], true);
+                    let liq_pool = LiqPool::new(chain_id.to_string(), None, None, None, Some(contract_address), vec![asset_0, asset_1], vec![liquidity_0, liquidity_1], true);
                     liq_pools.push(liq_pool);
                 }
             }
@@ -133,19 +152,21 @@ impl LiqPoolRegistry{
                 if contract_address == "None".to_string(){
                     let asset_0 = asset_registry.asset_map_lookup(chain_id.to_string(), parse_asset_key_type(&assets[0]).get_key_string());
                     let asset_1 = asset_registry.asset_map_lookup(chain_id.to_string(), parse_asset_key_type(&assets[1]).get_key_string());
-                    let liq_pool = LiqPool::new(chain_id.to_string(), None, vec![asset_0, asset_1], vec![liquidity_0, liquidity_1], false);
+                    let liq_pool = LiqPool::new(chain_id.to_string(), None, None, None, None, vec![asset_0, asset_1], vec![liquidity_0, liquidity_1], false);
                     liq_pools.push(liq_pool);
                 } else {
                     let asset_0 = asset_registry.asset_map_lookup(chain_id.to_string(), assets[0].as_str().unwrap().to_string().to_ascii_lowercase());
                     let asset_1 = asset_registry.asset_map_lookup(chain_id.to_string(), assets[1].as_str().unwrap().to_string().to_ascii_lowercase());
                      //Check if either asset is a sub_evm token
                     if asset_0.borrow().token_data.is_evm_sub_token() || asset_1.borrow().token_data.is_evm_sub_token() {
-                        let liq_pool = LiqPool::new(chain_id.to_string(), Some(contract_address), vec![asset_0, asset_1], vec![liquidity_0, liquidity_1], true);
+                        let liq_pool = LiqPool::new(chain_id.to_string(), None, None, None,Some(contract_address), vec![asset_0, asset_1], vec![liquidity_0, liquidity_1], true);
                         liq_pools.push(liq_pool);
                     }
                 }
             }
         }
+        // let pool = &mut liq_pools;
+        add_kucoin_pairs(asset_registry, &mut liq_pools);
 
         LiqPoolRegistry { liq_pools }
     }
@@ -187,8 +208,50 @@ impl LiqPoolRegistry{
             pool.display_liq_pool();
         }
     }
+
+    pub fn display_kucoin_pools(&self){
+        for pool in &self.liq_pools{
+            if pool.exchange != None{
+                pool.display_liq_pool()
+            }
+        }
+    }
 }
 
+fn add_kucoin_pairs(asset_registry: &AssetRegistry, liq_pools: &mut Vec<LiqPool>){
+    let kucoin_assets = asset_registry.get_kucoin_tokens();
+    // let liq_pools = mut liq_pools
+    //Get usdt asset
+    let mut usdt_asset = asset_registry.get_kucoin_usdt();
+    // let mut liq_pools = Vec::new();
+    for asset in &kucoin_assets{
+        // if asset.borrow().token_data.get_symbol() != "USDT"{
+        //     let prices = asset.borrow().token_data.
+        // }
+        match &asset.borrow().token_data{
+            
+            TokenData::KucoinToken { exchange, name, symbol, chain, precision, contract_address, price_data, price_decimals } => {
+                if symbol != "USDT"{
+                    let assets = vec![Rc::clone(&asset), Rc::clone(&usdt_asset)];
+                    let liq_pool = LiqPool::new(
+                        "None".to_string(), 
+                        Some(exchange.to_string()), 
+                        Some(price_data.clone()), 
+                        Some(price_decimals.clone()), 
+                        None, 
+                        assets,
+                        vec![], 
+                        false
+                    );
+                    liq_pools.push(liq_pool);
+                }
+            },
+            _ => panic!("Expected kucoin token")
+        }
+        
+    }
+    // liq_pools
+}
 fn parse_asset_key_type(value: &Value) -> AssetKeyType{
     let mut keys = value.as_object().unwrap().keys();
     

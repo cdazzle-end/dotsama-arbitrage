@@ -1,2 +1,7 @@
-/arb-project
+
 /parachains/bifrost/node_modules/
+/parachains/bifrost/.yarn/
+/heiko/.yarn/
+/heiko/node_modules/
+
+arb_handler/target/

@@ -22,12 +22,20 @@ impl AdjacencyTable{
         // let mut table = HashMap::new()
         let mut adjacency_table = AdjacencyTable { table: HashMap::new() };
         for pool in &liq_pool_registry.liq_pools{
-            let (asset_0, asset_1) = (Rc::clone(&pool.assets[0]), Rc::clone(&pool.assets[1]));
-            let (liquidity_0, liquidity_1) = (pool.liquidity[0], pool.liquidity[1]);
-            // println!("{} - {}", liquidity_0, liquidity_1);
+            if pool.exchange == None{
+                let (asset_0, asset_1) = (Rc::clone(&pool.assets[0]), Rc::clone(&pool.assets[1]));
+                let (liquidity_0, liquidity_1) = (pool.liquidity[0], pool.liquidity[1]);
+                // println!("{} - {}", liquidity_0, liquidity_1);
 
-            adjacency_table.add_pair_to_table(Rc::clone(&asset_0), liquidity_0, Rc::clone(&asset_1), liquidity_1);
-            adjacency_table.add_pair_to_table(asset_1, liquidity_1, asset_0, liquidity_0);
+                adjacency_table.add_pair_to_table(Rc::clone(&asset_0), liquidity_0, Rc::clone(&asset_1), liquidity_1);
+                adjacency_table.add_pair_to_table(asset_1, liquidity_1, asset_0, liquidity_0);
+            } else {
+                let (asset_0, asset_1) = (Rc::clone(&pool.assets[0]), Rc::clone(&pool.assets[1]));
+                let (bid_price, ask_price) = (pool.prices.unwrap().0, pool.prices.unwrap().1);
+
+                adjacency_table.add_kucoin_pair_to_table(Rc::clone(&asset_0), Rc::clone(&asset_1), bid_price, ask_price);
+                adjacency_table.add_kucoin_pair_to_table(asset_1, asset_0, bid_price, ask_price);
+            }
         }
         adjacency_table
     }
@@ -61,6 +69,30 @@ impl AdjacencyTable{
             let new_adjacency_list = vec![(base_asset, (0,0)), (adjacent_asset, (base_liquidity, adjacent_liquidity))];
             table.entry(base_asset_key.clone()).and_modify(|e| e.push(new_adjacency_list));
         }
+    }
+
+    pub fn add_kucoin_pair_to_table(&mut self, base_asset: AssetPointer, adjacent_asset: AssetPointer, bid: u64, ask: u64 ){
+        let table = &mut self.table;
+        let base_asset_key = base_asset.borrow().token_data.get_map_key();
+
+        let table_bucket = table.entry(base_asset_key.clone()).or_insert(vec![vec![(Rc::clone(&base_asset), (0,0))]]);
+        let mut value_has_been_inserted = false;
+
+        for adjacency_list in table_bucket{
+
+            //The first asset in an adjacency list is the primary asset (the rest are adjacent to the primary)
+            let adjacency_list_key = adjacency_list[0].0.borrow().token_data.get_map_key();
+            if base_asset_key == adjacency_list_key{
+                adjacency_list.push((Rc::clone(&adjacent_asset), (bid as u128, ask as u128)));
+                value_has_been_inserted = true;
+            }
+        }
+
+         if value_has_been_inserted == false{
+            let new_adjacency_list = vec![(base_asset, (0,0)), (adjacent_asset, (bid as u128, ask as u128))];
+            table.entry(base_asset_key.clone()).and_modify(|e| e.push(new_adjacency_list));
+        }
+
     }
 
     pub fn display_table(&self){

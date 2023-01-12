@@ -149,22 +149,23 @@ impl AssetRegistry{
     }
 
     //Get assets with that share the same XCM location of a specific asset
-    pub fn get_cross_chain_assets(&self, asset_location: AssetLocation) -> Vec<AssetPointer>{
+    pub fn get_assets_from_location(&self, asset_location: AssetLocation) -> Vec<AssetPointer>{
         let location_bucket = &self.location_map.get(&asset_location);
-        let mut related_assets = Vec::new();
+        let mut location_assets = Vec::new();
         match location_bucket{
             Some(bucket) => {
                 for asset in bucket.iter(){
                     if Some(&asset_location) == asset.borrow().asset_location.as_ref(){
-                        related_assets.push(Rc::clone(&asset));
+                        location_assets.push(Rc::clone(&asset));
                     }
                 }
             },
             None => (),
         }
-        related_assets
+        location_assets
     }
 
+    //Lookup asset in Hashmap 
     pub fn asset_map_lookup(&self, chain_input: String, id: String) -> Rc<RefCell<Asset>>{
         let map_key = chain_input.clone() + &id;
         let asset_bucket = self.asset_map.get(&map_key).unwrap();
@@ -181,11 +182,163 @@ impl AssetRegistry{
                     if chain_input == chain && id == contract_address {
                         return Rc::clone(asset)
                     }
+                },
+                TokenData::KucoinToken { exchange, symbol, .. } => {
+                    panic!("trying to lookup kucoin asset incorrectly")
                 }
             };
             // let asset_id = asset.token_data.get_local_id_evm()
         }
         panic!("Couldnt find asset in map");
+    }
+
+    pub fn add_exchange_tokens(&mut self){
+        let path_string = r"..\kucoin\exchange_data";
+        // let mut parsed_files = Vec::new();
+        let mut buf: Vec<u8> = Vec::new();
+        let mut file = File::open(Path::new(&path_string)).unwrap_or_else(|err| panic!("problem opening file: Error {:?}", err));
+        file.read_to_end(&mut buf).unwrap_or_else(|err| panic!("problem reading activity map into buffer {:?}", err));
+        let parsed: Value = serde_json::from_str(str::from_utf8(&buf).unwrap()).unwrap();
+        // parsed_files.push(parsed);
+
+        let assets = parsed.as_array().unwrap();
+            for asset in assets{
+                // println!("FILE: {:?}", asset);
+                let asset_value = asset.as_object().unwrap();
+                let price_data = asset_value["price"].as_array().unwrap();
+                let price_data = (price_data[0].as_u64().unwrap(), price_data[1].as_u64().unwrap());
+                let price_decimals = asset_value["price_decimals"].as_array().unwrap();
+                let price_decimals = (price_decimals[0].as_u64().unwrap(), price_decimals[1].as_u64().unwrap());
+                let chain = asset_value["chain"].as_str().unwrap().to_string();
+                // let evm_address = asset_value["address"].as_str().unwrap().to_string().to_ascii_lowercase();
+                // let mut is_cross_chain = false;
+                // let mut local_id = None;
+                
+                let token = TokenData::new_kucoin(
+                    "kucoin".to_string(), 
+                    asset_value["name"].as_str().unwrap().to_string(), 
+                    asset_value["assetTicker"].as_str().unwrap().to_string(), 
+                    asset_value["chain"].as_str().unwrap().to_string(), 
+                    asset_value["precision"].as_u64().unwrap() as u32, 
+                    asset_value["contractAddress"].as_str().unwrap().to_string(), 
+                    price_data,
+                    price_decimals
+                );
+                println!("{:?}", token);
+
+                // self.asset_list.push(Asset::new(token.clone(), None));
+
+                let map_key = token.clone().get_map_key();
+                // let asset_pointer = Rc::new(RefCell::new(Asset::new(token.clone(), None)));
+                let asset_location_map = &mut self.location_map;
+                let asset_map = &mut self.asset_map;
+
+                //Handle case for USDT token
+                if chain == "None"{
+                    let map_key = token.get_map_key();
+                    // let asset_location = AssetLocation::new(here, xtype.to_string(), Some(properties));
+                    let new_asset = Asset::new(token, None);
+                    let asset_pointer = Rc::new(RefCell::new(new_asset));
+                    asset_map.entry(map_key).or_insert(Vec::new()).push(asset_pointer);
+                } else{
+                    let asset_location_data = asset_value["assetLocation"].as_object().unwrap();
+                    let mut property_data = Vec::new();
+                    let property_data_option: Option<Vec<String>>;
+                    for property in asset_location_data["properties"].as_array().unwrap(){
+                        property_data.push(property.as_str().unwrap().to_string());
+                    }
+                    if property_data[0] == "None"{
+                        property_data_option = None;
+                    } else {
+                        property_data_option = Some(property_data);
+                    }
+                    let asset_location = AssetLocation::new(
+                        asset_location_data["here"].as_bool().unwrap(),
+                        asset_location_data["xtype"].as_str().unwrap().to_string(),
+                        property_data_option
+                    );
+                    
+
+                    let map_key = token.get_map_key();
+                    // let asset_location = AssetLocation::new(here, xtype.to_string(), Some(properties));
+                    let new_asset = Asset::new(token, Some(asset_location.clone()));
+                    let asset_pointer = Rc::new(RefCell::new(new_asset));
+
+                    
+
+                    asset_location_map.entry(asset_location.clone()).or_insert(Vec::new()).push(Rc::clone(&asset_pointer));
+                    asset_map.entry(map_key).or_insert(Vec::new()).push(asset_pointer);
+                }
+            
+            }
+
+            // let usdt_token = TokenData::new_kucoin(
+            //     "kucoin",
+            //     "USDT", symbol, chain, precision, contract_address, price_data, price_decimals)
+    }
+
+    pub fn display_exchange_tokens(&self){
+        for asset_bucket in self.asset_map.values(){
+            for asset in asset_bucket{
+                match asset.borrow().token_data{
+                    TokenData::KucoinToken{..} => {
+                        println!("{:?}", asset.borrow());
+                        if asset.borrow().asset_location != None{
+                            let related_assets = self.get_assets_from_location(asset.borrow().asset_location.clone().unwrap());
+                            println!("Related assets:");
+                            for relative in related_assets{
+                                println!("{:?}", relative.borrow().token_data)
+                            }
+                        }
+                    },
+                    _ => ()
+                }
+            }
+
+        }
+    }
+
+    pub fn get_kucoin_tokens(&self) -> Vec<AssetPointer>{
+        let mut kucoin_assets = Vec::new();
+        for asset_bucket in self.asset_map.values(){
+            for asset in asset_bucket{
+                match asset.borrow().token_data{
+                    TokenData::KucoinToken{..} => {
+                        kucoin_assets.push(Rc::clone(asset));
+                    },
+                    _ => ()
+                }
+            }
+
+        }
+        kucoin_assets
+    }
+
+    pub fn get_kucoin_usdt(&self) -> AssetPointer{
+        for asset_bucket in self.asset_map.values(){
+            for asset in asset_bucket{
+                match &asset.borrow().token_data{
+                    TokenData::KucoinToken{symbol, ..} => {
+                        if symbol == "USDT"{
+                            return Rc::clone(&asset)
+                        }
+                    },
+                    _ => ()
+                }
+            }
+
+        }
+        panic!("Could not find kucoin usdt")
+    }
+
+    pub fn get_kucoin_asset_decimals(&self, asset_location: AssetLocation) -> u64 {
+        let related_assets = self.get_assets_from_location(asset_location);
+        for asset in related_assets{
+            if !asset.borrow().token_data.is_exchange_token(){
+                return asset.borrow().token_data.get_asset_decimals()
+            }
+        }
+        panic!("Could not find decimals for kucoin asset")
     }
 
     pub fn add_evm_tokens(&mut self){
@@ -274,6 +427,7 @@ impl AssetRegistry{
                 println!("Value: {:?}", val);
                 vcount += 1;
             }
+            println!("")
         }
         println!("{:?}", self.location_map.keys().len());
         println!("{:?}", vcount)
@@ -301,6 +455,10 @@ impl AssetRegistry{
         }
         evm_token_addresses
     }
+
+    // pub fn get_assets_from_location(&self,  location: AssetLocation) -> Vec<AssetPointer> {
+
+    // }
 }
 
 pub fn clean_tokens(token_string: Vec<&str>) -> Vec<String>{

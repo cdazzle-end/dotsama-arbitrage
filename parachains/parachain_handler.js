@@ -12,6 +12,7 @@ const { isObject, isDeepStrictEqual } = require('util');
 const karHandler = require('../kar/kar_handler.js')
 const bncHandler = require('../parachains/bifrost.js')
 const movrHandler = require('../movr/movr_handler.js')
+const kcHandler = require('../kucoin/kc_handler')
 
 async function kusama() {
     const provider = new WsProvider('wss://kusama-rpc.polkadot.io');
@@ -320,6 +321,7 @@ async function updateAllLiqPools() {
     karHandler.save_dex_to_file().then(() => console.log("kar complete"));
     bncHandler.saveZenLiqPools().then(() => console.log("bnc complete"));
     movrHandler.updateLiqPools().then(() => console.log("movr complete"));
+    kcHandler.saveKucoinAssets().then(() => console.log("kucoin complete"));
 }
 
 async function main() {

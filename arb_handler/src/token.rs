@@ -35,7 +35,18 @@ pub enum TokenData{
         chain: String,
         cross_chain: bool,
         local_id: Option<String>,
+    },
+    KucoinToken{
+        exchange: String,
+        name: String,
+        symbol: String,
+        chain: String,
+        precision: u32,
+        contract_address: String,
+        price_data: (u64, u64),
+        price_decimals: (u64, u64)
     }
+
 }
 
 impl Token{
@@ -64,6 +75,9 @@ impl TokenData{
     pub fn new_evm(contract_address: String, name: String, symbol: String, decimals: u64, chain: String, cross_chain: bool, local_id: Option<String>) -> TokenData{
         TokenData::EvmToken { contract_address, name, symbol, decimals, chain, cross_chain, local_id }
     }
+    pub fn new_kucoin( exchange: String, name: String, symbol: String, chain: String, precision: u32, contract_address: String, price_data: (u64,u64), price_decimals: (u64,u64) ) -> TokenData{
+        TokenData::KucoinToken { exchange, name, symbol, chain, precision, contract_address, price_data, price_decimals}
+    }
 
     pub fn get_chain(&self) -> String{
         // self.chain
@@ -73,6 +87,9 @@ impl TokenData{
             }
             TokenData::EvmToken { chain, .. } => {
                 return chain.to_string()
+            }
+            TokenData::KucoinToken { .. } => {
+                panic!("Can't query kucoin token for chain")
             }
         }
     }
@@ -86,6 +103,9 @@ impl TokenData{
             TokenData::EvmToken { contract_address, .. } => {
                 return Some(contract_address.to_string())
             }
+            TokenData::KucoinToken { contract_address, ..}  => {
+                panic!("Can't query kucoin token for contract address")
+            }
         }
     }
 
@@ -96,6 +116,9 @@ impl TokenData{
                 return name.clone()
             }
             TokenData::EvmToken { name, .. } => {
+                return name.clone()
+            }
+            TokenData::KucoinToken { name, .. }  => {
                 return name.clone()
             }
         }
@@ -111,6 +134,10 @@ impl TokenData{
             TokenData::EvmToken {decimals, ..} => {
                 decimals.clone()
             }
+            
+            TokenData::KucoinToken { .. } => {
+                panic!("Can't query kucoin token for decimals")
+            }
         }
     }
 
@@ -125,6 +152,10 @@ impl TokenData{
             TokenData::EvmToken { chain, contract_address,.. } => {
                 chain.to_string() + &contract_address.to_string()
             }
+            TokenData::KucoinToken { exchange, symbol, .. }  => {
+                // panic("Can't query kucoin token for chain")
+                exchange.to_string() + symbol
+            }
         }
     }
 
@@ -137,6 +168,31 @@ impl TokenData{
             TokenData::EvmToken { local_id, .. } => {
                 return local_id.clone()
             }
+            TokenData::KucoinToken { .. }  => {
+                panic!("Can't query kucoin token for local evm id")
+            }
+        }
+    }
+
+    pub fn get_symbol(&self) -> String{
+        // self.chain
+        match self {
+            TokenData::SubToken {symbol, ..} => {
+                symbol.clone()
+            }
+            TokenData::EvmToken { symbol, .. } => {
+                symbol.clone()
+            }
+            TokenData::KucoinToken { symbol, .. }  => {
+                symbol.clone()
+            }
+        }
+    }
+
+    pub fn is_exchange_token(&self) -> bool{
+        match self{
+            TokenData::KucoinToken { .. } => true,
+            _ => false
         }
     }
 
@@ -148,6 +204,23 @@ impl TokenData{
             }
             TokenData::EvmToken { cross_chain, .. } => {
                 cross_chain.clone()
+            }
+            TokenData::KucoinToken { .. }  => {
+                false
+            }
+        }
+    }
+
+    pub fn get_price_decimals(&self) -> (u64, u64){
+        match self{
+            TokenData::SubToken {..} => {
+                panic!("Can't query price decimals on Sub token")
+            }
+            TokenData::EvmToken { cross_chain, .. } => {
+                panic!("Can't query price decimals on EVM token")
+            }
+            TokenData::KucoinToken {price_decimals, .. }  => {
+                price_decimals.clone()
             }
         }
     }

@@ -23,18 +23,19 @@ type GraphNodePointer = Rc<RefCell<GraphNode>>;
 pub struct TokenGraph{
     // pub adjacency_table: AdjacencyTable,
     // pub token_nodes: Vec<
-    pub node_map: HashMap<String, Vec<GraphNodePointer>>
+    pub node_map: HashMap<String, Vec<GraphNodePointer>>,
+    pub asset_registry: AssetRegistry
 }
 
 impl TokenGraph{
-    pub fn build_graph(asset_registry: &AssetRegistry, adjacency_table: AdjacencyTable) -> TokenGraph{
+    pub fn build_graph(asset_registry: AssetRegistry, adjacency_table: AdjacencyTable) -> TokenGraph{
         let mut graph_nodes: Vec<GraphNodePointer> = Vec::new();
         //Map of all graph nodes
         let mut node_map: HashMap<String, Vec<GraphNodePointer>> = HashMap::new();
         // let assets = asset_registry.get_all_assets();
 
         //Create a graph node for every asset
-        for asset in asset_registry.get_all_assets(){
+        for asset in &asset_registry.get_all_assets(){
             let new_node = Rc::new(RefCell::new(GraphNode{
                 asset: Rc::clone(&asset),
                 adjacent_nodes: Vec::new(),
@@ -75,7 +76,7 @@ impl TokenGraph{
             let current_node_location = current_node.borrow().asset.borrow().asset_location.clone();
             match current_node_location{
                 Some(asset_location) => {
-                    for cross_chain_asset in asset_registry.get_cross_chain_assets(asset_location){
+                    for cross_chain_asset in asset_registry.get_assets_from_location(asset_location){
                         let bucket = node_map.get(&cross_chain_asset.borrow().token_data.get_map_key()).unwrap();
                         for graph_node in bucket{
                             if cross_chain_asset.borrow().token_data.get_map_key() == graph_node.borrow().asset.borrow().token_data.get_map_key(){
@@ -86,17 +87,9 @@ impl TokenGraph{
                 },
                 None => ()
             }
-            // for related_asset in asset_registry.get_cross_chain_assets(Rc::clone(&node.borrow().asset.clone())){
-            //     let bucket = node_map.get(&related_asset.borrow().token_data.get_map_key()).unwrap();
-            //     for graph_node in bucket{
-            //         if related_asset.borrow().token_data.get_map_key() == graph_node.borrow().asset.borrow().token_data.get_map_key(){
-            //             node.borrow_mut().adjacent_nodes.push(Rc::clone(graph_node));
-            //         }
-            //     }
-            // }
         }
 
-        TokenGraph{ node_map }
+        TokenGraph{ node_map, asset_registry }
     }
 
     pub fn get_evm_tokens(&self){
@@ -179,41 +172,58 @@ impl TokenGraph{
 
         let mut node_queue = VecDeque::new();
         node_queue.push_back(Rc::clone(starting_node));
+        println!("***");
+        let mut first = true;
         while !node_queue.is_empty(){
-            println!("queue length: {}", node_queue.len());
+            // println!("queue length: {}", node_queue.len());
             let current_node = node_queue.pop_front().unwrap();
-            let current_node_display = current_node.borrow().best_path_value_display();
-            println!("Current node: {} - {} - {}", current_node.borrow().asset_key, current_node.borrow().get_asset_name(), current_node_display);
-            print!("Path: ");
-            for path_node in &current_node.borrow().best_path{
-                print!("{} {} ->", path_node.borrow().get_asset_key(), path_node.borrow().best_path_value_display());
-            }
-            println!("");
-            println!("");
+            print!("-");
+            let current_node_display = current_node.borrow().best_path_value_display(&self);
             for adjacent_node in &current_node.borrow().adjacent_nodes{
+                //Check if adjacent node shares same location with current node
                 if current_node.borrow().get_asset_location() != None && current_node.borrow().get_asset_location() == adjacent_node.0.borrow().get_asset_location(){
                     if current_node.borrow().best_path_value > adjacent_node.0.borrow().best_path_value{
-                        // let test = current_node.borrow().best_path.contains(&adjacent_node.0);
-                        let mut test= false;
+                        
+                        //Check if adjacent node already exists within path
+                        let mut current_path_contains_adjacent_node= false;
                         for path_node in &current_node.borrow().best_path{
                             if path_node.borrow().get_asset_key() == adjacent_node.0.borrow().get_asset_key(){
-                                test = true;
+                                current_path_contains_adjacent_node = true;
                             }
                         }
-                        println!("Contains adj node already: {}", test);
+                        // println!("Contains adj node already: {}", current_path_contains_adjacent_node);
                         adjacent_node.0.borrow_mut().best_path_value = current_node.borrow().best_path_value;
                         adjacent_node.0.borrow_mut().best_path = current_node.borrow().best_path.clone();
                         adjacent_node.0.borrow_mut().best_path.push(Rc::clone(&adjacent_node.0));
                         adjacent_node.0.borrow_mut().path_values = current_node.borrow().path_values.clone();
-                        adjacent_node.0.borrow_mut().path_values.push(current_node.borrow().best_path_value_display());
-                        if !test{
+                        adjacent_node.0.borrow_mut().path_values.push(current_node.borrow().best_path_value_display(&self));
+                        if !current_path_contains_adjacent_node{
                             node_queue.push_back(Rc::clone(&adjacent_node.0));
+                            print!("+")
                         }
                         
                     }
                     
-                } else {
-                    let (path_value,_) = calculate_edge(&self, &current_node, adjacent_node, current_node.borrow().best_path_value);
+                //Kucoin Lps
+                } 
+                // else if current_node.borrow().is_kucoin_asset() && adjacent_node.0.borrow().is_kucoin_asset(){
+                //     //Check if current node is USDT or other asset like RMRK. Are we doing RMRK -> USDT or USDT -> RMRK
+                //     let path_value = calculate_kucoin_edge(&current_node, adjacent_node, current_node.borrow().best_path_value);
+                //     if current_node.borrow().get_asset_symbol() != "UDST"{
+
+                //     }
+                // } 
+                else {
+                    let path_value;
+                    //Check if kucoin edge
+                    let mut is_kucoin_edge = false;
+                    if current_node.borrow().is_kucoin_asset() && adjacent_node.0.borrow().is_kucoin_asset(){
+                        path_value = calculate_kucoin_edge(&self, &current_node, adjacent_node, current_node.borrow().best_path_value);
+                        is_kucoin_edge = true;
+                    } else {
+                        (path_value,_) = calculate_edge(&current_node, adjacent_node, current_node.borrow().best_path_value);
+                    }
+                    // let (path_value,_) = calculate_edge(&current_node, adjacent_node, current_node.borrow().best_path_value);
                     if path_value > adjacent_node.0.borrow().best_path_value{
                         let mut test= false;
                         for path_node in &current_node.borrow().best_path{
@@ -221,20 +231,18 @@ impl TokenGraph{
                                 test = true;
                             }
                         }
-                        println!("found better path");
-                        println!("");
-                        println!("");
                         adjacent_node.0.borrow_mut().best_path_value = path_value;
                         adjacent_node.0.borrow_mut().best_path = current_node.borrow().best_path.clone();
                         adjacent_node.0.borrow_mut().best_path.push(Rc::clone(&adjacent_node.0));
                         adjacent_node.0.borrow_mut().path_values = current_node.borrow().path_values.clone();
-                        let formatted_path_value = adjacent_node.0.borrow().best_path_value_display().clone();
+                        let formatted_path_value = adjacent_node.0.borrow().best_path_value_display(&self).clone();
                         adjacent_node.0.borrow_mut().path_values.push(formatted_path_value);
                         
-                        println!("Step 1");
+                        // println!("Step 1");
                         if !test{
-                            println!("step 2");
+                            // println!("step 2");
                             node_queue.push_back(Rc::clone(&adjacent_node.0));
+                            print!("+")
                         }
                         
                     }
@@ -256,6 +264,19 @@ impl TokenGraph{
                     println!("");
                 }
             }
+        }
+
+        // let starting_node = &self.get_node(asset_key_1);
+        println!("START NODE");
+        // starting_node.borrow().display_path();
+        let start_node_location = starting_node.borrow().get_asset_location().unwrap();
+        let assets_at_location = &self.asset_registry.get_assets_from_location(start_node_location);
+        for asset in assets_at_location{
+            let asset_key = asset.borrow().token_data.get_map_key();
+            let asset_node = &self.get_node(asset_key);
+            asset_node.borrow().display_path();
+            println!("");
+            println!("");
         }
     }
 
@@ -317,7 +338,7 @@ impl TokenGraph{
 
                         let adjacent_node_input = (Rc::clone(&adjacent_node.0), (liq_current.clone(), liq_adjacent.clone()));
 
-                        let (edge_value, (new_current_node_liquidity, new_adjacent_node_liquidity)) = calculate_edge(&self, &current_node, &adjacent_node_input, current_node.borrow().best_path_value);
+                        let (edge_value, (new_current_node_liquidity, new_adjacent_node_liquidity)) = calculate_edge(&current_node, &adjacent_node_input, current_node.borrow().best_path_value);
 
                         //get new liquidity
 
@@ -354,12 +375,17 @@ impl TokenGraph{
         
     }
 
+    pub fn get_asset_decimals_for_kucoin_asset(&self, kucoin_node: &GraphNodePointer) -> u64 {
+        let registry = &self.asset_registry;
+        self.asset_registry.get_kucoin_asset_decimals(kucoin_node.borrow().get_asset_location().unwrap())
+    }
+
 
 
 }
 
 //returns the output amount of adjacent node and resulting liquidity for each asset
-pub fn calculate_edge(token_graph: &TokenGraph, primary_node: &GraphNodePointer, adjacent_node: &(GraphNodePointer, (u128, u128)), input_amount: u128) -> (u128, (u128,u128)){
+pub fn calculate_edge(primary_node: &GraphNodePointer, adjacent_node: &(GraphNodePointer, (u128, u128)), input_amount: u128) -> (u128, (u128,u128)){
     let node_1 = primary_node;
     let (node_2, (node_1_liquidity, node_2_liquidity)) = adjacent_node;
 
@@ -415,6 +441,37 @@ pub fn calculate_edge(token_graph: &TokenGraph, primary_node: &GraphNodePointer,
 
     (total_token_2_output.to_u128().unwrap(),(token_1_changing_liquidity.to_u128().unwrap(),token_2_changing_liquidity.to_u128().unwrap()))
     
+}
+
+fn calculate_kucoin_edge(token_graph: &TokenGraph, primary_node: &GraphNodePointer, adjacent_node: &(GraphNodePointer, (u128, u128)), input_amount: u128) -> u128{
+    
+    let usdt_token_decimals = 4;
+    //Asset -> USDT
+    let (_, (bid, ask)) = adjacent_node;
+    if primary_node.borrow().get_asset_symbol() != "USDT"{
+        let asset_decimals = token_graph.get_asset_decimals_for_kucoin_asset(primary_node);
+        let (bid_decimal, ask_decimal) = primary_node.borrow().asset.borrow().token_data.get_price_decimals();
+        //Convert number to normal, display value
+        let converted_input = input_amount as f64 / f64::powi(10.0, asset_decimals as i32);
+        let converted_bid = bid.clone() as f64 / f64::powi(10.0, bid_decimal as i32);
+
+        let asset_output = converted_input * converted_bid;
+        let asset_output_converted = asset_output * f64::powi(10.0, usdt_token_decimals as i32) ;
+        asset_output_converted as u128
+    }
+    //USDT -> Asset
+    else {
+        let asset_decimals = token_graph.get_asset_decimals_for_kucoin_asset(&adjacent_node.0);
+        let (bid_decimal, ask_decimal) = primary_node.borrow().asset.borrow().token_data.get_price_decimals();
+        //Convert number to normal, display value
+        let converted_input = input_amount as f64 / f64::powi(10.0, usdt_token_decimals as i32);
+        let converted_ask = bid.clone() as f64 / f64::powi(10.0, ask_decimal as i32);
+
+        let asset_output = input_amount as f64 / converted_ask;
+        let asset_output_converted = asset_output * f64::powi(10.0, asset_decimals as i32) ;
+        // asset_output as u128
+        asset_output_converted as u128
+    }
 }
 
     pub fn dfs_visit(node: GraphNodePointer, time: &mut u32){
@@ -479,6 +536,10 @@ impl GraphNode{
         self.asset.borrow().asset_location.clone()
     }
 
+    pub fn get_asset_symbol(&self) -> String{
+        self.asset.borrow().token_data.get_symbol()
+    }
+
     //Get the lastest path edge
     pub fn get_path_edge(&self, asset_key_1: String, asset_key_2: String) -> Option<(((&String, &u128), (&String, &u128)))>{
         // let mut v = Vec::new();
@@ -499,8 +560,28 @@ impl GraphNode{
         return None
     }
 
-    pub fn best_path_value_display(&self) -> f64 {
-        self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, self.get_asset_decimals() as i32)
+    pub fn is_kucoin_asset(&self) -> bool {
+        self.asset.borrow().token_data.is_exchange_token()
+    }
+
+    pub fn best_path_value_display(&self, token_graph: &TokenGraph) -> f64 {
+        match self.asset.borrow().token_data{
+            TokenData::KucoinToken { .. } => {
+                if self.get_asset_symbol() == "USDT"{
+                    let usdt_asset_decimals = 4;
+                    self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, usdt_asset_decimals as i32)
+                } 
+                else {
+                    let kucoin_asset_decimals = token_graph.asset_registry.get_kucoin_asset_decimals(self.get_asset_location().unwrap());
+                    self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, kucoin_asset_decimals as i32)
+                }
+                
+            },
+            _ => {
+                self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, self.get_asset_decimals() as i32)
+            }
+        }
+        // self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, self.get_asset_decimals() as i32)
     }
 
     pub fn path_contains(&self, node: GraphNodePointer) -> bool {
