@@ -36,56 +36,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getLiqPools = exports.getTokenList = void 0;
+exports.getLiqPools = exports.testApi = exports.getTokenList = void 0;
 var api_1 = require("@polkadot/api");
 var sdk_api_1 = require("@zenlink-dex/sdk-api");
 var sdk_core_1 = require("@zenlink-dex/sdk-core");
 var rxjs_1 = require("rxjs");
 var axios_1 = require("axios");
 var types_1 = require("./types");
-function main() {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            // const provider = new WsProvider(BifrostConfig.wss[0]);
-            // const provider = new WsProvider('wss://bifrost-parachain.api.onfinality.io/public-ws');
-            // await provider.isReady;
-            // const dexApi = new ModuleBApi(
-            //     provider,
-            //     // BifrostConfig
-            // );
-            // await dexApi.initApi(); // init the api;
-            // const response = await axios.get('https://raw.githubusercontent.com/zenlinkpro/token-list/main/tokens/bifrost.json');
-            // const tokensMeta = response.data.tokens;
-            // // generate Tokens
-            // const tokens = tokensMeta.map((item: AssetMeta) => {
-            //     let token = new Token(item);
-            //     console.log(token)
-            //     return token;
-            // });
-            // // query the standard pair and pool
-            // // const standardPairs = await dexApi.standardPairOfTokens(tokens);
-            // // console.log(standardPairs)
-            // const standardPairs = await firstValueFrom(dexApi.standardPairOfTokens(tokens));
-            // const standardPools = await firstValueFrom(dexApi.standardPoolOfPairs(standardPairs));
-            // let i = 0;
-            // console.log(standardPools.length)
-            // while (i < standardPools.length) {
-            //     console.log(`Token 0: ${standardPools[i].token0.name} ${standardPools[i].token0.symbol} - Token 1: ${standardPools[i].token1.name} ${standardPools[i].token1.symbol}`)
-            //     console.log(`${standardPools[i].reserve1.numerator.toString()} - ${standardPools[i].reserve1.numerator.toString()}`)
-            //     i++;
-            // }
-            // console.log(standardPairs.length)
-            // while (i < standardPairs.length) {
-            //     console.log(standardPairs[i])
-            //     // console.log(`${standardPools[i].reserve1.numerator.toString()} - ${standardPools[i].reserve1.numerator.toString()}`)
-            //     i++;
-            // }
-            // getResponse()
-            getLiqPools();
-            return [2 /*return*/];
-        });
-    });
-}
 function getResponse() {
     return __awaiter(this, void 0, void 0, function () {
         var CHAINID_TO_NETWORKID, CHAINID_TO_CHAINNAME, API_URL, response, allTokens, sdkTokens;
@@ -185,6 +142,30 @@ function getTokenList() {
     });
 }
 exports.getTokenList = getTokenList;
+function testApi() {
+    var _a;
+    return __awaiter(this, void 0, void 0, function () {
+        var provider, dexApi;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    provider = new api_1.WsProvider('wss://bifrost-parachain.api.onfinality.io/public-ws');
+                    return [4 /*yield*/, provider.isReady];
+                case 1:
+                    _b.sent();
+                    dexApi = new sdk_api_1.ModuleBApi(provider);
+                    return [4 /*yield*/, dexApi.initApi()];
+                case 2:
+                    _b.sent(); // init the api;
+                    // provider
+                    // dexApi.provider.disconnect();
+                    (_a = dexApi.api) === null || _a === void 0 ? void 0 : _a.disconnect();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.testApi = testApi;
 function getLiqPools() {
     return __awaiter(this, void 0, void 0, function () {
         var provider, dexApi, response, tokensMeta, tokens, standardPairs, standardPairArray, firstPair, pools;
@@ -196,8 +177,10 @@ function getLiqPools() {
                 case 1:
                     _a.sent();
                     dexApi = new sdk_api_1.ModuleBApi(provider);
+                    // dexApi.
                     return [4 /*yield*/, dexApi.initApi()];
                 case 2:
+                    // dexApi.
                     _a.sent(); // init the api;
                     return [4 /*yield*/, axios_1["default"].get('https://raw.githubusercontent.com/zenlinkpro/token-list/main/tokens/bifrost-kusama.json')];
                 case 3:
@@ -225,27 +208,29 @@ function getLiqPools() {
                     return [4 /*yield*/, dexApi.standardPoolOfPairs(standardPairArray)];
                 case 5:
                     pools = _a.sent();
-                    // console.log(pools)
-                    // pools.forEach((pool) => {
-                    //     // console.log(pool.)
-                    //     // let vals = pool.entries();
-                    //     // console.log(vals.next().value["liquidityAmount"])
-                    //     // console.log(vals.next().value)
-                    //     pool.forEach((val) => {
-                    //         // console.log(val)
-                    //         console.log("TOKENS: ")
-                    //         console.log(`Token 0: ${val.token0.name} ${val.token0.symbol} - Token 1: ${val.token1.name} ${val.token1.symbol}`)
-                    //         console.log("POOLS")
-                    //         console.log(`${val.reserve0.numerator.toString()} - ${val.reserve1.numerator.toString()}`)
-                    //     })
-                    //     // console.log("test")
-                    // })
-                    // console.log("bad pair")
-                    // console.log(standardPairs[2])
+                    // provider.disconnect()
+                    // dexApi.provider.disconnect();
+                    // try {
+                    //     console.log("DISCONNECTING")
+                    //     await dexApi.api?.disconnect()
+                    //     console.log("SUCCESS DISCONNECT")
+                    // } catch (err) {
+                    //     // console.log("zen dex api disconnect error")
+                    // }
+                    // console.log("CONTINUE AFTER DISCONNECT")
+                    // dexApi.api?.disconnect()
                     return [2 /*return*/, pools];
             }
         });
     });
 }
 exports.getLiqPools = getLiqPools;
-main();
+function main() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            getLiqPools();
+            return [2 /*return*/];
+        });
+    });
+}
+// main()

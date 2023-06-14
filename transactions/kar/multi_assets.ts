@@ -1,0 +1,5 @@
+export const locations = {
+    movr: {
+        
+    }
+}

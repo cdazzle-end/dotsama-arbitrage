@@ -1,0 +1,484 @@
+[
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "100",
+      "name": "KSM",
+      "symbol": "KSM",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": true,
+    "tokenLocation": "here"
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "123",
+      "name": "GENS",
+      "symbol": "GENS",
+      "decimals": "9",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "121",
+      "name": "KBTC",
+      "symbol": "KBTC",
+      "decimals": "8",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2092
+        },
+        {
+          "generalKey": "0x000b"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "5007",
+      "name": "LP-USDT/HKO",
+      "symbol": "LP-USDT/HKO",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "100210028",
+      "name": "cKSM-21/28",
+      "symbol": "cKSM-21/28",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "125",
+      "name": "TUR",
+      "symbol": "TUR",
+      "decimals": "10",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "5002",
+      "name": "LP-KSM/HKO",
+      "symbol": "LP-KSM/HKO",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "103",
+      "name": "AUSD",
+      "symbol": "AUSD",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "109",
+      "name": "LKSM",
+      "symbol": "LKSM",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2000
+        },
+        {
+          "generalKey": "0x0083"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "111",
+      "name": "SDN",
+      "symbol": "SDN",
+      "decimals": "18",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "5005",
+      "name": "LP-MOVR/HKO",
+      "symbol": "LP-MOVR/HKO",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "119",
+      "name": "KINT",
+      "symbol": "KINT",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2092
+        },
+        {
+          "generalKey": "0x000c"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "100150022",
+      "name": "cKSM-15/22",
+      "symbol": "cKSM-15/22",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "5004",
+      "name": "LP-KSM/cKSM-20/27",
+      "symbol": "LP-KSM/cKSM-20/27",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "102",
+      "name": "USDT",
+      "symbol": "USDT",
+      "decimals": "6",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x3": [
+        {
+          "parachain": 1000
+        },
+        {
+          "palletInstance": 50
+        },
+        {
+          "generalIndex": 1984
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "100230030",
+      "name": "cKSM-23/30",
+      "symbol": "cKSM-23/30",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "5006",
+      "name": "LP-PHA/HKO",
+      "symbol": "LP-PHA/HKO",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "5011",
+      "name": "LP-KBTC/HKO",
+      "symbol": "LP-KBTC/HKO",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "4294957295",
+      "name": "KSM_U",
+      "symbol": "KSM_U",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "1000",
+      "name": "sKSM",
+      "symbol": "sKSM",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x3": [
+        {
+          "parachain": 2085
+        },
+        {
+          "palletInstance": 6
+        },
+        {
+          "generalIndex": 1000
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "113",
+      "name": "MOVR",
+      "symbol": "MOVR",
+      "decimals": "18",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2023
+        },
+        {
+          "palletInstance": 10
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "115",
+      "name": "PHA",
+      "symbol": "PHA",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x1": {
+        "parachain": 2004
+      }
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "5003",
+      "name": "LP-KSM/sKSM",
+      "symbol": "LP-KSM/sKSM",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "100220029",
+      "name": "cKSM-22/29",
+      "symbol": "cKSM-22/29",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "107",
+      "name": "KAR",
+      "symbol": "KAR",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2000
+        },
+        {
+          "generalKey": "0x0080"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "5008",
+      "name": "LP-KAR/HKO",
+      "symbol": "LP-KAR/HKO",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "5009",
+      "name": "LP-LKSM/HKO",
+      "symbol": "LP-LKSM/HKO",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "5010",
+      "name": "LP-KINT/HKO",
+      "symbol": "LP-KINT/HKO",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "100200027",
+      "name": "cKSM-20/27",
+      "symbol": "cKSM-20/27",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2085,
+      "localId": "0",
+      "deposit": "0",
+      "name": "HKO",
+      "symbol": "HKO",
+      "decimals": "12",
+      "isFrozen": false
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2085
+        },
+        {
+          "generalKey": "0x484b4f"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "exchange": "kucoin",
+    "assetTicker": "KSM",
+    "price": [
+      215503,
+      215808
+    ],
+    "priceDecimals": [
+      4,
+      4
+    ]
+  },
+  {
+    "exchange": "kucoin",
+    "assetTicker": "RMRK",
+    "price": [
+      16831,
+      16911
+    ],
+    "priceDecimals": [
+      4,
+      4
+    ]
+  },
+  {
+    "exchange": "kucoin",
+    "assetTicker": "MOVR",
+    "price": [
+      48225,
+      48323
+    ],
+    "priceDecimals": [
+      4,
+      4
+    ]
+  },
+  {
+    "exchange": "kucoin",
+    "assetTicker": "KAR",
+    "price": [
+      781,
+      796
+    ],
+    "priceDecimals": [
+      4,
+      4
+    ]
+  },
+  {
+    "exchange": "kucoin",
+    "assetTicker": "BNC",
+    "price": [
+      1577,
+      16
+    ],
+    "priceDecimals": [
+      4,
+      2
+    ]
+  }
+]

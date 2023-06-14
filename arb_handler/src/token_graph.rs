@@ -21,8 +21,6 @@ type AssetPointer = Rc<RefCell<Asset>>;
 type GraphNodePointer = Rc<RefCell<GraphNode>>;
 
 pub struct TokenGraph{
-    // pub adjacency_table: AdjacencyTable,
-    // pub token_nodes: Vec<
     pub node_map: HashMap<String, Vec<GraphNodePointer>>,
     pub asset_registry: AssetRegistry
 }
@@ -76,7 +74,7 @@ impl TokenGraph{
             let current_node_location = current_node.borrow().asset.borrow().asset_location.clone();
             match current_node_location{
                 Some(asset_location) => {
-                    for cross_chain_asset in asset_registry.get_assets_from_location(asset_location){
+                    for cross_chain_asset in asset_registry.get_assets_at_location(asset_location){
                         let bucket = node_map.get(&cross_chain_asset.borrow().token_data.get_map_key()).unwrap();
                         for graph_node in bucket{
                             if cross_chain_asset.borrow().token_data.get_map_key() == graph_node.borrow().asset.borrow().token_data.get_map_key(){
@@ -175,7 +173,7 @@ impl TokenGraph{
         println!("***");
         let mut first = true;
         while !node_queue.is_empty(){
-            // println!("queue length: {}", node_queue.len());
+            println!("queue length: {}", node_queue.len());
             let current_node = node_queue.pop_front().unwrap();
             print!("-");
             let current_node_display = current_node.borrow().best_path_value_display(&self);
@@ -269,15 +267,17 @@ impl TokenGraph{
         // let starting_node = &self.get_node(asset_key_1);
         println!("START NODE");
         // starting_node.borrow().display_path();
-        let start_node_location = starting_node.borrow().get_asset_location().unwrap();
-        let assets_at_location = &self.asset_registry.get_assets_from_location(start_node_location);
-        for asset in assets_at_location{
-            let asset_key = asset.borrow().token_data.get_map_key();
-            let asset_node = &self.get_node(asset_key);
-            asset_node.borrow().display_path();
-            println!("");
-            println!("");
-        }
+        // let start_node_location = starting_node.borrow().get_asset_location().unwrap();
+        // let assets_at_location = &self.asset_registry.get_assets_from_location(start_node_location);
+        // for asset in assets_at_location{
+        //     let asset_key = asset.borrow().token_data.get_map_key();
+        //     let asset_node = &self.get_node(asset_key);
+        //     asset_node.borrow().display_path();
+        //     println!("");
+        //     println!("");
+        // }
+
+        starting_node.borrow().display_path();
     }
 
     pub fn find_best_path(&self, asset_key_1: String, asset_key_2: String, input_amount: f64){
@@ -467,7 +467,7 @@ fn calculate_kucoin_edge(token_graph: &TokenGraph, primary_node: &GraphNodePoint
         let converted_input = input_amount as f64 / f64::powi(10.0, usdt_token_decimals as i32);
         let converted_ask = bid.clone() as f64 / f64::powi(10.0, ask_decimal as i32);
 
-        let asset_output = input_amount as f64 / converted_ask;
+        let asset_output = converted_input as f64 / converted_ask;
         let asset_output_converted = asset_output * f64::powi(10.0, asset_decimals as i32) ;
         // asset_output as u128
         asset_output_converted as u128
@@ -594,11 +594,11 @@ impl GraphNode{
     }
 
     pub fn display_path(&self){
-        println!("Node: {} {}", &self.get_asset_key(), &self.get_asset_name());
+        println!("Node: {} {} {}", &self.get_asset_key(), &self.get_asset_name(), &self.get_asset_decimals());
         print!("Path: ");
         for (i, path_node) in self.best_path.iter().enumerate(){
             // let display_value = &self.path_values[i].to_f64().unwrap().clone() 
-            print!("{} {} ->", path_node.borrow().get_asset_key(), &self.path_values[i]);
+            print!("{} {} {} ->", path_node.borrow().get_asset_key(), path_node.borrow().get_asset_name(), &self.path_values[i]);
         }
     }
 

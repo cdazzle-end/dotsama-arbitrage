@@ -6,47 +6,7 @@ import axios from 'axios';
 import { writeFile, readdir, mkdir } from 'node:fs/promises';
 import { ApiToken, ChainId, ChainName, Native, NetworkId, SdkToken } from "./types";
 
-async function main() {
-    // const provider = new WsProvider(BifrostConfig.wss[0]);
-    // const provider = new WsProvider('wss://bifrost-parachain.api.onfinality.io/public-ws');
-    // await provider.isReady;
-    // const dexApi = new ModuleBApi(
-    //     provider,
-    //     // BifrostConfig
-    // );
-    // await dexApi.initApi(); // init the api;
-    // const response = await axios.get('https://raw.githubusercontent.com/zenlinkpro/token-list/main/tokens/bifrost.json');
-    // const tokensMeta = response.data.tokens;
 
-    // // generate Tokens
-    // const tokens = tokensMeta.map((item: AssetMeta) => {
-    //     let token = new Token(item);
-    //     console.log(token)
-    //     return token;
-    // });
-
-    // // query the standard pair and pool
-    // // const standardPairs = await dexApi.standardPairOfTokens(tokens);
-    // // console.log(standardPairs)
-    // const standardPairs = await firstValueFrom(dexApi.standardPairOfTokens(tokens));
-    // const standardPools = await firstValueFrom(dexApi.standardPoolOfPairs(standardPairs));
-
-    // let i = 0;
-    // console.log(standardPools.length)
-    // while (i < standardPools.length) {
-    //     console.log(`Token 0: ${standardPools[i].token0.name} ${standardPools[i].token0.symbol} - Token 1: ${standardPools[i].token1.name} ${standardPools[i].token1.symbol}`)
-    //     console.log(`${standardPools[i].reserve1.numerator.toString()} - ${standardPools[i].reserve1.numerator.toString()}`)
-    //     i++;
-    // }
-    // console.log(standardPairs.length)
-    // while (i < standardPairs.length) {
-    //     console.log(standardPairs[i])
-    //     // console.log(`${standardPools[i].reserve1.numerator.toString()} - ${standardPools[i].reserve1.numerator.toString()}`)
-    //     i++;
-    // }
-    // getResponse()
-    getLiqPools()
-}
 
 async function getResponse() {
 
@@ -129,12 +89,23 @@ export async function getTokenList() {
 
     // generate Tokens
     const tokens = tokensMeta.map((item: AssetMeta) => {
-        let token = new Token(item);
-        // console.log(token)
-        return token;
+        return new Token(item);
     });
 
     return tokens;
+}
+
+export async function testApi() {
+    const provider = new WsProvider('wss://bifrost-parachain.api.onfinality.io/public-ws');
+    await provider.isReady;
+    const dexApi = new ModuleBApi(
+        provider,
+    );
+
+    await dexApi.initApi(); // init the api;
+    // provider
+    // dexApi.provider.disconnect();
+    dexApi.api?.disconnect()
 }
 
 export async function getLiqPools() {
@@ -142,8 +113,9 @@ export async function getLiqPools() {
     await provider.isReady;
     const dexApi = new ModuleBApi(
         provider,
-        // BifrostConfig
     );
+    // dexApi.
+    
     await dexApi.initApi(); // init the api;
     const response = await axios.get('https://raw.githubusercontent.com/zenlinkpro/token-list/main/tokens/bifrost-kusama.json');
     const tokensMeta = response.data.tokens;
@@ -160,15 +132,7 @@ export async function getLiqPools() {
     // query the standard pair and pool
     
     const standardPairs = await firstValueFrom(dexApi.standardPairOfTokens(tokens));
-    // console.log(standardPairs)
-    // standardPairs.forEach((pair) => {
-    //     console.log(pair["lpToken"]);
-    //     console.log(pair["token0"]);
-    //     console.log(pair["token1"])
-    // })
-
-    
-    // console.log(standardPairs.length)
+    // standardPairs.
     let standardPairArray: StandardPair[] = [];
     let firstPair: StandardPair = standardPairs[0];
     standardPairArray.push(firstPair)
@@ -184,43 +148,13 @@ export async function getLiqPools() {
     
     let pools = await dexApi.standardPoolOfPairs(standardPairArray);
     
-    // console.log(pools)
-    // pools.forEach((pool) => {
-    //     // console.log(pool.)
-    //     // let vals = pool.entries();
-    //     // console.log(vals.next().value["liquidityAmount"])
-    //     // console.log(vals.next().value)
-    //     pool.forEach((val) => {
-    //         // console.log(val)
-    //         console.log("TOKENS: ")
-    //         console.log(`Token 0: ${val.token0.name} ${val.token0.symbol} - Token 1: ${val.token1.name} ${val.token1.symbol}`)
-    //         console.log("POOLS")
-    //         console.log(`${val.reserve0.numerator.toString()} - ${val.reserve1.numerator.toString()}`)
-    //     })
-        
-    //     // console.log("test")
-        
-    // })
-
-    // console.log("bad pair")
-    // console.log(standardPairs[2])
     return pools;
-
-    // const standardPools = await firstValueFrom(dexApi.standardPoolOfPairs(standardPairs));
-    // console.log(standardPools)
-    // console.log("TEST")
-    // console.log("TEST")
-    // console.log("TEST")
-
-    // let i = 0;
-    // console.log(standardPools.length)
-    // while (i < standardPools.length) {
-    //     // console.log("Token 0 Reserves: " + standardPools[i].reserve0)
-    //     console.log(`Token 0: ${standardPools[i].token0.name} ${standardPools[i].token0.symbol} - Token 1: ${standardPools[i].token1.name} ${standardPools[i].token1.symbol}`)
-    //     console.log(`${standardPools[i].reserve1.numerator.toString()} - ${standardPools[i].reserve1.numerator.toString()}`)
-    //     i++;
-    // }
-    // return standardPools;
+    
 }
 
-main()
+async function main() {
+    getLiqPools()
+    // testApi()
+}
+
+// main()

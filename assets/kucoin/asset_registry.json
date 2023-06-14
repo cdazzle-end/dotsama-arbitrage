@@ -1,0 +1,112 @@
+[
+  {
+    "tokenData": {
+      "exchange": "kucoin",
+      "assetTicker": "KSM",
+      "name": "Kusama",
+      "chain": "KSM",
+      "precision": 8,
+      "contractAddress": ""
+    },
+    "hasLocation": true,
+    "tokenLocation": "here"
+  },
+  {
+    "tokenData": {
+      "exchange": "kucoin",
+      "assetTicker": "RMRK",
+      "name": "RMRK",
+      "chain": "Statemine",
+      "precision": 8,
+      "contractAddress": "8"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x3": [
+        {
+          "parachain": 1000
+        },
+        {
+          "palletInstance": 50
+        },
+        {
+          "generalIndex": 8
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "exchange": "kucoin",
+      "assetTicker": "MOVR",
+      "name": "Moonriver",
+      "chain": "MOVR",
+      "precision": 8,
+      "contractAddress": ""
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2023
+        },
+        {
+          "palletInstance": 10
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "exchange": "kucoin",
+      "assetTicker": "KAR",
+      "name": "Karura",
+      "chain": "KAR",
+      "precision": 8,
+      "contractAddress": ""
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2000
+        },
+        {
+          "generalKey": "0x0080"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "exchange": "kucoin",
+      "assetTicker": "BNC",
+      "name": "Bifrost",
+      "chain": "bifrost",
+      "precision": 8,
+      "contractAddress": ""
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2001
+        },
+        {
+          "generalKey": "0x0001"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "exchange": "kucoin",
+      "assetTicker": "USDT",
+      "name": "Tether",
+      "chain": "None",
+      "precision": 8,
+      "contractAddress": "None"
+    },
+    "hasLocation": false
+  }
+]

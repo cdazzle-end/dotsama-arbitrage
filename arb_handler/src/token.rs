@@ -27,6 +27,15 @@ pub enum TokenData{
         chain: String,
         contract_address: Option<String>
     },
+    HeikoToken{
+        local_id: String,
+        name: String,
+        symbol: String,
+        decimals: u64,
+        deposit: u64,
+        isFrozen: bool,
+        chain: String,
+    },
     EvmToken{
         contract_address: String,
         name: String,
@@ -91,6 +100,9 @@ impl TokenData{
             TokenData::KucoinToken { .. } => {
                 panic!("Can't query kucoin token for chain")
             }
+            TokenData::HeikoToken{ chain, .. } => {
+                return chain.to_string()
+            }
         }
     }
 
@@ -106,6 +118,9 @@ impl TokenData{
             TokenData::KucoinToken { contract_address, ..}  => {
                 panic!("Can't query kucoin token for contract address")
             }
+            TokenData::HeikoToken{ .. } => {
+                panic!("heiko");
+            }
         }
     }
 
@@ -119,6 +134,9 @@ impl TokenData{
                 return name.clone()
             }
             TokenData::KucoinToken { name, .. }  => {
+                return name.clone()
+            }
+            TokenData::HeikoToken{ name, .. } => {
                 return name.clone()
             }
         }
@@ -136,7 +154,11 @@ impl TokenData{
             }
             
             TokenData::KucoinToken { .. } => {
-                panic!("Can't query kucoin token for decimals")
+                // panic!("Can't query kucoin token for decimals")
+                0
+            }
+            TokenData::HeikoToken{decimals, .. } => {
+                decimals.clone()
             }
         }
     }
@@ -156,6 +178,9 @@ impl TokenData{
                 // panic("Can't query kucoin token for chain")
                 exchange.to_string() + symbol
             }
+            TokenData::HeikoToken{ local_id, chain, .. } => {
+                chain.to_string() + &local_id
+            }
         }
     }
 
@@ -171,6 +196,9 @@ impl TokenData{
             TokenData::KucoinToken { .. }  => {
                 panic!("Can't query kucoin token for local evm id")
             }
+            TokenData::HeikoToken{ .. } => {
+                panic!("heiko");
+            }
         }
     }
 
@@ -184,6 +212,9 @@ impl TokenData{
                 symbol.clone()
             }
             TokenData::KucoinToken { symbol, .. }  => {
+                symbol.clone()
+            }
+            TokenData::HeikoToken{ symbol, .. } => {
                 symbol.clone()
             }
         }
@@ -208,9 +239,13 @@ impl TokenData{
             TokenData::KucoinToken { .. }  => {
                 false
             }
+            TokenData::HeikoToken{ .. } => {
+                false
+            }
         }
     }
 
+    //This is just for kucoin price data
     pub fn get_price_decimals(&self) -> (u64, u64){
         match self{
             TokenData::SubToken {..} => {
@@ -221,6 +256,9 @@ impl TokenData{
             }
             TokenData::KucoinToken {price_decimals, .. }  => {
                 price_decimals.clone()
+            }
+            TokenData::HeikoToken{ .. } => {
+                panic!("heiko");
             }
         }
     }

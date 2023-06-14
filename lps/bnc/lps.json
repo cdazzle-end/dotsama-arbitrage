@@ -1,0 +1,167 @@
+[
+  {
+    "chainId": 2001,
+    "poolAssets": [
+      {
+        "Native": "BNC"
+      },
+      {
+        "Token": "KSM"
+      }
+    ],
+    "liquidityStats": [
+      "247861466003793334",
+      "1783005914972996"
+    ]
+  },
+  {
+    "chainId": 2001,
+    "poolAssets": [
+      {
+        "Native": "BNC"
+      },
+      {
+        "Token": "ZLK"
+      }
+    ],
+    "liquidityStats": [
+      "63441372024477600",
+      "807160857361851261851411"
+    ]
+  },
+  {
+    "chainId": 2001,
+    "poolAssets": [
+      {
+        "Native": "BNC"
+      },
+      {
+        "Token2": "0"
+      }
+    ],
+    "liquidityStats": [
+      "74964092512236218",
+      "11721591511"
+    ]
+  },
+  {
+    "chainId": 2001,
+    "poolAssets": [
+      {
+        "Native": "BNC"
+      },
+      {
+        "VToken": "BNC"
+      }
+    ],
+    "liquidityStats": [
+      "713582149446688399",
+      "689029459206379807"
+    ]
+  },
+  {
+    "chainId": 2001,
+    "poolAssets": [
+      {
+        "Token": "KSM"
+      },
+      {
+        "Stable": "KUSD"
+      }
+    ],
+    "liquidityStats": [
+      "724752164411742",
+      "31477200045115827"
+    ]
+  },
+  {
+    "chainId": 2001,
+    "poolAssets": [
+      {
+        "Token": "KSM"
+      },
+      {
+        "VSToken": "KSM"
+      }
+    ],
+    "liquidityStats": [
+      "7652649902393423",
+      "15643204518544514"
+    ]
+  },
+  {
+    "chainId": 2001,
+    "poolAssets": [
+      {
+        "Token": "KSM"
+      },
+      {
+        "Token": "RMRK"
+      }
+    ],
+    "liquidityStats": [
+      "48129827946293",
+      "6467328915238"
+    ]
+  },
+  {
+    "chainId": 2001,
+    "poolAssets": [
+      {
+        "VToken": "KSM"
+      },
+      {
+        "Token": "KSM"
+      }
+    ],
+    "liquidityStats": [
+      "21791793989556809",
+      "26063875450126906"
+    ]
+  },
+  {
+    "chainId": 2001,
+    "poolAssets": [
+      {
+        "Token": "KSM"
+      },
+      {
+        "Token2": "2"
+      }
+    ],
+    "liquidityStats": [
+      "5031762287750",
+      "420247"
+    ]
+  },
+  {
+    "chainId": 2001,
+    "poolAssets": [
+      {
+        "Token": "KAR"
+      },
+      {
+        "Token": "ZLK"
+      }
+    ],
+    "liquidityStats": [
+      "4135226906406670",
+      "24628687534580419518552"
+    ]
+  },
+  {
+    "chainId": 2001,
+    "poolAssets": [
+      {
+        "VToken": "KSM"
+      },
+      {
+        "Token2": "0"
+      }
+    ],
+    "liquidityStats": [
+      "271063160820012",
+      "7064849598"
+    ]
+  }
+]

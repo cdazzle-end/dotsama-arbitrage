@@ -111,7 +111,6 @@ impl AdjacencyTable{
         }
         println!("table buckets {}", num_buckets);
         println!("table lists {}", num_lists);
-        
     }
 
     //Get the adjacent assets and liquidity for a specific asset

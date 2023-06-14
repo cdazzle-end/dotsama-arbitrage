@@ -1,0 +1,328 @@
+[
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KSM"
+        }
+      },
+      {
+        "ForeignAssetId": "0"
+      }
+    ],
+    "liquidityStats": [
+      "57065262176265",
+      "7408400508408"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KSM"
+        }
+      },
+      {
+        "NativeAssetId": {
+          "Token": "LKSM"
+        }
+      }
+    ],
+    "liquidityStats": [
+      "910445007101546",
+      "6723655978160854"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KAR"
+        }
+      },
+      {
+        "NativeAssetId": {
+          "Token": "KUSD"
+        }
+      }
+    ],
+    "liquidityStats": [
+      "186608487103257565",
+      "28675800819830863"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KAR"
+        }
+      },
+      {
+        "ForeignAssetId": "2"
+      }
+    ],
+    "liquidityStats": [
+      "8156853187576050",
+      "1073872483757495667669461"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KUSD"
+        }
+      },
+      {
+        "NativeAssetId": {
+          "Token": "KSM"
+        }
+      }
+    ],
+    "liquidityStats": [
+      "209674121354713909",
+      "4960143861772609"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KUSD"
+        }
+      },
+      {
+        "NativeAssetId": {
+          "Token": "BNC"
+        }
+      }
+    ],
+    "liquidityStats": [
+      "26411954335152828",
+      "85011399459743469"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KUSD"
+        }
+      },
+      {
+        "ForeignAssetId": "5"
+      }
+    ],
+    "liquidityStats": [
+      "15667731054215621",
+      "1297325196934159627"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KUSD"
+        }
+      },
+      {
+        "ForeignAssetId": "0"
+      }
+    ],
+    "liquidityStats": [
+      "4393784715168910",
+      "13401190186726"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KSM"
+        }
+      },
+      {
+        "ForeignAssetId": "1"
+      }
+    ],
+    "liquidityStats": [
+      "287357987484",
+      "63948131403422"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KUSD"
+        }
+      },
+      {
+        "NativeAssetId": {
+          "Token": "KINT"
+        }
+      }
+    ],
+    "liquidityStats": [
+      "1825651922109329",
+      "2276926071305315"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "TAI"
+        }
+      },
+      {
+        "StableAssetId": "0"
+      }
+    ],
+    "liquidityStats": [
+      "73127855652651576",
+      "53596961435317"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KAR"
+        }
+      },
+      {
+        "NativeAssetId": {
+          "Token": "KSM"
+        }
+      }
+    ],
+    "liquidityStats": [
+      "971054863397046815",
+      "3527201208290586"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KUSD"
+        }
+      },
+      {
+        "ForeignAssetId": "12"
+      }
+    ],
+    "liquidityStats": [
+      "4049646847173048",
+      "284774151645142608247040"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KAR"
+        }
+      },
+      {
+        "NativeAssetId": {
+          "Token": "LKSM"
+        }
+      }
+    ],
+    "liquidityStats": [
+      "313306364053955651",
+      "8371537753605328"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KUSD"
+        }
+      },
+      {
+        "ForeignAssetId": "2"
+      }
+    ],
+    "liquidityStats": [
+      "952434382661797",
+      "848333081860002408214729"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KUSD"
+        }
+      },
+      {
+        "NativeAssetId": {
+          "Token": "PHA"
+        }
+      }
+    ],
+    "liquidityStats": [
+      "8991945646783445",
+      "44012455064390527"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KUSD"
+        }
+      },
+      {
+        "NativeAssetId": {
+          "Token": "LKSM"
+        }
+      }
+    ],
+    "liquidityStats": [
+      "58387518830151155",
+      "10187366124451944"
+    ]
+  },
+  {
+    "chainId": 2000,
+    "poolAssets": [
+      {
+        "NativeAssetId": {
+          "Token": "KUSD"
+        }
+      },
+      {
+        "NativeAssetId": {
+          "Token": "KBTC"
+        }
+      }
+    ],
+    "liquidityStats": [
+      "13742030136340535",
+      "27656434"
+    ]
+  }
+]

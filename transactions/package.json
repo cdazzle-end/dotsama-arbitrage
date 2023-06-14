@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@acala-network/api": "beta",
+    "@polkadot/ui-keyring": "^2.10.1",
+    "@polkadot/ui-settings": "^2.10.1"
+  }
+}

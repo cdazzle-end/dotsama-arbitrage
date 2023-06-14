@@ -21,7 +21,7 @@ async function bifrost_kusama() {
     const parachainId = await (await api.query.parachainInfo.parachainId()).toHuman();
     let assets = await apiHelper.getAssets(api);
     let assetLocations = await apiHelper.getAssetLocations(api);
-
+    // api.create('AssetId', 1)
     // console.log(assetLocations)
     console.log(parachainId)
 
@@ -218,20 +218,20 @@ class MergedAsset{
         this.zlkAsset = zlkAsset;
     }
 }
+exports.testApi = async () => {
+    zenG.testApi();
+}
 
 exports.saveZenLiqPools = async () => {
     let liqPoolObjs = [];
-    //Get zenlink pools
     let liqPools = await zenG.getLiqPools();
-    // console.log(liqPools)
+    // console.log("GOT LIQPOOLS")
     await liqPools.forEach(async (liqPoolResponse) => {
-        // let liqPoolObjs = [];
-        // console.log(liqPoolResponse)
+        // console.log("ITERATE LIQPOOL")
         await liqPoolResponse.forEach(async (pool) => {
-            // console.log(pool)
-            console.log(`RETURNED: Token 0: ${pool.token0.name} ${pool.token0.symbol} - Token 1: ${pool.token1.name} ${pool.token1.symbol}`)
-            console.log(`RETURNED: ${pool.reserve0.numerator.toString()} - ${pool.reserve1.numerator.toString()}`)
-
+            // console.log(`RETURNED: Token 0: ${pool.token0.name} ${pool.token0.symbol} - Token 1: ${pool.token1.name} ${pool.token1.symbol}`)
+            // console.log(`RETURNED: ${pool.reserve0.numerator.toString()} - ${pool.reserve1.numerator.toString()}`)
+            
             let token0 = await zenToBnc(pool.token0);
             let token1 = await zenToBnc(pool.token1);
             let reserve0 = pool.reserve0.numerator.toString();
@@ -241,65 +241,16 @@ exports.saveZenLiqPools = async () => {
                 let liquidity = [reserve0, reserve1]
                 let liqPool = new LiqPool("2001", "None", tokens, liquidity)
                 liqPoolObjs.push(liqPool);
-                console.log("pool")
+                // console.log("pool")
             }
         })
-        console.log(await liqPoolObjs)
-        // console.log(liqPoolObjs)
+        // console.log(await liqPoolObjs)
         let fs = require('fs');
         fs.writeFileSync('../bnc/liq_pool_registry', JSON.stringify(liqPoolObjs), 'utf8')
+        // console.log("WROTE LIQPOOLS TO FILE")
+        console.log("bnc done")
+        
     })
-    
-    // let i = 0;
-    // let liqPoolsInner = liqPools[0];
-    // console.log(liqPoolsInner);
-    // liqPoolsInner.forEach(async (value) => {
-    //     console.log(`RETURNED: Token 0: ${value.token0.name} ${value.token0.symbol} - Token 1: ${value.token1.name} ${value.token1.symbol}`)
-    //     console.log(`RETURNED: ${value.reserve0.numerator.toString()} - ${value.reserve1.numerator.toString()}`)
-
-    //     let token0 = await zenToBnc(value.token0);
-    //     let token1 = await zenToBnc(value.token1);
-    //     let reserve0 = value.reserve0.numerator.toString();
-    //     let reserve1 = value.reserve1.numerator.toString();
-    //     if (token0 != undefined && token1 != undefined) {
-    //         let tokens = [token0["bncAsset"]["localId"], token1["bncAsset"]["localId"]]
-    //         let liquidity = [reserve0, reserve1]
-    //         let liqPool = new LiqPool("2001", "None", tokens, liquidity)
-    //         liqPoolObjs.push(liqPool);
-    //         console.log("pool")
-    //     }
-    // });
-
-    //Match the zenlink assets to the merged ZLK/BNC assets and create liqPool objects
-    // await liqPools.forEach(async (pool) => {
-    //     // console.log("TEST")
-    //     await pool.forEach(async (value) => {
-    //         console.log(`RETURNED: Token 0: ${value.token0.name} ${value.token0.symbol} - Token 1: ${value.token1.name} ${value.token1.symbol}`)
-    //         console.log(`RETURNED: ${value.reserve0.numerator.toString()} - ${value.reserve1.numerator.toString()}`)
-
-    //         let token0 = await zenToBnc(value.token0);
-    //         let token1 = await zenToBnc(value.token1);
-    //         let reserve0 = value.reserve0.numerator.toString();
-    //         let reserve1 = value.reserve1.numerator.toString();
-    //         if (token0 != undefined && token1 != undefined) {
-    //             let tokens = [token0["bncAsset"]["localId"], token1["bncAsset"]["localId"]]
-    //             let liquidity = [reserve0, reserve1]
-    //             let liqPool = new LiqPool("2001", "None", tokens, liquidity)
-    //             liqPoolObjs.push(liqPool);
-    //             console.log("pool")
-    //         }
-    //     })
-    //     console.log(liqPoolObjs)
-    // })
-    
-    
-    
-    // liqPoolObjs.forEach((pool) => {
-    //     console.log(pool)
-    //     console.log("test2")
-    // })
-    // let fs = require('fs');  
-    // fs.writeFileSync('../bnc/liq_pool_registry', JSON.stringify(liqPoolObjs), 'utf8')
 }
 
 //Find the corresponding merged BNC/ZLK asset

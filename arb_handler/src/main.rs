@@ -9,13 +9,24 @@ use std::io::prelude::*;
 use serde_json::{Value};
 use std::str;
 use std::path::Path;
+// use tokio::{join, task};
 // mod liq_pool;
 
 // use liq_pool::LiqPool;
+#[tokio::main]
+async fn main() {
 
-fn main() {
-
-    cross_chain();
+    // cross_chain();
+    // test_arb_2()
+    // test_asset_registry();
+    async_search().await
+    // search_ksm().await;
+    // test_arb_3()
+    // test_table_2();
+    // search_rmrk().await;
+    // search_movr().await;
+    // async_search_2().await; 
+    // test_table_2();
 
 }
 

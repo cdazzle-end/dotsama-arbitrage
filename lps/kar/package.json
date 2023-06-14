@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@acala-network/api": "beta",
+    "@polkadot/api": "^9.13.4",
+    "bignumber.js": "^9.1.1"
+  }
+}

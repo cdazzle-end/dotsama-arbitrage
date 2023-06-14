@@ -1,0 +1,69 @@
+[
+    {
+        "chainId": 2000,
+        "poolAssets": [
+            {
+                "NativeAssetId": {
+                    "Token": "KSM"
+                }
+            },
+            {
+                "NativeAssetId": {
+                    "Token": "LKSM"
+                }
+            }
+        ],
+        "liquidityStats": [
+            "3977493341361394",
+            "10754763652132293",
+            "3977493341361394",
+            "80852229285318050"
+        ],
+        "tokenPrecisions": [
+            "1",
+            "1"
+        ],
+        "swapFee": "25000000",
+        "a": 3,
+        "aPrecision": 100,
+        "aBlock": "1582221",
+        "futureA": "3000",
+        "futureABlock": "1582500",
+        "totalSupply": "14700052175683353",
+        "poolPrecision": "1000000000000"
+    },
+    {
+        "chainId": 2000,
+        "poolAssets": [
+            {
+                "NativeAssetId": {
+                    "Token": "KUSD"
+                }
+            },
+            {
+                "Erc20": "0x1f3a10587a20114ea25ba1b388ee2dd4a337ce27"
+            },
+            {
+                "ForeignAssetId": "7"
+            }
+        ],
+        "liquidityStats": [
+            "1051485583003487565",
+            "28996564604000000",
+            "28944255370000000"
+        ],
+        "tokenPrecisions": [
+            "1",
+            "1000000",
+            "1000000"
+        ],
+        "swapFee": "5000000",
+        "a": 10000,
+        "aPrecision": 100,
+        "aBlock": "1913274",
+        "futureA": "10000",
+        "futureABlock": "1913274",
+        "totalSupply": "1088044888752849863",
+        "poolPrecision": "1000000000000"
+    }
+]

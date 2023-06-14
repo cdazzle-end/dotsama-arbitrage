@@ -1,0 +1,2726 @@
+[
+  {
+    "chainId": 2007,
+    "contractAddress": "0x459dd7cd75cda4b60701a211b5dfbe298264f999",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "48462665982411764185305",
+      "2247648306064841819058019"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1ba530cf929ea5bc7f1af241495c97331ddb4f70",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "33759027221725604195497",
+      "1564523514410163580945995"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xbc14873c7daeb1887950083030afd2ff9c9b20a0",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x722377A047e89CA735f09Eb7CccAb780943c4CB4"
+    ],
+    "liquidityStats": [
+      "20551770798492724806681",
+      "281801867997953286367511"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x456c0082de0048ee883881ff61341177fa1fef40",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xb12c13e66AdE1F72f71834f2FC5082Db8C091358"
+    ],
+    "liquidityStats": [
+      "8895060462561673044288",
+      "1337807426033264544394320"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1a313816bfebe895c92514f3049f82166b723003",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "6058876821891273923034",
+      "2204356171"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0b754a6e8213410e702ffd49f3cd4e812e09058f",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "4662453669847421213570",
+      "2085020803"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x322f3bfda7567c32c2d75795aab4da78401496a2",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xD67de0e0a0Fd7b15dC8348Bb9BE742F3c5850454"
+    ],
+    "liquidityStats": [
+      "4095581720566346531658",
+      "3208819248541140225385665"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1eab04c15dca24bea6c29f545d630ce9392c0d3d",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A"
+    ],
+    "liquidityStats": [
+      "4754891219726469068768",
+      "1761440855118805852305"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9b2814756fb9d9ab1e60324bad4686fdd66d93fd",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x332730a4F6E03D9C55829435f10360E13cfA41Ff"
+    ],
+    "liquidityStats": [
+      "4400502139432917883133",
+      "5460499615962145231"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xdb9a42e1165ba2fc479e1f2c1ce939807dbe6020",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "2544856476636798399328",
+      "927165856"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x6c08d62f41e596de5850e935861dea2b712e4b93",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61"
+    ],
+    "liquidityStats": [
+      "2672122189157291249062",
+      "607460166488912266"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xcfd26d28d13b201f8431a9511aee790b6800559d",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x922D641a426DcFFaeF11680e5358F34d97d112E1"
+    ],
+    "liquidityStats": [
+      "2814984602337529049903",
+      "3731496"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x240d19e0533f37c2c43355393b7943e09c807693",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "1745837502766299121608",
+      "638858129"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xb6784e8552bfcb5bcf05f1f949dbc332937caad2",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61"
+    ],
+    "liquidityStats": [
+      "2116256263088803987340",
+      "479521378344542669"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xc8cab387bd305d4a0a1e4555973773b26cf60717",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x922D641a426DcFFaeF11680e5358F34d97d112E1"
+    ],
+    "liquidityStats": [
+      "2308890581181321121746",
+      "3032664"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xeb2c6d3f1bbe9da50a0272e80faa89354630de88",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61"
+    ],
+    "liquidityStats": [
+      "2044455370917004160722",
+      "465215079985513896"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xb7653daa829e901720cd641ef5bfded392a48bdf",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73"
+    ],
+    "liquidityStats": [
+      "1798701557693496380700",
+      "659168038955323547463"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9c1ee9aed6e0e02f492952d594c16265a272beb3",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xec0c789c6dC019b1C19F055eDf938B369D235D2c"
+    ],
+    "liquidityStats": [
+      "826251086644617064465",
+      "177999029719367481177852"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x8a4a3faf10f5267015d3a6ab41a3013bb8c068a5",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "741700736976477359580",
+      "34547603071080057107831"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xc82731e2ade4091f28df13557de61f939a970c92",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98"
+    ],
+    "liquidityStats": [
+      "1046562224919366159593",
+      "77413818811004808150833"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9a0d22a22aa62f9fef935de46257b3a3edbf6b27",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "571025121969601839748",
+      "255868121"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x82e6287ea6042a08e16a304d516139d4c86fa3aa",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x332730a4F6E03D9C55829435f10360E13cfA41Ff"
+    ],
+    "liquidityStats": [
+      "556537606336510236145",
+      "689980779821624842"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x155a8b6968e24d0a5caeb39f0f38e381b9b04c64",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x55F712c88946FFE8BA0EEe79217cbf690183F418"
+    ],
+    "liquidityStats": [
+      "501565972652633294963",
+      "4118887170485197043645089"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x936032362d02f2c030ab2a5e20deabbb9848d429",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x3671af96072B60296F79e17Df07c4Ac2c3f43dEC"
+    ],
+    "liquidityStats": [
+      "299128471418582459677",
+      "2100819664682943607277"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x950661f5c07b6fe7ae9cdfa87189f552a25b124d",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xa9b79AAB9d60e8e6d08D2cbAd56ff0De58ff8d41"
+    ],
+    "liquidityStats": [
+      "230280176468523615031",
+      "749935811664674429069969790576323"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1f582584c003c9ba9258d1ea6c5289e617a169bf",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "165054935363551422646",
+      "61074980"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xb4d9eaca13c7198b7f32899739246b1feec758e3",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x5bd0CD1f9932214E4F79C8e3d64D2CCaf21a1d36"
+    ],
+    "liquidityStats": [
+      "108428202180673877458",
+      "6167374175398476494186"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1147b2c480046c9eea02cea05dad512cdda192da",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x16bF7eCaf868348703Ff5B5c0c3B84be7Bf483F9"
+    ],
+    "liquidityStats": [
+      "108257016404127005272",
+      "239816982105735073978823"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x5204693db7ba02c23802247449c4bc073b33d360",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x55F712c88946FFE8BA0EEe79217cbf690183F418"
+    ],
+    "liquidityStats": [
+      "92729919609666845305",
+      "765755235130441107038507"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0f635f0f8dbb8f525792ce7be20d1399d7a8effc",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x5bd0CD1f9932214E4F79C8e3d64D2CCaf21a1d36"
+    ],
+    "liquidityStats": [
+      "52888454503035833246",
+      "2978410961932639213762"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x98209ebadc408c7473e652baef2146b5e141df30",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xC635421078BDA964481467874B10dA2c47213135"
+    ],
+    "liquidityStats": [
+      "40499837527001297827",
+      "57953404436035810573"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0ace692f0051e37443e78649c775591926627c50",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x481F3F60888cc2763852ca37739daA9Ad44df0fF"
+    ],
+    "liquidityStats": [
+      "16270633150284779558",
+      "156325077078468249048339"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xd43745b5e16b7650077eff49774dc68cb644fd0f",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xB23f49Ae60A72FAA7097923793f42b2eBe8d5d15"
+    ],
+    "liquidityStats": [
+      "14118343734506765200",
+      "848275404909873630616670"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x3f5ada4d3b9f716b55d7d4a5032cda35f1099be5",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "11501028161293290844",
+      "532456496309061698481"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xf33226b6595f80a0742de7de0924839ce1321360",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x61dA6C135a66Ec8c1bFbdc66B47975966BBaaEdC"
+    ],
+    "liquidityStats": [
+      "9600095339071509368",
+      "667009892579171595054472"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x6760b4142eeda065c859e97b370086d480f8a4e2",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x481F3F60888cc2763852ca37739daA9Ad44df0fF"
+    ],
+    "liquidityStats": [
+      "7602030220009190039",
+      "73466643048163075611146"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x50a1e2a2339db72f4bf2977ab1266c203326445e",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x3bdF3c6130003F8C04Bd52f32ff623d66EC85AaC"
+    ],
+    "liquidityStats": [
+      "1276645509473528037",
+      "1300000000000000031532"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1be75503809b1f2f4f513a05cf65016332db2c54",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x3bdF3c6130003F8C04Bd52f32ff623d66EC85AaC"
+    ],
+    "liquidityStats": [
+      "32",
+      "31623"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1147b2c480046c9eea02cea05dad512cdda192da",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x16bF7eCaf868348703Ff5B5c0c3B84be7Bf483F9"
+    ],
+    "liquidityStats": [
+      "108257016404127005272",
+      "239816982105735073978823"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0ace692f0051e37443e78649c775591926627c50",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x481F3F60888cc2763852ca37739daA9Ad44df0fF"
+    ],
+    "liquidityStats": [
+      "16270633150284779558",
+      "156325077078468249048339"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x6760b4142eeda065c859e97b370086d480f8a4e2",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x481F3F60888cc2763852ca37739daA9Ad44df0fF"
+    ],
+    "liquidityStats": [
+      "7602030220009190039",
+      "73466643048163075611146"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x06308b279ad6884a92a7bd4749dde19d4ea42fab",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xCCD3C0ce2B05fdf4f9638C97009E29e3D9317B45"
+    ],
+    "liquidityStats": [
+      "154877035333909626",
+      "7113738104382724543"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xdb274db851b16eab8e85fe67f93cfb0096b9a3f7",
+    "poolAssets": [
+      "0x04e5F29718E0AF3d076065Efe2f98A868B0c540F",
+      "0xDb701CD6e37ACDDd7b2784e6515Eff4766E29c0f"
+    ],
+    "liquidityStats": [
+      "10445710773113455163553",
+      "5618855918585966791644"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xdb97fe64465f3a21a8f0e13a25cd11a9aef4b107",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xDb701CD6e37ACDDd7b2784e6515Eff4766E29c0f"
+    ],
+    "liquidityStats": [
+      "210965867948687460",
+      "1074223830487662017"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x78778b5d5229f8076e1796a73fbe59687a37d868",
+    "poolAssets": [
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "18932787064087025810",
+      "30653970231"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x8644e9ac84273ca0609f2a2b09b2ed2a5ad2e9dd",
+    "poolAssets": [
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "5396520059253577241854",
+      "5348225206"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0334afb968944fcf18d3781f0d988c938eff5600",
+    "poolAssets": [
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "2579432393327193530965",
+      "2558067715"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1a313816bfebe895c92514f3049f82166b723003",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "6058876821891273923034",
+      "2204356171"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xa6f213f63973c2815fa9c8079965f933694a3251",
+    "poolAssets": [
+      "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "63695137316144657247677",
+      "1708924116"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xb0ff15f71e339474fd35407ee12c13594199a52c",
+    "poolAssets": [
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "154902243845826909415741",
+      "1229595675"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xdb9a42e1165ba2fc479e1f2c1ce939807dbe6020",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "2544856476636798399328",
+      "927165856"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xcfb0e95a3a68e3574c73a3c6985d56b7c03b6348",
+    "poolAssets": [
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "564905550642190243",
+      "914405591"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x240d19e0533f37c2c43355393b7943e09c807693",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "1745837502766299121608",
+      "638858129"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xa23953251157fc08bf0630e4952ae47aae0e25d4",
+    "poolAssets": [
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "654431788904457672373",
+      "650778429"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xe2c19eb0f91c80275cc254f90ed0f18f26650ec5",
+    "poolAssets": [
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "66742441932184043481202",
+      "529495793"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x82ad55fe3fe3778a751ff088de3a385e75baac95",
+    "poolAssets": [
+      "0xA96Ed945e4856aa27269b59A58b36be9F3A82204",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "83529493729537702871037",
+      "299752780"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xda3aae05d083301043bb6b96c7d6bca15356bf55",
+    "poolAssets": [
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "77793808036912675541153",
+      "385512294"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x5bb745ab9fa20e36b8e1a4fd1b14f08c5d372bb1",
+    "poolAssets": [
+      "0x1A6a12953d5439e8965d94d3D8452464FBd53e30",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "171908217963808709581",
+      "64980643"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1f582584c003c9ba9258d1ea6c5289e617a169bf",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "165054935363551422646",
+      "61074980"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x19dbf84f8de7a806042dbc46ca2d604e3c393db5",
+    "poolAssets": [
+      "0x64D70C807C20B5F3bCadC4D92874Fc986049D76D",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "35368578124039616157",
+      "34785879"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x184a0a9cbc1afea4aaff68072dbd7e1819916bee",
+    "poolAssets": [
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "25543043",
+      "21033954"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x60ada865bbc0ad3f5b002ddfa1c8e22c36ce3ed1",
+    "poolAssets": [
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "2140251469967501586763",
+      "17356838"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x488fef2d72ffb811fc952719c2468ac50cef914e",
+    "poolAssets": [
+      "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "9880884868275053946",
+      "10003621"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xe475cc5fc01fc708868eefd888808a4a9dbfd4b1",
+    "poolAssets": [
+      "0x3a80766d66918b832eacf374f11F1828e43EFfd1",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "419746125958386672734286",
+      "5939094"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xf782f2a8254a272b0cbb283499bf3a36ffa809f9",
+    "poolAssets": [
+      "0x922D641a426DcFFaeF11680e5358F34d97d112E1",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "3861",
+      "1080293"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xeebe7accd6ed40d2121ab1d93f3737ad51ae2d21",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "2056556497595512464",
+      "858939"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xc3a586447bc5b5eaf91de2a20ddc25d76fb9fb4a",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "2054920824880387932",
+      "852357"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x363f7e4a6ef110e998f3d8067eddc15141f89e0c",
+    "poolAssets": [
+      "0x434f5f7B5ee004A3A7BBF1DD262dEf47EB553134",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "1236199552035711186",
+      "809257"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x19e01eb5f4b51ff897537087a9272db41f5e5910",
+    "poolAssets": [
+      "0x3671af96072B60296F79e17Df07c4Ac2c3f43dEC",
+      "0x7b7e696df8Ca22A8dC6c1dC14c4D5bC153a225D5"
+    ],
+    "liquidityStats": [
+      "19228289537807470930",
+      "18330335761681549994"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xd9e243b5f30ea647bb3507cffdfbdf98692e290c",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x7b7e696df8Ca22A8dC6c1dC14c4D5bC153a225D5"
+    ],
+    "liquidityStats": [
+      "840200311122618826",
+      "5575181098177681348"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xf43e3b21a49b6879ec7e0503b9f42ec9a0e6b094",
+    "poolAssets": [
+      "0x7b7e696df8Ca22A8dC6c1dC14c4D5bC153a225D5",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "429060666501619164",
+      "23395"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x155a8b6968e24d0a5caeb39f0f38e381b9b04c64",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x55F712c88946FFE8BA0EEe79217cbf690183F418"
+    ],
+    "liquidityStats": [
+      "501565972652633294963",
+      "4118887170485197043645089"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x5204693db7ba02c23802247449c4bc073b33d360",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x55F712c88946FFE8BA0EEe79217cbf690183F418"
+    ],
+    "liquidityStats": [
+      "92729919609666845305",
+      "765755235130441107038507"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xbf70368007b3009b49a24d0861cdebe8a0412ec0",
+    "poolAssets": [
+      "0x55F712c88946FFE8BA0EEe79217cbf690183F418",
+      "0x5bd0CD1f9932214E4F79C8e3d64D2CCaf21a1d36"
+    ],
+    "liquidityStats": [
+      "2273912069158560674",
+      "337484697339114"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x85dddc0fdf4dda0507c731939b5e33576469d657",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xf29228338B01c0e9009a50B54e6436BcB22A3302"
+    ],
+    "liquidityStats": [
+      "2152527454421711",
+      "14597766856659"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xb4d9eaca13c7198b7f32899739246b1feec758e3",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x5bd0CD1f9932214E4F79C8e3d64D2CCaf21a1d36"
+    ],
+    "liquidityStats": [
+      "108428202180673877458",
+      "6167374175398476494186"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0f635f0f8dbb8f525792ce7be20d1399d7a8effc",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x5bd0CD1f9932214E4F79C8e3d64D2CCaf21a1d36"
+    ],
+    "liquidityStats": [
+      "52888454503035833246",
+      "2978410961932639213762"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x446ab16570cd9ee399f19e521de2aa55466a2223",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x5bd0CD1f9932214E4F79C8e3d64D2CCaf21a1d36"
+    ],
+    "liquidityStats": [
+      "10598356790998114",
+      "532514608998508766"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x68002e76dfa113e05437d11bded25a57423ffd3e",
+    "poolAssets": [
+      "0x5bd0CD1f9932214E4F79C8e3d64D2CCaf21a1d36",
+      "0x871795981Df52508B69CfA8c22F8ccff7F0e1b80"
+    ],
+    "liquidityStats": [
+      "54950642098280147",
+      "112106969999999998"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xbf70368007b3009b49a24d0861cdebe8a0412ec0",
+    "poolAssets": [
+      "0x55F712c88946FFE8BA0EEe79217cbf690183F418",
+      "0x5bd0CD1f9932214E4F79C8e3d64D2CCaf21a1d36"
+    ],
+    "liquidityStats": [
+      "2273912069158560674",
+      "337484697339114"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xbcf7da070d784f561b3048691f25c07b83fd3fc4",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x92e0eC1e411092A8f09B8a9A9067bdF65484a499"
+    ],
+    "liquidityStats": [
+      "100000000000000000",
+      "979797979797979797979797"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xcfd26d28d13b201f8431a9511aee790b6800559d",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x922D641a426DcFFaeF11680e5358F34d97d112E1"
+    ],
+    "liquidityStats": [
+      "2814984602337529049903",
+      "3731496"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xc8cab387bd305d4a0a1e4555973773b26cf60717",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x922D641a426DcFFaeF11680e5358F34d97d112E1"
+    ],
+    "liquidityStats": [
+      "2308890581181321121746",
+      "3032664"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xf782f2a8254a272b0cbb283499bf3a36ffa809f9",
+    "poolAssets": [
+      "0x922D641a426DcFFaeF11680e5358F34d97d112E1",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "3861",
+      "1080293"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xfc861e6626010ff69ecd496ab2dcce34e66e7a91",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x922D641a426DcFFaeF11680e5358F34d97d112E1"
+    ],
+    "liquidityStats": [
+      "1898233418",
+      "2"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xd856f94ca1bc6a4f13e11cc1441afb9ca66a3958",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x922D641a426DcFFaeF11680e5358F34d97d112E1"
+    ],
+    "liquidityStats": [
+      "12513407444",
+      "1"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x6fcd517b74cd728204b2f12ed27d9decfd1bf8ae",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x24b6179E4062ED9BAEacE0E6081Dbd55B6072380"
+    ],
+    "liquidityStats": [
+      "733059522354268889",
+      "44999521505078"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x052fdeb273625eea788ff3d83435d492247dc6bb",
+    "poolAssets": [
+      "0x3671af96072B60296F79e17Df07c4Ac2c3f43dEC",
+      "0xb53973ad94eB16FbD138805AcE4173416F016e7E"
+    ],
+    "liquidityStats": [
+      "12003398797720926687",
+      "11668383"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x09276a972685ca09222e2aed81d984acb517ef0a",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xb53973ad94eB16FbD138805AcE4173416F016e7E"
+    ],
+    "liquidityStats": [
+      "865309601589632759",
+      "5851169"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xecdc3971dedcfd7963ae3b6d584901ed8a24a5c8",
+    "poolAssets": [
+      "0xb53973ad94eB16FbD138805AcE4173416F016e7E",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "437029",
+      "23002"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xf5068d71fa699cab4232e7cb0470d14e50fe1580",
+    "poolAssets": [
+      "0x061886a3d868F1a325BfC78983fBAa830068ffb2",
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef"
+    ],
+    "liquidityStats": [
+      "380929545",
+      "544220602096"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x19984d83d85be6e0ebf63c0e1664fdc6c4f71edb",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x3a76Ee76E3Ef176e214904c353Cc73b266368B70"
+    ],
+    "liquidityStats": [
+      "837916884883173139",
+      "160320108803606"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xba472bf9a59acd3cdc8fe69a16c87590c9e40d7d",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x3a76Ee76E3Ef176e214904c353Cc73b266368B70"
+    ],
+    "liquidityStats": [
+      "45390215830287626",
+      "7581423123072"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9c1ee9aed6e0e02f492952d594c16265a272beb3",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xec0c789c6dC019b1C19F055eDf938B369D235D2c"
+    ],
+    "liquidityStats": [
+      "826251086644617064465",
+      "177999029719367481177852"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x78778b5d5229f8076e1796a73fbe59687a37d868",
+    "poolAssets": [
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "18932787064087025810",
+      "30653970231"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x6c08d62f41e596de5850e935861dea2b712e4b93",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61"
+    ],
+    "liquidityStats": [
+      "2672122189157291249062",
+      "607460166488912266"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xcfb0e95a3a68e3574c73a3c6985d56b7c03b6348",
+    "poolAssets": [
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "564905550642190243",
+      "914405591"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xb6784e8552bfcb5bcf05f1f949dbc332937caad2",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61"
+    ],
+    "liquidityStats": [
+      "2116256263088803987340",
+      "479521378344542669"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xeb2c6d3f1bbe9da50a0272e80faa89354630de88",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61"
+    ],
+    "liquidityStats": [
+      "2044455370917004160722",
+      "465215079985513896"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x006c2a2e9ee9a1f337f3dab3c27d347855a3e9e8",
+    "poolAssets": [
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98"
+    ],
+    "liquidityStats": [
+      "112997844746334584",
+      "36532760311169861225449"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x96d96cfee931f75b282f45a4aa20226da5dcfe62",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61"
+    ],
+    "liquidityStats": [
+      "52230009925821578",
+      "21131611930074"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xf33226b6595f80a0742de7de0924839ce1321360",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x61dA6C135a66Ec8c1bFbdc66B47975966BBaaEdC"
+    ],
+    "liquidityStats": [
+      "9600095339071509368",
+      "667009892579171595054472"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x885bb9c583e29125f47da5e4e728aea6807f766e",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xCCA64E0E9A598FB01283419808664dA7B6b943Dc"
+    ],
+    "liquidityStats": [
+      "2002070055748502155",
+      "999267536976957746477834"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9040d9a270c2e4c437ccbeaaa79b1c37f4956f36",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x36B18C2201A9a1649bfFe2AE2353e02d3F0668DD"
+    ],
+    "liquidityStats": [
+      "100000000000000",
+      "100000000000000"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1f1b023fd2fcd01131e1e36c4345fd42a0160801",
+    "poolAssets": [
+      "0x04E4702A81d39fA24CF907dd3d147Bd63fd8A591",
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef"
+    ],
+    "liquidityStats": [
+      "16018503725",
+      "27675580825947"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x459dd7cd75cda4b60701a211b5dfbe298264f999",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "48462665982411764185305",
+      "2247648306064841819058019"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1ba530cf929ea5bc7f1af241495c97331ddb4f70",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "33759027221725604195497",
+      "1564523514410163580945995"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xb0ff15f71e339474fd35407ee12c13594199a52c",
+    "poolAssets": [
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "154902243845826909415741",
+      "1229595675"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xe2c19eb0f91c80275cc254f90ed0f18f26650ec5",
+    "poolAssets": [
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "66742441932184043481202",
+      "529495793"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x8a4a3faf10f5267015d3a6ab41a3013bb8c068a5",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "741700736976477359580",
+      "34547603071080057107831"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x60ada865bbc0ad3f5b002ddfa1c8e22c36ce3ed1",
+    "poolAssets": [
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "2140251469967501586763",
+      "17356838"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x3f5ada4d3b9f716b55d7d4a5032cda35f1099be5",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "11501028161293290844",
+      "532456496309061698481"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x5ee844ba085a8d867e17dfa1776941725b8d24ca",
+    "poolAssets": [
+      "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "18387243983008067937",
+      "65342763536452560833"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x2e701e415ffd2b8d1c7031ebe69c332909c92d96",
+    "poolAssets": [
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "16271416922305362",
+      "1911463911522021888"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x4543af72ec4139e9da415c995893dbadd01a7f05",
+    "poolAssets": [
+      "0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "391393113464608220",
+      "386493419395966855"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x642e9720311a6be08b5db1e3f34aa13755d5bba5",
+    "poolAssets": [
+      "0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "278900694000194116",
+      "273497108928977970"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x456c0082de0048ee883881ff61341177fa1fef40",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xb12c13e66AdE1F72f71834f2FC5082Db8C091358"
+    ],
+    "liquidityStats": [
+      "8895060462561673044288",
+      "1337807426033264544394320"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x03751d407811266462347efa2a618b027339986a",
+    "poolAssets": [
+      "0xb12c13e66AdE1F72f71834f2FC5082Db8C091358",
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98"
+    ],
+    "liquidityStats": [
+      "205275013951964131321",
+      "106919504507990357803"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xfaaeeedb34f416a2c2a771f83c69767168a43cea",
+    "poolAssets": [
+      "0x9427A2a738AffBc5880F0646b5251069c022e525",
+      "0xb12c13e66AdE1F72f71834f2FC5082Db8C091358"
+    ],
+    "liquidityStats": [
+      "231691086302214376",
+      "16303627256035126606"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9a96886ca81a271de0fb0f8f59c4e818d850c011",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xad4eFE08f0Fb7B3AB7AA37Be16d194e50eb045FA"
+    ],
+    "liquidityStats": [
+      "10000000000000000",
+      "1000000000"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x763e3a4ee7fd036d77b303059fc599a6e700ab4b",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xad4eFE08f0Fb7B3AB7AA37Be16d194e50eb045FA"
+    ],
+    "liquidityStats": [
+      "36",
+      "28498"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0b754a6e8213410e702ffd49f3cd4e812e09058f",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "4662453669847421213570",
+      "2085020803"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9ba8665fb25ba5d74702eb5c7165ee534a301529",
+    "poolAssets": [
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "784994386546628851782",
+      "943092507"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9a0d22a22aa62f9fef935de46257b3a3edbf6b27",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "571025121969601839748",
+      "255868121"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1e8803c917c25e108aad1a9c29640450098cd4ed",
+    "poolAssets": [
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b",
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98"
+    ],
+    "liquidityStats": [
+      "305414397",
+      "50673842084486548434532"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x184a0a9cbc1afea4aaff68072dbd7e1819916bee",
+    "poolAssets": [
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "25543043",
+      "21033954"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xccdf1c0c39c7663d08d111b2d03eed88ca447db4",
+    "poolAssets": [
+      "0x3a80766d66918b832eacf374f11F1828e43EFfd1",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "256425622917181768625021",
+      "4394688"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x82b41ab9214f683e849fd4c445b1a61e17d76ffb",
+    "poolAssets": [
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b",
+      "0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720"
+    ],
+    "liquidityStats": [
+      "1474169",
+      "1000000000000000000"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x82b8eee4f51dcf1c5284c27750a265de64ffcd17",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "833222055134972642",
+      "428443"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x24c6a5804fb0a11fbd5d4d512fc30fa230697011",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "22197026865930497",
+      "7708"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x69dbb5c95cd8205911161acb7fb2fc6b4e580776",
+    "poolAssets": [
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "1025",
+      "982"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xda0110e2d7dc696bbb8e73c104d3902e8e6db37a",
+    "poolAssets": [
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "158923777",
+      "1"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x836e384cc4ad9fdd0eec49a42fe19b5f4a529abe",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "507543102",
+      "1"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x55742bef4952a13e32621db49723b5c869ee4c62",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "547722558",
+      "1"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xb48e50a70b2abeac1733416c98ebcf2e3204c270",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x9427A2a738AffBc5880F0646b5251069c022e525"
+    ],
+    "liquidityStats": [
+      "1685313790961146091",
+      "2379460837865664657"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x731698f75104c410e2bce894aef60c5613a0378c",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x9427A2a738AffBc5880F0646b5251069c022e525"
+    ],
+    "liquidityStats": [
+      "816576623062109605",
+      "1226191663648167904"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x3f758678558dcfb8eb94d010cdacbbcfd5cb4f97",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x9427A2a738AffBc5880F0646b5251069c022e525"
+    ],
+    "liquidityStats": [
+      "859270572022373084",
+      "1165521739696079479"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x54d43a26941d55f93dc38be17d7a7d07d56a1e5d",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x9427A2a738AffBc5880F0646b5251069c022e525"
+    ],
+    "liquidityStats": [
+      "430249687772415905",
+      "581453049948258588"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xfaaeeedb34f416a2c2a771f83c69767168a43cea",
+    "poolAssets": [
+      "0x9427A2a738AffBc5880F0646b5251069c022e525",
+      "0xb12c13e66AdE1F72f71834f2FC5082Db8C091358"
+    ],
+    "liquidityStats": [
+      "231691086302214376",
+      "16303627256035126606"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1467cf530c03894b4c72f904201643e733fd65ee",
+    "poolAssets": [
+      "0x9427A2a738AffBc5880F0646b5251069c022e525",
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98"
+    ],
+    "liquidityStats": [
+      "182805474107479383",
+      "11516729292370468531"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x990f39e44e4dabfcb320de60aa8028ed9cb8eeee",
+    "poolAssets": [
+      "0x9427A2a738AffBc5880F0646b5251069c022e525",
+      "0xD67de0e0a0Fd7b15dC8348Bb9BE742F3c5850454"
+    ],
+    "liquidityStats": [
+      "105109350004456707",
+      "31647311138119053311"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x7272933b365915bc65f8c58a087717beffecd471",
+    "poolAssets": [
+      "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",
+      "0x9427A2a738AffBc5880F0646b5251069c022e525"
+    ],
+    "liquidityStats": [
+      "144561706130952292",
+      "42287295724060159"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0b4eb092247701f60c2f4d002d69073c03828003",
+    "poolAssets": [
+      "0x116dc328f6962C5defE32D17Ef8B118d56B77E88",
+      "0x938BCe03532A3845Ec0aB75069E3d84f9cd2826f"
+    ],
+    "liquidityStats": [
+      "7069086190601640871329",
+      "7533160353027335485782"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xf6d59d826815c56ffb6cd1e90b5450b70abd17f7",
+    "poolAssets": [
+      "0x116dc328f6962C5defE32D17Ef8B118d56B77E88",
+      "0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720"
+    ],
+    "liquidityStats": [
+      "100000000000000000000",
+      "1000000000000000000"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x78c0b11373b3c7933ff12dbb71e19e9bebcbacaf",
+    "poolAssets": [
+      "0x116dc328f6962C5defE32D17Ef8B118d56B77E88",
+      "0x938BCe03532A3845Ec0aB75069E3d84f9cd2826f"
+    ],
+    "liquidityStats": [
+      "29009957761046980511",
+      "21185035703805676099"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x5b63bbb133af8d30c196c70b2fe945f6488fb2d5",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x116dc328f6962C5defE32D17Ef8B118d56B77E88"
+    ],
+    "liquidityStats": [
+      "16310719907176028",
+      "7529583159494586292"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xe66cb9faac32f62e3ecf45feb6d7b6faa420f2a5",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x116dc328f6962C5defE32D17Ef8B118d56B77E88"
+    ],
+    "liquidityStats": [
+      "317",
+      "3163"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x8644e9ac84273ca0609f2a2b09b2ed2a5ad2e9dd",
+    "poolAssets": [
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "5396520059253577241854",
+      "5348225206"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0334afb968944fcf18d3781f0d988c938eff5600",
+    "poolAssets": [
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "2579432393327193530965",
+      "2558067715"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1eab04c15dca24bea6c29f545d630ce9392c0d3d",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A"
+    ],
+    "liquidityStats": [
+      "4754891219726469068768",
+      "1761440855118805852305"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9ba8665fb25ba5d74702eb5c7165ee534a301529",
+    "poolAssets": [
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "784994386546628851782",
+      "943092507"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xa23953251157fc08bf0630e4952ae47aae0e25d4",
+    "poolAssets": [
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "654431788904457672373",
+      "650778429"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x43ab3c683fc2dd450cc77eed1e4e286faa7f57ea",
+    "poolAssets": [
+      "0x332730a4F6E03D9C55829435f10360E13cfA41Ff",
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A"
+    ],
+    "liquidityStats": [
+      "82119280527888516",
+      "24640105806430622598"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x630b589377884c146834699499acf7821c696be1",
+    "poolAssets": [
+      "0x3a80766d66918b832eacf374f11F1828e43EFfd1",
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A"
+    ],
+    "liquidityStats": [
+      "377440902852916366750848",
+      "5402146478151507446"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x31f7b39f14324963434a39542fb48a705ad58668",
+    "poolAssets": [
+      "0x1A6a12953d5439e8965d94d3D8452464FBd53e30",
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A"
+    ],
+    "liquidityStats": [
+      "986220137759112786",
+      "346958638918783691"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xcdbbd5e71430c47ee8463bb4108233a19f9a42f4",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xEdeFeACbEf9D26FE58BFa1C67B8c7c47f4544377"
+    ],
+    "liquidityStats": [
+      "1000000000000",
+      "1"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xcee1ca903abd070e4a012145fb41854a1dc09e8c",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x1BAAE317210448Db043354B81e7A24c273b47a61"
+    ],
+    "liquidityStats": [
+      "1000000100000",
+      "999999900301"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x71b909af485d061dbc72a61f2976e7507ac37cf3",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xad8c2D7b1F6B663820B86C35490600F4fca9C31A"
+    ],
+    "liquidityStats": [
+      "1000000000000000002",
+      "1"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xb289e6457abb095e13d155f3d2d7fc87541b9df0",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xeeF67b7F20253Ea329a892417E9e57fA99fD8308"
+    ],
+    "liquidityStats": [
+      "1099670000000000000",
+      "909066108938801491243537356"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x98209ebadc408c7473e652baef2146b5e141df30",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xC635421078BDA964481467874B10dA2c47213135"
+    ],
+    "liquidityStats": [
+      "40499837527001297827",
+      "57953404436035810573"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x82b2488945fa477b33ce931a60691561ba7fb0df",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xC635421078BDA964481467874B10dA2c47213135"
+    ],
+    "liquidityStats": [
+      "330",
+      "3034"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x369f09009858b0e0c9c1c5dc6736aa2402da94ca",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xa5b9cE3F27f64c9850C9Ec4CB319D990dC8c0482"
+    ],
+    "liquidityStats": [
+      "123374566676143953",
+      "18"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x5f784de3b3f573b470ea8954ea0669b8a350a3f3",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x2fCd816EFc5e9f68d9CE5e6b85829a7d3C2bA9F9"
+    ],
+    "liquidityStats": [
+      "31052068235739512",
+      "10868223882509"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x2d5bac9c2b9b09eb4821e19bafcf63306562ddb9",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xCFaBC0408b1A47ccF74b924182b60fbc1736B910"
+    ],
+    "liquidityStats": [
+      "10100000000000000",
+      "9901284196560294"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x03933aa2cd63472ec6bf7987055cd89261d10bdb",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x862456F210D5dd3F7DAEde4c8567011e948928e3"
+    ],
+    "liquidityStats": [
+      "99304639564863379",
+      "70500000000000"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x97c1626622b85062121b038fbcb0dbe2890d6a8a",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x8A27d2c7767da8d32298322e886905958F12369c"
+    ],
+    "liquidityStats": [
+      "1240420113980598219",
+      "814571313928586504503419"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9b2814756fb9d9ab1e60324bad4686fdd66d93fd",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x332730a4F6E03D9C55829435f10360E13cfA41Ff"
+    ],
+    "liquidityStats": [
+      "4400502139432917883133",
+      "5460499615962145231"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0a606c3b5dc6d2f29f221dc6cce35b0c2761f02c",
+    "poolAssets": [
+      "0x332730a4F6E03D9C55829435f10360E13cfA41Ff",
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98"
+    ],
+    "liquidityStats": [
+      "1820129058360455020",
+      "109116117060621605281629"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x82e6287ea6042a08e16a304d516139d4c86fa3aa",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x332730a4F6E03D9C55829435f10360E13cfA41Ff"
+    ],
+    "liquidityStats": [
+      "556537606336510236145",
+      "689980779821624842"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x43ab3c683fc2dd450cc77eed1e4e286faa7f57ea",
+    "poolAssets": [
+      "0x332730a4F6E03D9C55829435f10360E13cfA41Ff",
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A"
+    ],
+    "liquidityStats": [
+      "82119280527888516",
+      "24640105806430622598"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x8d46cd9ad9a2786e8a5846d5ec61c197d235b50f",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xeAD2715298B43854Da18Ea1f5B5A4e73E8e11E56"
+    ],
+    "liquidityStats": [
+      "121788085621642352",
+      "99950795884961"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xd5abbe029df426bdb5c7eb6852f751891bff83cb",
+    "poolAssets": [
+      "0x35188e3CB4e5eb81350f7b47E153354A12794FeC",
+      "0x3671af96072B60296F79e17Df07c4Ac2c3f43dEC"
+    ],
+    "liquidityStats": [
+      "5404200",
+      "27370012564752885518"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1fd239e7afbce8ba1fb6a8861e7cc5271a02539e",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x35188e3CB4e5eb81350f7b47E153354A12794FeC"
+    ],
+    "liquidityStats": [
+      "114811155328652552",
+      "157823"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xf2e36c597172fd40c5cbb59989b769f3c6c86da6",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xA83305a135c33D7964781Ba3c27CBf39C9617144"
+    ],
+    "liquidityStats": [
+      "3847163951692642",
+      "574079270250953"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xa1de8db3e185eaf9574b61b43b18c577b90977e4",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x18112F64B557f528A0A7788Ca24378778a6de9AF"
+    ],
+    "liquidityStats": [
+      "25000000000000",
+      "25000000000000"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x229fbccefe875379ea2b98865be3e85e7a0317ad",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x511f4c8A4982E256560CEB92E2063570bBA2076c"
+    ],
+    "liquidityStats": [
+      "10000000000000001",
+      "1"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xe475cc5fc01fc708868eefd888808a4a9dbfd4b1",
+    "poolAssets": [
+      "0x3a80766d66918b832eacf374f11F1828e43EFfd1",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "419746125958386672734286",
+      "5939094"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x630b589377884c146834699499acf7821c696be1",
+    "poolAssets": [
+      "0x3a80766d66918b832eacf374f11F1828e43EFfd1",
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A"
+    ],
+    "liquidityStats": [
+      "377440902852916366750848",
+      "5402146478151507446"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xccdf1c0c39c7663d08d111b2d03eed88ca447db4",
+    "poolAssets": [
+      "0x3a80766d66918b832eacf374f11F1828e43EFfd1",
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"
+    ],
+    "liquidityStats": [
+      "256425622917181768625021",
+      "4394688"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x36f7ba7f34b5a3cbebbc3f232ed9476ab1a8c025",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x3a80766d66918b832eacf374f11F1828e43EFfd1"
+    ],
+    "liquidityStats": [
+      "3416805552080913286",
+      "89327539003115031513129"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x936032362d02f2c030ab2a5e20deabbb9848d429",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x3671af96072B60296F79e17Df07c4Ac2c3f43dEC"
+    ],
+    "liquidityStats": [
+      "299128471418582459677",
+      "2100819664682943607277"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xd5abbe029df426bdb5c7eb6852f751891bff83cb",
+    "poolAssets": [
+      "0x35188e3CB4e5eb81350f7b47E153354A12794FeC",
+      "0x3671af96072B60296F79e17Df07c4Ac2c3f43dEC"
+    ],
+    "liquidityStats": [
+      "5404200",
+      "27370012564752885518"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x19e01eb5f4b51ff897537087a9272db41f5e5910",
+    "poolAssets": [
+      "0x3671af96072B60296F79e17Df07c4Ac2c3f43dEC",
+      "0x7b7e696df8Ca22A8dC6c1dC14c4D5bC153a225D5"
+    ],
+    "liquidityStats": [
+      "19228289537807470930",
+      "18330335761681549994"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x052fdeb273625eea788ff3d83435d492247dc6bb",
+    "poolAssets": [
+      "0x3671af96072B60296F79e17Df07c4Ac2c3f43dEC",
+      "0xb53973ad94eB16FbD138805AcE4173416F016e7E"
+    ],
+    "liquidityStats": [
+      "12003398797720926687",
+      "11668383"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x87b76ed5e4bb254f69e0990f4548066a79a27ad6",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x823CA7AD650219F9d0bE3374A7d52e314CA816e4"
+    ],
+    "liquidityStats": [
+      "26300367657876",
+      "2330350370479777676"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x51efb2454107fe80de08de43c0d0d54ea07224a4",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x583a4988Fb830BFd0c905Bc3Bac2e8356e8DE889"
+    ],
+    "liquidityStats": [
+      "3493865512678273563",
+      "2788489414644490"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x8299441ffdacae95f4bc40a3fa38c51ba88e1f7e",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xC5591499F96a986Dec022878ACd50cb2AfE64163"
+    ],
+    "liquidityStats": [
+      "743157373608",
+      "1"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xb7653daa829e901720cd641ef5bfded392a48bdf",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73"
+    ],
+    "liquidityStats": [
+      "1798701557693496380700",
+      "659168038955323547463"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x488fef2d72ffb811fc952719c2468ac50cef914e",
+    "poolAssets": [
+      "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "9880884868275053946",
+      "10003621"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x2d811485b7d54ddb7a79e00700ed4bc7ec26bf3f",
+    "poolAssets": [
+      "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "1000000000",
+      "1"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x2f9aaf85a1d455bb5eb9bd0c9850a2e737f53bb4",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73"
+    ],
+    "liquidityStats": [
+      "571",
+      "1755"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x322f3bfda7567c32c2d75795aab4da78401496a2",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xD67de0e0a0Fd7b15dC8348Bb9BE742F3c5850454"
+    ],
+    "liquidityStats": [
+      "4095581720566346531658",
+      "3208819248541140225385665"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x990f39e44e4dabfcb320de60aa8028ed9cb8eeee",
+    "poolAssets": [
+      "0x9427A2a738AffBc5880F0646b5251069c022e525",
+      "0xD67de0e0a0Fd7b15dC8348Bb9BE742F3c5850454"
+    ],
+    "liquidityStats": [
+      "105109350004456707",
+      "31647311138119053311"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x950661f5c07b6fe7ae9cdfa87189f552a25b124d",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xa9b79AAB9d60e8e6d08D2cbAd56ff0De58ff8d41"
+    ],
+    "liquidityStats": [
+      "230280176468523615031",
+      "749935811664674429069969790576323"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0b4eb092247701f60c2f4d002d69073c03828003",
+    "poolAssets": [
+      "0x116dc328f6962C5defE32D17Ef8B118d56B77E88",
+      "0x938BCe03532A3845Ec0aB75069E3d84f9cd2826f"
+    ],
+    "liquidityStats": [
+      "7069086190601640871329",
+      "7533160353027335485782"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xe4333c2b1274ba578ddd080df525e94993e55dfa",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x938BCe03532A3845Ec0aB75069E3d84f9cd2826f"
+    ],
+    "liquidityStats": [
+      "641986980387787051",
+      "311881693592200652130"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x78c0b11373b3c7933ff12dbb71e19e9bebcbacaf",
+    "poolAssets": [
+      "0x116dc328f6962C5defE32D17Ef8B118d56B77E88",
+      "0x938BCe03532A3845Ec0aB75069E3d84f9cd2826f"
+    ],
+    "liquidityStats": [
+      "29009957761046980511",
+      "21185035703805676099"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xd8bd8a71010f7c80e83de05d3d1d58625e308df3",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x938BCe03532A3845Ec0aB75069E3d84f9cd2826f"
+    ],
+    "liquidityStats": [
+      "100000000000000000",
+      "1000000000000000000"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x0a606c3b5dc6d2f29f221dc6cce35b0c2761f02c",
+    "poolAssets": [
+      "0x332730a4F6E03D9C55829435f10360E13cfA41Ff",
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98"
+    ],
+    "liquidityStats": [
+      "1820129058360455020",
+      "109116117060621605281629"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xc82731e2ade4091f28df13557de61f939a970c92",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98"
+    ],
+    "liquidityStats": [
+      "1046562224919366159593",
+      "77413818811004808150833"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xda3aae05d083301043bb6b96c7d6bca15356bf55",
+    "poolAssets": [
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "77793808036912675541153",
+      "385512294"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x1e8803c917c25e108aad1a9c29640450098cd4ed",
+    "poolAssets": [
+      "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b",
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98"
+    ],
+    "liquidityStats": [
+      "305414397",
+      "50673842084486548434532"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x006c2a2e9ee9a1f337f3dab3c27d347855a3e9e8",
+    "poolAssets": [
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98"
+    ],
+    "liquidityStats": [
+      "112997844746334584",
+      "36532760311169861225449"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xd43745b5e16b7650077eff49774dc68cb644fd0f",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xB23f49Ae60A72FAA7097923793f42b2eBe8d5d15"
+    ],
+    "liquidityStats": [
+      "14118343734506765200",
+      "848275404909873630616670"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x3e4dd424a8c051db8e54ce2013cdb75ded05f2c8",
+    "poolAssets": [
+      "0x23a67aF01e343BF800A8e66A6AdEddA7ca354d1E",
+      "0x394AbEC6af04fCa50E410DB66de2267cde77a690"
+    ],
+    "liquidityStats": [
+      "10010000000001001",
+      "10000000000001000"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x54a1ae7223b1389ebb2ff9f7ed504acde9d21eed",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x394AbEC6af04fCa50E410DB66de2267cde77a690"
+    ],
+    "liquidityStats": [
+      "10000581251699",
+      "93663934159486"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xff7ead7da8403eac3f258f2427b9fce4abc7adcb",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x394AbEC6af04fCa50E410DB66de2267cde77a690"
+    ],
+    "liquidityStats": [
+      "21220204379903",
+      "21000996183873"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x77c6af31133d4ce5e54c7aeac79338225f60a910",
+    "poolAssets": [
+      "0x135c997C9E9D888e2ba75eC3E6f919D60ff21752",
+      "0x394AbEC6af04fCa50E410DB66de2267cde77a690"
+    ],
+    "liquidityStats": [
+      "10000000000000",
+      "9990009990009"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x2a8700e6bf8ba3a9db78b6733309d4f9edd9e5c5",
+    "poolAssets": [
+      "0x394AbEC6af04fCa50E410DB66de2267cde77a690",
+      "0x871795981Df52508B69CfA8c22F8ccff7F0e1b80"
+    ],
+    "liquidityStats": [
+      "2614676942543",
+      "2614697952646"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x20f9e92bbcd773bd9e03bea27a7fc2e888ba1661",
+    "poolAssets": [
+      "0x135c997C9E9D888e2ba75eC3E6f919D60ff21752",
+      "0x394AbEC6af04fCa50E410DB66de2267cde77a690"
+    ],
+    "liquidityStats": [
+      "1001",
+      "1000"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9197f6b88add8115007b302565da2025ba79f0d9",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xb30B5cd0F1488bAd751638795431dD8F2BcA9cf6"
+    ],
+    "liquidityStats": [
+      "13970790342097437",
+      "756468884476941"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x7cd18a2051a1bbcd4065e9c3eb2dda67e1c13fd3",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xEFAD19BF9cFe80aA88a48e2e397B70DBF3a47032"
+    ],
+    "liquidityStats": [
+      "1001000000000000000",
+      "259533702898211"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x96f3d629460dae13458c7e3dc3a673ffb5f2fb5b",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xA6AD76fc448DDCaa97c38a011ce84DC63f523Afd"
+    ],
+    "liquidityStats": [
+      "4289022964309",
+      "4362554151"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x16382c0a2695c9f771e19969c4ad1cff10ad53ea",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x50b79f282bB5452AA01783A0A7002d1ef90347a2"
+    ],
+    "liquidityStats": [
+      "97977083745229988",
+      "71499999999998"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x3c71ec0f0aefeb0497603e972be278eb1fd43b37",
+    "poolAssets": [
+      "0x7cAf74c42A608F8C24075E0156e9D9fa51b0AEd4",
+      "0x85a581D89d99341818483F17170FB40932AF5600"
+    ],
+    "liquidityStats": [
+      "8188273440236373416",
+      "47410943806769054691045849"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xbc14873c7daeb1887950083030afd2ff9c9b20a0",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x722377A047e89CA735f09Eb7CccAb780943c4CB4"
+    ],
+    "liquidityStats": [
+      "20551770798492724806681",
+      "281801867997953286367511"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xa6f213f63973c2815fa9c8079965f933694a3251",
+    "poolAssets": [
+      "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "63695137316144657247677",
+      "1708924116"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x5ee844ba085a8d867e17dfa1776941725b8d24ca",
+    "poolAssets": [
+      "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",
+      "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F"
+    ],
+    "liquidityStats": [
+      "18387243983008067937",
+      "65342763536452560833"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xf4db2d81f80fab66d127186fcb0b2be2d1b3dc49",
+    "poolAssets": [
+      "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",
+      "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98"
+    ],
+    "liquidityStats": [
+      "536591481991670844",
+      "4390373691446732170"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x7272933b365915bc65f8c58a087717beffecd471",
+    "poolAssets": [
+      "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",
+      "0x9427A2a738AffBc5880F0646b5251069c022e525"
+    ],
+    "liquidityStats": [
+      "144561706130952292",
+      "42287295724060159"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x9d093ea3a56f1fe3cb86bcd2396870af0f282873",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x722377A047e89CA735f09Eb7CccAb780943c4CB4"
+    ],
+    "liquidityStats": [
+      "83333333807",
+      "414725353720"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x477643537a737a0f243355d1a31696b5362ff4aa",
+    "poolAssets": [
+      "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "1132254389",
+      "1"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xdc38df2180aeddebaaf6c5deacf41bdef7dee4e7",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x85d533Ea0614eC224138906604A20e5A742C4dE1"
+    ],
+    "liquidityStats": [
+      "100000000000000000",
+      "1000000000000000000"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xf36f089b182b6541ed74a5bd6ab6280c6a142c28",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x85a581D89d99341818483F17170FB40932AF5600"
+    ],
+    "liquidityStats": [
+      "1710462842632114776",
+      "586552215943408746"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x25d6c0618f49e1801e52a51bf2c84ca670b313dc",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A"
+    ],
+    "liquidityStats": [
+      "15934188632932418",
+      "5813842109393463"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0xd42c6356a6763e18b3ae77ecf48724a950259b6c",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    ],
+    "liquidityStats": [
+      "1000000000000",
+      "1"
+    ]
+  },
+  {
+    "chainId": 2007,
+    "contractAddress": "0x7e85248e1d3fa4f9de2da6f306d41e3903a04517",
+    "poolAssets": [
+      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
+      "0x765277EebeCA2e31912C9946eAe1021199B39C61"
+    ],
+    "liquidityStats": [
+      "342235492932458",
+      "148570859494"
+    ]
+  }
+]

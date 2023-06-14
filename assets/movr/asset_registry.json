@@ -1,0 +1,426 @@
+[
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "108457044225666871745333730479173774551",
+      "name": "Crust Shadow Native Token",
+      "symbol": "xcCSM",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF519811215e05efa24830eebe9c43acd7"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x1": {
+        "parachain": 2012
+      }
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "16797826370226091782818345603793389938",
+      "name": "Shiden",
+      "symbol": "xcSDN",
+      "decimals": "18",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF0ca324c842330521525e7de111f38972"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x1": {
+        "parachain": 2007
+      }
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "76100021443485661246318545281171740067",
+      "name": "HKO",
+      "symbol": "xcHKO",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF394054bcda1902b6a6436840435655a3"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2085
+        },
+        {
+          "generalKey": "0x484b4f"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "328179947973504579459046439826496046832",
+      "name": "Kintsugi Wrapped BTC",
+      "symbol": "xcKBTC",
+      "decimals": "8",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFFf6e528ad57184579beee00c5d5e646f0"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2092
+        },
+        {
+          "generalKey": "0x000b"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "108036400430056508975016746969135344601",
+      "name": "Robonomics Native Token",
+      "symbol": "xcXRT",
+      "decimals": "9",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF51470dca3dbe535bd2880a9ccdbc6bd9"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x1": {
+        "parachain": 2048
+      }
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "213357169630950964874127107356898319277",
+      "name": "Calamari",
+      "symbol": "xcKMA",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFFa083189f870640b141ae1e882c2b5bad"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x1": {
+        "parachain": 2084
+      }
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "65216491554813189869575508812319036608",
+      "name": "LIT",
+      "symbol": "xcLIT",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF31103d490325bb0a8e40ef62e2f614c0"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2106
+        },
+        {
+          "palletInstance": 10
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "173481220575862801646329923366065693029",
+      "name": "Crab Parachain Token",
+      "symbol": "xcCRAB",
+      "decimals": "18",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF8283448b3cb519ca4732f2dddc6a6165"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2105
+        },
+        {
+          "palletInstance": 5
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "189307976387032586987344677431204943363",
+      "name": "Phala Token",
+      "symbol": "xcPHA",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF8e6b63d9e447b6d4c45bda8af9dc9603"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x1": {
+        "parachain": 2004
+      }
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "214920334981412447805621250067209749032",
+      "name": "Acala Dollar",
+      "symbol": "xcAUSD",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFFa1b026a00fbaa67c86d5d1d5bf8d8228"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2000
+        },
+        {
+          "generalKey": "0x0081"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "175400718394635817552109270754364440562",
+      "name": "Kintsugi Native Token",
+      "symbol": "xcKINT",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF83f4f317d3cbf6ec6250aec3697b3ff2"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2092
+        },
+        {
+          "generalKey": "0x000c"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "105075627293246237499203909093923548958",
+      "name": "TEER",
+      "symbol": "xcTEER",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF4f0cd46769550e5938f6bee2f5d4ef1e"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2015
+        },
+        {
+          "generalKey": "0x54454552"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "311091173110107856861649819128533077277",
+      "name": "Tether USD",
+      "symbol": "xcUSDT",
+      "decimals": "6",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFFea09fb06d082fd1275cd48b191cbcd1d"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x3": [
+        {
+          "parachain": 1000
+        },
+        {
+          "palletInstance": 50
+        },
+        {
+          "generalIndex": 1984
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "182365888117048807484804376330534607370",
+      "name": "xcRMRK",
+      "symbol": "xcRMRK",
+      "decimals": "10",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF893264794d9d57e1e0e21e0042af5a0a"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x3": [
+        {
+          "parachain": 1000
+        },
+        {
+          "palletInstance": 50
+        },
+        {
+          "generalIndex": 8
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "42259045809535163221576417993425387648",
+      "name": "xcKSM",
+      "symbol": "xcKSM",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF1fcacbd218edc0eba20fc2308c778080"
+    },
+    "hasLocation": true,
+    "tokenLocation": "here"
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "10810581592933651521121702237638664357",
+      "name": "Karura",
+      "symbol": "xcKAR",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF08220ad2e6e157f26ed8bd22a336a0a5"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2000
+        },
+        {
+          "generalKey": "0x0080"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "319623561105283008236062145480775032445",
+      "name": "xcBNC",
+      "symbol": "xcBNC",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFFf075423be54811ecb478e911f22dde7d"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2001
+        },
+        {
+          "generalKey": "0x0001"
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "MOVR",
+      "name": "MOVR",
+      "symbol": "MOVR",
+      "decimals": "18",
+      "contractAddress": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2023
+        },
+        {
+          "palletInstance": 10
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "ZLK",
+      "name": "ZLK",
+      "symbol": "ZLK",
+      "decimals": "18",
+      "contractAddress": "0x0f47ba9d9Bde3442b42175e51d6A367928A1173B"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2001
+        },
+        {
+          "generalKey": "0x0207"
+        }
+      ]
+    }
+  }
+]

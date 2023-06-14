@@ -13,6 +13,7 @@
 
 // Adds two arrays for the given base (10 or 16), returning the result.
 // This turns out to be the only "primitive" operation we need.
+exports.__esModule = true;
 function add(x, y, base) {
     var z = [];
     var n = Math.max(x.length, y.length);
@@ -86,8 +87,22 @@ exports.decToHex = (decStr) => {
     return hex ? '0x' + hex : null;
 }
 
+
 exports.hexToDec = (hexStr) => {
     if (hexStr.substring(0, 2) === '0x') hexStr = hexStr.substring(2);
     hexStr = hexStr.toLowerCase();
     return convertBase(hexStr, 16, 10);
 }
+
+async function decToHex2(decStr){
+    var hex = convertBase(decStr, 10, 16);
+    return hex ? '0x' + hex : null;
+}
+
+exports.decToHex2 = decToHex2;
+async function hexToDex2(hexStr) {
+    if (hexStr.substring(0, 2) === '0x') hexStr = hexStr.substring(2);
+    hexStr = hexStr.toLowerCase();
+    return convertBase(hexStr, 16, 10);
+}
+exports.hexToDec2 = hexToDex2;

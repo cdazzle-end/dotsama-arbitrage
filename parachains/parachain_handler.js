@@ -13,6 +13,7 @@ const karHandler = require('../kar/kar_handler.js')
 const bncHandler = require('../parachains/bifrost.js')
 const movrHandler = require('../movr/movr_handler.js')
 const kcHandler = require('../kucoin/kc_handler')
+const hkoHandler = require('../heiko/hko_handler')
 
 async function kusama() {
     const provider = new WsProvider('wss://kusama-rpc.polkadot.io');
@@ -277,15 +278,9 @@ async function isObject2(object) {
 }
 
 async function addXcAsset(xcList, asset, paraId) {
-    // console.log("Current name: " + asset.tokenData.name)
-    // console.log(`Current location:`)
-    // console.log(asset.locationData.location)
     let found = false;
-    // xcList.parachains = [];
     for (x in xcList) {
-        // xcList[x].parachains = [];
         if (await locIsEqual(xcList[x].location, asset.locationData.location)) { // ADD NAME TO EXISTING ASSET
-            // console.log("Found match")
             if (asset.tokenData != undefined && !xcList[x].name.includes(asset.tokenData.name)) {
                 xcList[x].name.push(asset.tokenData.name)
             }
@@ -301,9 +296,7 @@ async function addXcAsset(xcList, asset, paraId) {
     }
     console.log("FOUND : " + found)
     if (!found) { //ADD NEW CROSS CHAIN ASSET
-        // console.log("New asset")
         let xcAsset = new CrossChanAsset(asset.locationData.location);
-        // console.log(xcAsset)
         if (xcAsset.tokenData != undefined) {
             xcAsset.name.push(asset.tokenData.name)
             xcAsset.symbol.push(asset.tokenData.symbol)
@@ -320,18 +313,13 @@ async function addXcAsset(xcList, asset, paraId) {
 async function updateAllLiqPools() {
     karHandler.save_dex_to_file().then(() => console.log("kar complete"));
     bncHandler.saveZenLiqPools().then(() => console.log("bnc complete"));
+    // bncHandler.testApi();
     movrHandler.updateLiqPools().then(() => console.log("movr complete"));
     kcHandler.saveKucoinAssets().then(() => console.log("kucoin complete"));
+    hkoHandler.updateLiquidityPools().then(() => console.log("heiko done"))
 }
 
 async function main() {
-    
-    // karura()
-    // read_karura();
-    // moonriver()
-    // kusama()
-    // crossChainAssets()
-    // movr_addresses()
     updateAllLiqPools()
 
 }

@@ -47,9 +47,9 @@ impl AssetLocation{
 
 
 impl AssetRegistry{
-
+// "kar", "bnc", "movr",
     pub fn build_sub_asset_registry_from_file() -> AssetRegistry{
-        let chains = vec!["kar", "bnc", "movr"];
+        let chains = vec![ "kar", "bnc", "movr", "heiko"];
         let mut parsed_files = Vec::new();
         for chain in chains{
             let path_string = r"..\".to_owned() + chain + r"\asset_registry";
@@ -64,6 +64,7 @@ impl AssetRegistry{
         let mut asset_map: HashMap<String, Vec<AssetPointer>> = HashMap::new();
         let mut asset_location_map = HashMap::new();
         for parsed in parsed_files{
+            // println!("{:?}", parsed);
             let asset_reg_objects = parsed.as_object().unwrap()["assetRegistryObjects"].as_array().unwrap();
             let chain_id = parsed.as_object().unwrap()["parachainId"].as_str();
             let mut x = 0;
@@ -83,7 +84,18 @@ impl AssetRegistry{
                     true,
                     Some(asset["localId"].to_string())
                 );
-                } else{
+                } else if chain_id.unwrap().to_string() == "2,085" {
+                    token = TokenData::HeikoToken { 
+                        local_id: asset["localId"].as_str().unwrap().to_string(),
+                        name: asset["name"].as_str().unwrap().to_string(),
+                        symbol: asset["symbol"].as_str().unwrap().to_string(),
+                        decimals: asset["decimals"].as_str().unwrap().parse().unwrap(),
+                        deposit: asset["deposit"].as_str().unwrap().parse().unwrap(),
+                        isFrozen: false,
+                        chain: chain_id.unwrap().to_string().replace(",", ""),
+                     }
+
+                }else{
                     token = TokenData::new_sub(
                     parse_asset_key_type(&asset["localId"]),
                     asset["name"].as_str().unwrap().to_string(),
@@ -96,7 +108,7 @@ impl AssetRegistry{
                 );
                 
                 }
-                
+                println!("{:?}", token);
                 
 
                 let location = &asset_location["location"];
@@ -149,7 +161,7 @@ impl AssetRegistry{
     }
 
     //Get assets with that share the same XCM location of a specific asset
-    pub fn get_assets_from_location(&self, asset_location: AssetLocation) -> Vec<AssetPointer>{
+    pub fn get_assets_at_location(&self, asset_location: AssetLocation) -> Vec<AssetPointer>{
         let location_bucket = &self.location_map.get(&asset_location);
         let mut location_assets = Vec::new();
         match location_bucket{
@@ -185,6 +197,13 @@ impl AssetRegistry{
                 },
                 TokenData::KucoinToken { exchange, symbol, .. } => {
                     panic!("trying to lookup kucoin asset incorrectly")
+                },
+                TokenData::HeikoToken{local_id, chain, .. } => {
+                    if chain_input == chain && id == local_id{
+                        // kl
+                        return Rc::clone(asset)
+                        // return asset
+                    }
                 }
             };
             // let asset_id = asset.token_data.get_local_id_evm()
@@ -284,7 +303,7 @@ impl AssetRegistry{
                     TokenData::KucoinToken{..} => {
                         println!("{:?}", asset.borrow());
                         if asset.borrow().asset_location != None{
-                            let related_assets = self.get_assets_from_location(asset.borrow().asset_location.clone().unwrap());
+                            let related_assets = self.get_assets_at_location(asset.borrow().asset_location.clone().unwrap());
                             println!("Related assets:");
                             for relative in related_assets{
                                 println!("{:?}", relative.borrow().token_data)
@@ -332,7 +351,7 @@ impl AssetRegistry{
     }
 
     pub fn get_kucoin_asset_decimals(&self, asset_location: AssetLocation) -> u64 {
-        let related_assets = self.get_assets_from_location(asset_location);
+        let related_assets = self.get_assets_at_location(asset_location);
         for asset in related_assets{
             if !asset.borrow().token_data.is_exchange_token(){
                 return asset.borrow().token_data.get_asset_decimals()
@@ -454,6 +473,27 @@ impl AssetRegistry{
             }
         }
         evm_token_addresses
+    }
+
+    pub fn save_asset_registry(&self){
+        let path_string = r"..\transactions\multi_asset_data";
+        // let mut parsed_files = Vec::new();
+        let mut buf: Vec<u8> = Vec::new();
+        let mut file = File::create(path_string);
+
+        let map = &self.location_map;
+
+        let mut vcount = 0;
+        for(key,values) in map{
+            // println!("Key: {:?}", key);
+            println!("Asset Location: {}: {:?}", key.xtype, key.properties.clone().unwrap_or(vec![key.here.to_string()]));
+            for val in values{
+                println!("{:?} {:?}", val.borrow().token_data.get_chain(), val.borrow().token_data.get_asset_name());
+                vcount += 1;
+            }
+            println!("")
+        }
+
     }
 
     // pub fn get_assets_from_location(&self,  location: AssetLocation) -> Vec<AssetPointer> {

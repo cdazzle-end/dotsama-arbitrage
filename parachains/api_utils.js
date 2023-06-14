@@ -111,3 +111,10 @@ exports.getAssetLocations2 = async (api) => {
     })
     return xcAssetLocations;
 }
+function testFunction() {
+    console.log("Test")
+}
+
+// module.exports = {
+//     testFunction: testFunction
+// };

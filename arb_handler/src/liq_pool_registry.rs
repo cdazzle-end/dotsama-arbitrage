@@ -69,10 +69,10 @@ impl LiqPool{
         }
     }
 }
-
+// "kar", "bnc", "movr"
 impl LiqPoolRegistry{
     pub fn build_all_liqpool_registry(asset_registry: &AssetRegistry) -> LiqPoolRegistry{
-        let chains = vec![ "kar", "bnc", "movr"];
+        let chains = vec!["heiko"];
         // let chain_ids = vec!["2000", "2001"]; // NEED TO ADD CHAIN ID TO JSON FILE
         let mut liq_pools = Vec::new();
         let mut parsed_files = Vec::new();
@@ -89,12 +89,10 @@ impl LiqPoolRegistry{
             // let chain_id = chain_ids[i];
             for liq_pool in file.as_array().unwrap(){
                 // println!("{:?}", liq_pool);
+                println!("{:?}", liq_pool);
                 let chain_id = liq_pool["chainId"].as_str().unwrap();
                 let assets = liq_pool["poolAssets"].as_array().unwrap();
                 let liquidity_stats = liq_pool["liquidityStats"].as_array().unwrap();
-                // let asset_0 = asset_registry.asset_map_lookup(chain_id.to_string(), parse_asset_key_type(&assets[0]).get_key_string());
-                // let asset_1 = asset_registry.asset_map_lookup(chain_id.to_string(), parse_asset_key_type(&assets[1]).get_key_string());
-                // println!("{:?} -- {:?}", asset_0.borrow().token_data.get_map_key(), asset_1.borrow().token_data.get_map_key());
                 
                 let liquidity_0: u128 = liquidity_stats[0].as_str().unwrap().parse().unwrap();
                 let liquidity_1: u128 = liquidity_stats[1].as_str().unwrap().parse().unwrap();
@@ -120,7 +118,7 @@ impl LiqPoolRegistry{
 
     //Abberviated list, only substrate tokens and important evm tokens
     pub fn build_sub_liqpool_registry(asset_registry: &AssetRegistry) -> LiqPoolRegistry{
-        let chains = vec![ "kar", "bnc", "movr"];
+        let chains = vec![ "kar", "bnc", "movr", "heiko"];
         let sub_evm_addresses = asset_registry.get_substrate_evm_tokens();
         let mut liq_pools = Vec::new();
         let mut parsed_files = Vec::new();
@@ -136,17 +134,12 @@ impl LiqPoolRegistry{
         for (i, file) in parsed_files.iter().enumerate(){
             // let chain_id = chain_ids[i];
             for liq_pool in file.as_array().unwrap(){
-                // println!("{:?}", liq_pool);
                 let chain_id = liq_pool["chainId"].as_str().unwrap();
                 let assets = liq_pool["poolAssets"].as_array().unwrap();
                 let liquidity_stats = liq_pool["liquidityStats"].as_array().unwrap();
-                // let asset_0 = asset_registry.asset_map_lookup(chain_id.to_string(), parse_asset_key_type(&assets[0]).get_key_string());
-                // let asset_1 = asset_registry.asset_map_lookup(chain_id.to_string(), parse_asset_key_type(&assets[1]).get_key_string());
-                // println!("{:?} -- {:?}", asset_0.borrow().token_data.get_map_key(), asset_1.borrow().token_data.get_map_key());
                 
                 let liquidity_0: u128 = liquidity_stats[0].as_str().unwrap().parse().unwrap();
                 let liquidity_1: u128 = liquidity_stats[1].as_str().unwrap().parse().unwrap();
-                // println!("{} -- {}", liquidity_0, liquidity_1)
                 let contract_address = liq_pool["contractAddress"].as_str().unwrap().to_string();
 
                 if contract_address == "None".to_string(){
@@ -154,6 +147,14 @@ impl LiqPoolRegistry{
                     let asset_1 = asset_registry.asset_map_lookup(chain_id.to_string(), parse_asset_key_type(&assets[1]).get_key_string());
                     let liq_pool = LiqPool::new(chain_id.to_string(), None, None, None, None, vec![asset_0, asset_1], vec![liquidity_0, liquidity_1], false);
                     liq_pools.push(liq_pool);
+                } else if contract_address == "heiko" {
+                    println!("ASSET 0: {:?}", assets[0]);
+                    let asset_0 = asset_registry.asset_map_lookup(chain_id.to_string(), assets[0].as_str().unwrap().to_string().to_ascii_lowercase());
+                    println!("ASSET 1: {:?}", assets[1]);
+                    let asset_1 = asset_registry.asset_map_lookup(chain_id.to_string(), assets[1].as_str().unwrap().to_string().to_ascii_lowercase());
+                    let liq_pool = LiqPool::new(chain_id.to_string(), None, None, None, None, vec![asset_0, asset_1], vec![liquidity_0, liquidity_1], false);
+                    liq_pools.push(liq_pool);
+
                 } else {
                     let asset_0 = asset_registry.asset_map_lookup(chain_id.to_string(), assets[0].as_str().unwrap().to_string().to_ascii_lowercase());
                     let asset_1 = asset_registry.asset_map_lookup(chain_id.to_string(), assets[1].as_str().unwrap().to_string().to_ascii_lowercase());
@@ -165,43 +166,10 @@ impl LiqPoolRegistry{
                 }
             }
         }
-        // let pool = &mut liq_pools;
         add_kucoin_pairs(asset_registry, &mut liq_pools);
 
         LiqPoolRegistry { liq_pools }
     }
-
-    //TODO: CHANGE JSON TO MATCH SUB ASSETS
-    // pub fn add_evm_pools(&mut self, asset_registry: &AssetRegistry){
-    //     let chains = vec![ "movr"];
-    //     // let chain_ids = vec!["2023"]; // NEED TO ADD CHAIN ID TO JSON FILE
-    //     // let mut liq_pools = Vec::new();
-    //     let mut parsed_files = Vec::new();
-    //     for chain in chains{
-    //         let path_string = r"..\".to_owned() + chain + r"\liq_pool_registry";
-    //         let mut buf: Vec<u8> = Vec::new();
-    //         let mut file = File::open(Path::new(&path_string)).unwrap_or_else(|err| panic!("problem opening file: Error {:?}", err));
-    //         file.read_to_end(&mut buf).unwrap_or_else(|err| panic!("problem reading activity map into buffer {:?}", err));
-    //         let parsed: Value = serde_json::from_str(str::from_utf8(&buf).unwrap()).unwrap();
-    //         parsed_files.push(parsed);
-    //     }
-    //     for (i, file) in parsed_files.iter().enumerate(){
-    //         // let chain_id = chain_ids[i];
-    //         for liq_pool in file.as_array().unwrap(){
-    //             let chain_id = liq_pool["chainId"].as_str().unwrap();
-    //             let contract_address = liq_pool["contractAddress"].as_str().unwrap().to_string();
-    //             let asset_0 = asset_registry.asset_map_lookup(chain_id.to_string(), liq_pool["poolAssets"].as_array().unwrap()[0].as_str().unwrap().to_string());
-    //             let asset_1 = asset_registry.asset_map_lookup(chain_id.to_string(), liq_pool["poolAssets"].as_array().unwrap()[1].as_str().unwrap().to_string());
-                
-    //             let liquidity_stats = liq_pool["liquidityStats"].as_array().unwrap();
-    //             let liquidity_0: u128 = liquidity_stats[0].as_str().unwrap().parse().unwrap();
-    //             let liquidity_1: u128 = liquidity_stats[1].as_str().unwrap().parse().unwrap();
-
-    //             let liq_pool = LiqPool::new(chain_id.to_string(), Some(contract_address), vec![asset_0, asset_1], vec![liquidity_0, liquidity_1], true);
-    //             self.liq_pools.push(liq_pool);
-    //         }
-    //     }
-    // }
 
     pub fn display_all_pools(&self){
         for pool in &self.liq_pools{
@@ -225,9 +193,6 @@ fn add_kucoin_pairs(asset_registry: &AssetRegistry, liq_pools: &mut Vec<LiqPool>
     let mut usdt_asset = asset_registry.get_kucoin_usdt();
     // let mut liq_pools = Vec::new();
     for asset in &kucoin_assets{
-        // if asset.borrow().token_data.get_symbol() != "USDT"{
-        //     let prices = asset.borrow().token_data.
-        // }
         match &asset.borrow().token_data{
             
             TokenData::KucoinToken { exchange, name, symbol, chain, precision, contract_address, price_data, price_decimals } => {

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@moonbeam-network/api-augment": "^0.2000.1",
+    "@polkadot/api": "^9.13.2"
+  }
+}
