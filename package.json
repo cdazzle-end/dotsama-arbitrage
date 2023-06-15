@@ -1,4 +1,28 @@
 {
   "name": "arb_project",
-  "packageManager": "yarn@3.2.4"
+  "packageManager": "yarn@3.2.4",
+  "private": true,
+  "workspaces": [
+    "assets",
+    "assets/bnc",
+    "assets/bsx",
+    "assets/hko",
+    "assets/kar",
+    "assets/kucoin",
+    "assets/mgx",
+    "assets/movr",
+    "assets/sdn",
+    "lps",
+    "lps/bnc",
+    "lps/bsx",
+    "lps/hko",
+    "lps/kar",
+    "lps/kucoin",
+    "lps/mgx",
+    "lps/movr",
+    "lps/sdn"
+  ],
+  "dependencies": {
+    "@polkadot/api": "^10.9.1"
+  }
 }

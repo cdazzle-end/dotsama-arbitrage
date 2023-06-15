@@ -6,7 +6,7 @@ import { options } from '@parallel-finance/api';
 import { CurrencyId, Pool, Balance } from '@parallel-finance/types/interfaces';
 import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
-import { BigNumber } from 'ethers';
+// import { BigNumber } from 'ethers';
 import {BN} from '@polkadot/util';
 
 export async function updateLps() {

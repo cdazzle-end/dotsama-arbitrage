@@ -33,7 +33,7 @@ class MyKaruraAsset implements KaruraAsset {
     ) { }
 }
 
-async function saveAssets() {
+export async function saveAssets() {
     const provider = new WsProvider('wss://karura.api.onfinality.io/public-ws');
     const api = new ApiPromise(options({ provider }));
     await api.isReady;
@@ -174,7 +174,7 @@ async function queryAssetLocations(api: ApiPromise): Promise<[MultiLocation, Cur
     //Make sure that location and currencyId are correct
     const multiLocations: [MultiLocation, CurrencyId][] = assetLocations.map(([location, currencyId]: [MyMultiLocation, Codec]) => {
         const multiLocation: MultiLocation = api.createType('Junctions', location)
-        let karCurrencyId: CurrencyId = api.createType('CurrencyId', currencyId.toHex())
+        let karCurrencyId = api.createType('CurrencyId', currencyId.toHex())
         return [multiLocation, karCurrencyId]
     })
     return assetLocations;

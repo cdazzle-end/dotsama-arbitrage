@@ -5,7 +5,7 @@ import { options } from '@astar-network/astar-api'
 import { AssetId, AssignmentId  } from '@polkadot/types/interfaces';
 import { MyAsset, MyAssetRegistryObject, MyMultiLocation } from '../asset_types';
 
-async function saveAssets() {
+export async function saveAssets() {
     const assets = await queryAssets();
     const assetLocations = await queryLocations();
     let assetRegistry = assets.map((asset, index) => {

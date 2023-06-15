@@ -1,8 +1,8 @@
 {
+  "name": "hko_lps",
   "dependencies": {
     "@parallel-finance/api": "^1.7.14",
     "@parallel-finance/type-definitions": "^1.7.14",
-    "@parallel-finance/types": "^1.7.14",
-    "@polkadot/api": "^9.13.4"
+    "@parallel-finance/types": "^1.7.14"
   }
 }

@@ -10,7 +10,7 @@ import { ModuleBApi, BifrostConfig } from '@zenlink-dex/sdk-api';
 import { Percent, Token, TokenAmount, TradeType, StandardPair, StandardPool, StablePair, StableSwap, AssetMeta, AssetType } from '@zenlink-dex/sdk-core';
 const axios = require('axios').default;
 
-async function saveAssets() {
+export async function saveAssets() {
     const provider = new WsProvider('wss://bifrost-parachain.api.onfinality.io/public-ws');
     const api = await ApiPromise.create({ provider: provider });
     await api.isReady;

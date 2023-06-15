@@ -1,4 +1,5 @@
 {
+  "name": "sdn_lps",
   "dependencies": {
     "@astar-network/astar-api": "^0.1.13",
     "@polkadot/api": "^9.13.5"

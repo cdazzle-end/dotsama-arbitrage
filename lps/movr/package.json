@@ -1,4 +1,5 @@
 {
+  "name": "movr_lps",
   "dependencies": {
     "ethers": "^6.3.0"
   }

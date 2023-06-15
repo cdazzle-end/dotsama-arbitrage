@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { MyJunction, MyAsset, MyAssetRegistryObject, MyMultiLocation } from '../asset_types';
 import { Keyring, ApiPromise, WsProvider } from '@polkadot/api';
 
-async function saveAssets() {
+export async function saveAssets() {
     const provider = new WsProvider('wss://basilisk-rpc.dwellir.com');
     const api = await ApiPromise.create({ provider: provider });
     await api.isReady;

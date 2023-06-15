@@ -5,6 +5,8 @@ import { ethers } from 'ethers';
 import * as fs from 'fs';
 import { MyLp } from '../lp_types';
 declare const fetch: any;
+const rpc1 = 'wss://shiden.api.onfinality.io/public-ws';
+const rpc2 = 'wss://shiden.api.onfinality.io/public';
 
 // 2. Define network configurations
 const providerRPC = {
@@ -16,14 +18,14 @@ const providerRPC = {
 };
 
 // 3. Create ethers provider
-const provider = new ethers.providers.StaticJsonRpcProvider(
-    providerRPC.sdn.rpc,
-    {
-        chainId: providerRPC.sdn.chainId,
-        name: providerRPC.sdn.name,
-    }
-);
-
+// const provider = new ethers.providers.StaticJsonRpcProvider(
+//     providerRPC.sdn.rpc,
+//     {
+//         chainId: providerRPC.sdn.chainId,
+//         name: providerRPC.sdn.name,
+//     }
+// );
+const provider = new ethers.WebSocketProvider(rpc1);
 const dexContractAbi = [
     "function name() view returns (string)",
     "function symbol() view returns (string)",

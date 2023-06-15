@@ -1,4 +1,5 @@
 {
+  "name": "kar_lps",
   "dependencies": {
     "@acala-network/api": "beta",
     "@polkadot/api": "^9.13.4",

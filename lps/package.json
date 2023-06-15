@@ -1,4 +1,14 @@
 {
+  "name": "lps",
+  "private": true,
+  "workspaces": [
+    "bnc_lp",
+    "hko_lp",
+    "kar_lp",
+    "mgx_lp",
+    "movr_lp",
+    "sdn_lp"
+  ],
   "dependencies": {
     "@polkadot/api": "^9.13.4"
   }

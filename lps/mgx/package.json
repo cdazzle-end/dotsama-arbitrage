@@ -1,4 +1,5 @@
 {
+  "name": "mgx_lps",
   "dependencies": {
     "@mangata-finance/sdk": "^1.16.1"
   }

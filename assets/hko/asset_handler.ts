@@ -14,7 +14,7 @@ async function test() {
     // api.createType('MultiLocation')
 }
 
-async function saveAssets() {
+export async function saveAssets() {
     const provider = new WsProvider('wss://heiko-rpc.parallel.fi');
     const api = new ApiPromise(options({ provider }));
     await api.isReady;

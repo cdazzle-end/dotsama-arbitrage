@@ -9,7 +9,7 @@ export async function getAssets() {
     return JSON.parse(fs.readFileSync('./mgx/asset_registry.json', 'utf8'));
 }
 
-async function saveAssets() {
+export async function saveAssets() {
     const provider = new WsProvider('wss://mangata-x.api.onfinality.io/public-ws');
     const api = await ApiPromise.create({ provider: provider });
     await api.isReady;

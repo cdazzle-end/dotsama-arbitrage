@@ -1,11 +1,12 @@
 import { MyAssetRegistryObject, MyMultiLocation, CexAsset, MyAsset } from './asset_types'
-// import * as bncHandler from './bnc/asset_handler'
-// import * as karHandler from './kar/asset_handler'
-// import * as hkoHandler from './hko/asset_handler'
-// import * as movrHandler from './movr/asset_handler'
-// import * as sdnHandler from './sdn/asset_handler'
-// import * as kucoinHandler from './kucoin/asset_handler'
-// import * as mgxHandler from './mgx/asset_handler'
+import * as bncHandler from './bnc/asset_handler'
+import * as karHandler from './kar/asset_handler'
+import * as hkoHandler from './hko/asset_handler'
+import * as movrHandler from './movr/asset_handler'
+import * as sdnHandler from './sdn/asset_handler'
+import * as kucoinHandler from './kucoin/asset_handler'
+import * as mgxHandler from './mgx/asset_handler'
+import * as bsxHandler from './bsx/asset_handler'
 import * as fs from 'fs';
 
 // async function getAllAssets() {
@@ -95,11 +96,14 @@ function getLocationString(token: any): string {
 }
 
 async function saveAssets() {
-    // await bncHandler.saveAssets()
-    // await karHandler.saveAssets()
-    // await hkoHandler.saveAssets()
-    // await movrHandler.saveAssets()
-    // await sdnHandler.saveAssets()
+    await bncHandler.saveAssets()
+    await karHandler.saveAssets()
+    await hkoHandler.saveAssets()
+    await movrHandler.saveAssets()
+    await sdnHandler.saveAssets()
+    // await kucoinHandler.saveAssets()
+    await mgxHandler.saveAssets()
+    await bsxHandler.saveAssets()
 }
 
 async function main() {
@@ -107,7 +111,8 @@ async function main() {
     // getAllAssets()
     // testJson()
     // getAllAssets()
-    getAllAssets2()
+    // getAllAssets2()
+    saveAssets
 }
 
 main()

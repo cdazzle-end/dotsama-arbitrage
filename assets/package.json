@@ -1,5 +1,14 @@
 {
+  "name": "assets",
+  "private": true,
+  "workspaces": [
+    "bnc_assets",
+    "hko_assets",
+    "kar_assets",
+    "movr_assets",
+    "sdn_assets"
+  ],
   "dependencies": {
-    "@polkadot/api": "^9.12.1"
+    "@polkadot/api": "^10.9.1"
   }
 }

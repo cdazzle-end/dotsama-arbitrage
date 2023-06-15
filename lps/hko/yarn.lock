@@ -165,7 +165,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/api@npm:9.13.4, @polkadot/api@npm:^9.13.4, @polkadot/api@npm:^9.3.2":
+"@polkadot/api@npm:9.13.4, @polkadot/api@npm:^9.3.2":
   version: 9.13.4
   resolution: "@polkadot/api@npm:9.13.4"
   dependencies:
@@ -1072,6 +1072,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hko_lps@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "hko_lps@workspace:."
+  dependencies:
+    "@parallel-finance/api": ^1.7.14
+    "@parallel-finance/type-definitions": ^1.7.14
+    "@parallel-finance/types": ^1.7.14
+  languageName: unknown
+  linkType: soft
+
 "http-cache-semantics@npm:^4.1.0":
   version: 4.1.1
   resolution: "http-cache-semantics@npm:4.1.1"
@@ -1621,17 +1631,6 @@ __metadata:
   checksum: 87f4164e396f0171b0a3386cc1877a817f572148ee13a7e113b238e48e8a9f2f31d009a92ec38a591ff1567d9662c6b67fd8818a2dbbaed74bc26a87a2a4a9a0
   languageName: node
   linkType: hard
-
-"root-workspace-0b6124@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "root-workspace-0b6124@workspace:."
-  dependencies:
-    "@parallel-finance/api": ^1.7.14
-    "@parallel-finance/type-definitions": ^1.7.14
-    "@parallel-finance/types": ^1.7.14
-    "@polkadot/api": ^9.13.4
-  languageName: unknown
-  linkType: soft
 
 "rxjs@npm:^7.2.0, rxjs@npm:^7.8.0":
   version: 7.8.0

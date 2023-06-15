@@ -1,4 +1,5 @@
 {
+  "name": "kar_assets",
   "dependencies": {
     "@acala-network/api": "^4.1.8-2.3",
     "@polkadot/api": "^9.12.1"
