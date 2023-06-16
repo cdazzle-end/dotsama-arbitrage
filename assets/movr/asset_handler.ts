@@ -11,6 +11,10 @@ import {  } from '@moonbeam-network/api-augment/moonriver/interfaces';
 import Keyring from '@polkadot/keyring';
 import { u8aToHex, stringToHex , numberToHex} from '@polkadot/util';
 import { mnemonicToLegacySeed, hdEthereum } from '@polkadot/util-crypto';
+const rpc1 = 'wss://wss.moonriver.moonbeam.network';
+const rpc2 = 'wss://moonriver.public.blastapi.io';
+const rpc3 = 'wss://moonriver.api.onfinality.io/public-ws';
+const rpc4 = 'wss://moonriver.unitedbloc.com'
 
 // // hex.d.ts
 // declare module '../../parachains/hex' {
@@ -19,20 +23,21 @@ import { mnemonicToLegacySeed, hdEthereum } from '@polkadot/util-crypto';
 //     // ... add any other exports from the hex.js module here
 // }
 
-const providerRPC = {
-    moonriver: {
-        name: 'moonriver',
-        rpc: 'https://moonriver.api.onfinality.io/public', // Insert your RPC URL here
-        chainId: 1285, // 0x505 in hex,
-    },
-};
-const provider = new ethers.providers.StaticJsonRpcProvider(
-    providerRPC.moonriver.rpc,
-    {
-        chainId: providerRPC.moonriver.chainId,
-        name: providerRPC.moonriver.name,
-    }
-);
+// const providerRPC = {
+//     moonriver: {
+//         name: 'moonriver',
+//         rpc: 'https://moonriver.api.onfinality.io/public', // Insert your RPC URL here
+//         chainId: 1285, // 0x505 in hex,
+//     },
+// };
+// const provider = new ethers.providers.StaticJsonRpcProvider(
+//     providerRPC.moonriver.rpc,
+//     {
+//         chainId: providerRPC.moonriver.chainId,
+//         name: providerRPC.moonriver.name,
+//     }
+// );
+const provider = new ethers.WebSocketProvider(rpc1);
 const dexContractAbi = [
     "function name() view returns (string)",
     "function symbol() view returns (string)",

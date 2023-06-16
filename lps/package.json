@@ -10,6 +10,6 @@
     "sdn_lp"
   ],
   "dependencies": {
-    "@polkadot/api": "^9.13.4"
+    "@polkadot/api": "^10.9.1"
   }
 }
