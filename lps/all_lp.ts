@@ -10,21 +10,65 @@ import * as kucoinHandler from './kucoin/lp_handler'
 import * as mgxHandler from './mgx/lp_handler'
 import * as bsxHandler from './bsx/lp_handler'
 
+const dateTimeOptions: Intl.DateTimeFormatOptions = {
+    timeZone: 'America/New_York',
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+};
+
+// const options: Intl.DateTimeFormatOptions = {
+//     timeZone: 'America/New_York',
+//     hour12: false,
+//     year: "numeric",
+//     month: "2-digit",
+//     day: "2-digit",
+//     hour: "2-digit",
+//     minute: "2-digit",
+//     second: "2-digit"
+// };
+
+// const formatter = new Intl.DateTimeFormat('en-US', options);
+// const estTime = formatter.format(date);
+
+
+
+
 async function updateLps() {
-    bncHandler.updateLps().then(() => console.log("bnc complete"))
-    hkoHandler.updateLps().then(() => console.log("hko complete"))
-    karHandler.updateLps().then(() => console.log("kar complete"))
+    await Promise.all([
+        bncHandler.updateLps().then(() => console.log("bnc complete")),
+        hkoHandler.updateLps().then(() => console.log("hko complete")),
+        karHandler.updateLps().then(() => console.log("kar complete")),
+        kucoinHandler.updateLps().then(() => console.log("kucoin complete")),
+        mgxHandler.updateLps().then(() => console.log("mgx complete")),
+        bsxHandler.updateLps().then(() => console.log("bsx complete")),
+        movrHandler.updateLps().then(() => console.log("movr complete")),
+        // sdnHandler.updateLps().then(() => console.log("sdn complete"))
+    ]);
+}
+async function startTimer() {
+    console.log("startTimer")
+    const date = new Date();
+    const startTime = date.toLocaleString('en-US', dateTimeOptions);
+    fs.appendFileSync("lp_timestamps.txt", "LPs started at: " + startTime + "\n");
+}
+async function updateLpTimeStamp() {
 
-    kucoinHandler.updateLps().then(() => console.log("kucoin complete"))
-    mgxHandler.updateLps().then(() => console.log("mgx complete"))
-    bsxHandler.updateLps().then(() => console.log("bsx complete"))
-
-    movrHandler.updateLps().then(() => console.log("movr complete"))
-    // sdnHandler.updateLps().then(() => console.log("sdn complete"))
+    console.log("updateLpTimeStamp")
+    const date = new Date();
+    const startTime = date.toLocaleString('en-US', dateTimeOptions);
+    fs.appendFileSync("lp_timestamps.txt", "LPs updated at: " + startTime + "\n");
 }
 
 async function main() {
-    updateLps()
+
+    startTimer()
+    await updateLps()
+    updateLpTimeStamp()
 }
 
 main()

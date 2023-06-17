@@ -2,6 +2,8 @@
 /parachains/
 /old/
 arb_handler/target/
+lps/lp_timestamps.txt
+lps/update_lps.ps1
 
 # Logs
 logs

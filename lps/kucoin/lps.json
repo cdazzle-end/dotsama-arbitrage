@@ -3,11 +3,11 @@
     "exchange": "kucoin",
     "assetTicker": "KSM",
     "price": [
-      20631,
-      206459
+      230548,
+      230754
     ],
     "priceDecimals": [
-      3,
+      4,
       4
     ]
   },
@@ -15,8 +15,8 @@
     "exchange": "kucoin",
     "assetTicker": "RMRK",
     "price": [
-      16804,
-      16858
+      17846,
+      17897
     ],
     "priceDecimals": [
       4,
@@ -27,8 +27,8 @@
     "exchange": "kucoin",
     "assetTicker": "MOVR",
     "price": [
-      48157,
-      48297
+      50981,
+      51029
     ],
     "priceDecimals": [
       4,
@@ -39,11 +39,11 @@
     "exchange": "kucoin",
     "assetTicker": "KAR",
     "price": [
-      712,
-      722
+      79,
+      799
     ],
     "priceDecimals": [
-      4,
+      3,
       4
     ]
   },
@@ -51,8 +51,8 @@
     "exchange": "kucoin",
     "assetTicker": "BNC",
     "price": [
-      1567,
-      1595
+      1647,
+      1674
     ],
     "priceDecimals": [
       4,
