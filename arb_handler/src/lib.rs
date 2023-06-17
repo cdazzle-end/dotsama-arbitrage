@@ -19,41 +19,27 @@ use adjacency_table_2::{AdjacencyTable2};
 use asset_registry_2::AssetRegistry2;
 use liq_pool_registry_2::LiqPoolRegistry2;
 use token_graph_2::TokenGraph2;
+use token_graph_2::GraphNode;
 
-
-// mod adjacency_list_2;
-// mod adjacency_list_3;
-
-
-
-// mod hash_table;
-// mod evm_reader;
-// use adjacency_list_2::{ListNode2, NodeData};
-
-
-
-// use evm_reader::EvmReader;
-// use liq_pool::{LiqPool, LiqPoolList};
-
-
-
-// use adjacency_list::AdjacencyList;
-
-
-
-
-
-
-// use std::borrow::Borrow;
 use std::fs::File;
 use std::io::prelude::*;
 use serde_json::{Value};
+use serde::{Deserialize, Serialize};
 use std::str;
 use std::path::Path;
 use std::cell::RefCell;
 use std::rc::Rc;
 use tokio::{join, task};
+use std::fs::OpenOptions;
+// use std::io::prelude::*;
+type NodePath = Vec<Rc<RefCell<GraphNode>>>;
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PathNode{
+    pub node_key: String,
+    pub asset_name: String,
+    pub path_value: f64,
+}
 
 pub fn build_sub_assets(){
     AssetRegistry::build_sub_asset_registry_from_file();
@@ -65,15 +51,57 @@ pub async fn async_search(){
     let future3 = task::spawn(search_movr());
     let (result1, result2, result3) = join!(future1, future2, future3);
     // future1
+    let (ksm_display, ksm_log) = result2.unwrap();
     println!();
     println!("------------------------------------");
     println!("RESULTS");
     println!("------------------------------------");
     println!("Result of function 1: {:?}", result1);
     println!("------------------------------------");
-    println!("Result of function 2: {:?}", result2);
+    println!("Result of function 2: {:?}", ksm_display);
     println!("------------------------------------");
     println!("Result of function 3: {:?}", result3);
+
+    for node in ksm_log{
+        println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+    }
+}
+
+pub fn log_results(path: NodePath) -> Vec<PathNode>{
+    let start_node = path[0].borrow();
+    let path_values = &start_node.path_values;
+    let mut result_log: Vec<PathNode> = Vec::new();
+    for(i, node) in path.iter().enumerate(){
+        let path_node = PathNode{
+            node_key: node.borrow().get_asset_key(),
+            asset_name: node.borrow().get_asset_name(),
+            path_value: path_values[i].clone(),
+        };
+        result_log.push(path_node);
+    }
+
+    let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
+    // Get the current timestamp
+    let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
+    let log_data_path = format!("result_log_data/{}_{}.json", start_node.get_asset_name(), timestamp);
+    println!("Log data path: {}", log_data_path);
+    let mut file = File::create(log_data_path).expect("Failed to create file");
+    file.write_all(json.as_bytes()).expect("Failed to write data");
+
+    // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
+    let best_path_value = result_log[result_log.len()-1].path_value;
+    let result_log_string = format!("{} {} - {}", timestamp, start_node.get_asset_name(), best_path_value);
+    let mut file = OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open("result_log.txt")
+        .expect("Failed to open or create file");
+    writeln!(file, "{}", result_log_string).expect("Failed to write data");
+
+    result_log.clone()
+    // for node in result_log{
+    //     println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+    // }
 }
 
 pub fn test_table_2(){
@@ -95,7 +123,8 @@ pub async fn search_movr() -> String{
     // graph.display_graph_2();
     let key_1 = "2023\"MOVR\"".to_string();
     let input_amount = 4 as f64;
-    graph.find_arbitrage_3(key_1, input_amount)
+    let (display_string, path) = graph.find_arbitrage_3(key_1, input_amount);
+    display_string
 }
 
 pub async fn search_rmrk() -> String{
@@ -107,7 +136,8 @@ pub async fn search_rmrk() -> String{
     // graph.display_graph_2();
     let key_1 = "2000{\"ForeignAssetId\":\"0\"}".to_string();
     let input_amount = 15 as f64;
-    graph.find_arbitrage_3(key_1, input_amount)
+    let (display_string, path) = graph.find_arbitrage_3(key_1, input_amount);
+    display_string
 }
 
 pub fn test_arb_3() {
@@ -123,17 +153,18 @@ pub fn test_arb_3() {
     println!("{:?}", result);
 }
 
-pub async fn search_ksm() -> String{
+pub async fn search_ksm() -> (String, Vec<PathNode>){
     let mut asset_registry = AssetRegistry2::build_asset_registry();
     let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
     lp_registry.display_stable_pools();
     let list = AdjacencyTable2::build_table_2(&lp_registry);
-    // list.display_table_2();
     let graph = TokenGraph2::build_graph_2(asset_registry, list);
-    // graph.display_graph_2();
     let key_1 = "2000{\"NativeAssetId\":{\"Token\":\"KSM\"}}".to_string();
     let input_amount = 1 as f64;
-    graph.find_arbitrage_3(key_1, input_amount)
+    let (display_string, path) = graph.find_arbitrage_3(key_1, input_amount);
+    let loggable_results = log_results(path);
+    (display_string, loggable_results)
+
     // "lol".to_string()
 }
 

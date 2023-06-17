@@ -211,7 +211,7 @@ impl TokenGraph2{
         return_string
     }
 
-    pub fn find_arbitrage_3(&self, asset_key_1: String, input_amount: f64) -> String{
+    pub fn find_arbitrage_3(&self, asset_key_1: String, input_amount: f64) -> (String, Vec<Rc<RefCell<GraphNode>>>) {
         let starting_node = &self.get_node(asset_key_1).clone();
         
         let formatted_input = &input_amount * f64::powi(10.0, starting_node.borrow().get_asset_decimals() as i32);
@@ -327,8 +327,10 @@ impl TokenGraph2{
         println!("START NODE");
         starting_node.borrow().display_path();
         let return_string = starting_node.borrow().get_display_path().clone();
+        let best_path = starting_node.borrow().best_path.clone();
         // starting_node.borrow().get_display_path().clone()
-        return_string
+        let path_and_display: (String, Vec<Rc<RefCell<GraphNode>>>) = (return_string, best_path);
+        path_and_display
     }
 
     pub fn get_asset_decimals_for_kucoin_asset(&self, kucoin_node: &GraphNodePointer) -> u64 {
