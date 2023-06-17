@@ -4,6 +4,9 @@
 arb_handler/target/
 lps/lp_timestamps.txt
 lps/update_lps.ps1
+**/lps.json
+arb_handler/result_log_data/
+arb_handler/result_log.txt
 
 # Logs
 logs
