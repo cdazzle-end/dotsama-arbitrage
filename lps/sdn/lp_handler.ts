@@ -6,7 +6,15 @@ import * as fs from 'fs';
 import { MyLp } from '../lp_types';
 declare const fetch: any;
 const rpc1 = 'wss://shiden.api.onfinality.io/public-ws';
-const rpc2 = 'wss://shiden.api.onfinality.io/public';
+// const rpc2 = 'wss://shiden.api.onfinality.io/public';
+const rpc3 = 'wss://rpc.shiden.astar.network';
+const rpc4 = 'wss://shiden.public.blastapi.io';
+const rpc5 = 'wss://shiden-rpc.dwellir.com';
+
+// Astar Team: wss://rpc.shiden.astar.network
+// BlastAPI: wss://shiden.public.blastapi.io
+// Dwellir: wss://shiden-rpc.dwellir.com
+// OnFinality: wss://shiden.api.onfinality.io/public-ws
 
 // 2. Define network configurations
 const providerRPC = {
@@ -25,7 +33,7 @@ const providerRPC = {
 //         name: providerRPC.sdn.name,
 //     }
 // );
-const provider = new ethers.WebSocketProvider(rpc1);
+const provider = new ethers.WebSocketProvider(rpc3);
 const dexContractAbi = [
     "function name() view returns (string)",
     "function symbol() view returns (string)",
@@ -61,8 +69,10 @@ export async function updateLps() {
         let reserves = await pool.getReserves();
         const token0 = await pool.token0();
         const token1 = await pool.token1();
-        let reserve_0 = await hexToDec(reserves[0]["_hex"]);
-        let reserve_1 = await hexToDec(reserves[1]["_hex"]);
+        // let reserve_0 = await hexToDec(reserves[0]["_hex"]);
+        // let reserve_1 = await hexToDec(reserves[1]["_hex"]);
+        let reserve_0 = removeLastChar(reserves[0].toString());
+        let reserve_1 = removeLastChar(reserves[1].toString());
         let newliquidityStats = [reserve_0, reserve_1];
         // let newPool = new LiqPool("2023", poolAddress, pool["poolAssets"], newliquidityStats);
         const newPool: MyLp = {
@@ -465,4 +475,8 @@ async function hexToDec(hexStr: any) {
     if (hexStr.substring(0, 2) === '0x') hexStr = hexStr.substring(2);
     hexStr = hexStr.toLowerCase();
     return convertBase(hexStr, 16, 10);
+}
+
+function removeLastChar(str: string) {
+    return str.slice(0, -1);
 }
