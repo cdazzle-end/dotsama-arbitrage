@@ -2445,7 +2445,6 @@ __metadata:
   dependencies:
     "@polkadot/api": ^10.9.1
     axios: ^1.4.0
-    ethers: ^6.6.0
   languageName: unknown
   linkType: soft
 
