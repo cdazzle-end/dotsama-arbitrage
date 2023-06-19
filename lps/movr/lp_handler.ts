@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 import * as fs from 'fs';
 // import { MyJunction, MyAsset, MyAssetRegistryObject, MyMultiLocation } from '../asset_types';
 import { parse } from 'path'
-import { formatUnits } from 'ethers/lib/utils';
+// import { formatUnits } from 'ethers/lib/utils';
 // import {hexToDec2, decToHex2} from '../../parachains/hex'
 import { ApiPromise, WsProvider } from '@polkadot/api';
 // import { } from '@moonbeam-network/api-augment/moonriver/interfaces';
