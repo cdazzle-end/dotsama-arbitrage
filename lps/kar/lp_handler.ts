@@ -13,7 +13,7 @@ const endpoint5 = 'wss://karura-rpc-2.aca-api.network/ws'
 declare const fetch: any;
 
 export async function updateLps() {
-    const provider = new WsProvider(endpoint2);
+    const provider = new WsProvider(endpoint1);
     const api = new ApiPromise(options({ provider }));
     await api.isReady;
 

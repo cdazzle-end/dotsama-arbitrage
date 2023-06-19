@@ -47,7 +47,7 @@ async function updateLps() {
         mgxHandler.updateLps().then(() => console.log("mgx complete")),
         bsxHandler.updateLps().then(() => console.log("bsx complete")),
         movrHandler.updateLps().then(() => console.log("movr complete")),
-        // sdnHandler.updateLps().then(() => console.log("sdn complete"))
+        sdnHandler.updateLps().then(() => console.log("sdn complete"))
     ]);
 }
 async function startTimer() {
