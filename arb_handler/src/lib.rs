@@ -83,8 +83,24 @@ pub fn log_results(path: NodePath) -> Vec<PathNode>{
     let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
     // Get the current timestamp
     let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
-    let log_data_path = format!("result_log_data/{}_{}.json", start_node.get_asset_name(), timestamp);
+    let date = chrono::Local::now().format("%Y-%m-%d").to_string();
+    let time = chrono::Local::now().format("%H-%M-%S").to_string();
+
+    // Construct the directory path for the current date
+    let log_folder_path = format!("result_log_data/{}", date);
+
+    // Create a directory for the current date if it doesn't exist
+    match std::fs::create_dir_all(&log_folder_path) {
+        Ok(_) => println!("Directory created successfully"),
+        Err(e) => println!("Error creating directory: {:?}", e),
+    }
+
+    // Construct the file path including the directory
+    let log_data_path = format!("{}/{}_{}.json", log_folder_path, start_node.get_asset_name(), time);
     println!("Log data path: {}", log_data_path);
+    // let log_data_path = format!("result_log_data/{}_{}.json", start_node.get_asset_name(), timestamp);
+    // println!("Log data path: {}", log_data_path);
+    // When creating the file, use the log_data_path which includes the directory
     let mut file = File::create(log_data_path).expect("Failed to create file");
     file.write_all(json.as_bytes()).expect("Failed to write data");
 
@@ -99,9 +115,6 @@ pub fn log_results(path: NodePath) -> Vec<PathNode>{
     writeln!(file, "{}", result_log_string).expect("Failed to write data");
 
     result_log.clone()
-    // for node in result_log{
-    //     println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
-    // }
 }
 
 pub fn test_table_2(){

@@ -86,6 +86,7 @@ export async function updateLps() {
     // console.log(lps)
     // console.log(lps.length)
     fs.writeFileSync('./sdn/lps.json', JSON.stringify(lps, null, 2))
+    provider.destroy()
 }
 
 async function saveLps() {
