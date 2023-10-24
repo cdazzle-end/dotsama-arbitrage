@@ -20,10 +20,16 @@
     "lps/kucoin",
     "lps/mgx",
     "lps/movr",
-    "lps/sdn"
+    "lps/sdn",
+    "web_dashboard",
+    "web_dashboard/my-dashboard"
   ],
   "dependencies": {
+    "@notionhq/client": "^2.2.6",
     "@polkadot/api": "^10.9.1",
-    "axios": "^1.4.0"
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
+    "sqlite3": "^5.1.6",
+    "ws": "^8.14.2"
   }
 }

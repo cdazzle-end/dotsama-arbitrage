@@ -7,6 +7,9 @@ lps/update_lps.ps1
 **/lps.json
 arb_handler/result_log_data/
 arb_handler/result_log.txt
+sql_database/dbs/
+notion/key.txt
+TODO.txt
 
 # Logs
 logs
