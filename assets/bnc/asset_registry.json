@@ -70,12 +70,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2000
+          "Parachain": "2000"
         },
         {
-          "generalKey": "0x0081"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x0081000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -185,15 +188,37 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2092
+          "Parachain": "2092"
         },
         {
-          "generalKey": "0x000b"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x000b000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2001,
+      "localId": {
+        "VSBond": [
+          "KSM",
+          "2262",
+          "28",
+          "35"
+        ]
+      },
+      "name": "vsBOND-KSM-2262-28-35",
+      "symbol": "vsBOND-KSM-2262-28-35",
+      "decimals": "12",
+      "minimalBalance": "100000000"
+    },
+    "hasLocation": false
   },
   {
     "tokenData": {
@@ -209,15 +234,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x3": [
+      "X3": [
         {
-          "parachain": 1000
+          "Parachain": "1000"
         },
         {
-          "palletInstance": 50
+          "PalletInstance": "50"
         },
         {
-          "generalIndex": 8
+          "GeneralIndex": "8"
         }
       ]
     }
@@ -284,6 +309,25 @@
       "network": "kusama",
       "chain": 2001,
       "localId": {
+        "VSBond": [
+          "KSM",
+          "2241",
+          "28",
+          "35"
+        ]
+      },
+      "name": "vsBOND-KSM-2241-28-35",
+      "symbol": "vsBOND-KSM-2241-28-35",
+      "decimals": "12",
+      "minimalBalance": "100000000"
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2001,
+      "localId": {
         "Token2": "0"
       },
       "name": "Tether USD",
@@ -293,15 +337,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x3": [
+      "X3": [
         {
-          "parachain": 1000
+          "Parachain": "1000"
         },
         {
-          "palletInstance": 50
+          "PalletInstance": "50"
         },
         {
-          "generalIndex": 1984
+          "GeneralIndex": "1984"
         }
       ]
     }
@@ -349,6 +393,20 @@
       "network": "kusama",
       "chain": 2001,
       "localId": {
+        "BLP": "0"
+      },
+      "name": "Bifrost Stable Pool Token 0",
+      "symbol": "BLP0",
+      "decimals": "12",
+      "minimalBalance": "1000000"
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2001,
+      "localId": {
         "Token2": "1"
       },
       "name": "Kintsugi",
@@ -358,12 +416,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2092
+          "Parachain": "2092"
         },
         {
-          "generalKey": "0x000c"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x000c000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -399,7 +460,15 @@
       "decimals": "12",
       "minimalBalance": "10000000000"
     },
-    "hasLocation": false
+    "hasLocation": true,
+    "tokenLocation": {
+      "X1": {
+        "GeneralKey": {
+          "length": "2",
+          "data": "0x0101000000000000000000000000000000000000000000000000000000000000"
+        }
+      }
+    }
   },
   {
     "tokenData": {
@@ -432,7 +501,15 @@
       "decimals": "18",
       "minimalBalance": "1000000000000"
     },
-    "hasLocation": false
+    "hasLocation": true,
+    "tokenLocation": {
+      "X1": {
+        "GeneralKey": {
+          "length": "2",
+          "data": "0x010a000000000000000000000000000000000000000000000000000000000000"
+        }
+      }
+    }
   },
   {
     "tokenData": {
@@ -458,6 +535,39 @@
       "network": "kusama",
       "chain": 2001,
       "localId": {
+        "VSBond": [
+          "KSM",
+          "2259",
+          "27",
+          "34"
+        ]
+      },
+      "name": "vsBOND-KSM-2259-27-34",
+      "symbol": "vsBOND-KSM-2259-27-34",
+      "decimals": "12",
+      "minimalBalance": "100000000"
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2001,
+      "localId": {
+        "BLP": "1"
+      },
+      "name": "Bifrost Stable Pool Token 1",
+      "symbol": "BLP1",
+      "decimals": "12",
+      "minimalBalance": "1000000"
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2001,
+      "localId": {
         "VToken": "KSM"
       },
       "name": "Voucher KSM",
@@ -467,14 +577,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
-        {
-          "parachain": 2001
-        },
-        {
-          "generalKey": "0x0104"
+      "X1": {
+        "GeneralKey": {
+          "length": "2",
+          "data": "0x0104000000000000000000000000000000000000000000000000000000000000"
         }
-      ]
+      }
     }
   },
   {
@@ -529,12 +637,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2110
+          "Parachain": "2110"
         },
         {
-          "generalKey": "0x00000000"
+          "GeneralKey": {
+            "length": "4",
+            "data": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -553,12 +664,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2023
+          "Parachain": "2023"
         },
         {
-          "palletInstance": 10
+          "PalletInstance": "10"
         }
       ]
     }
@@ -615,14 +726,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
-        {
-          "parachain": 2001
-        },
-        {
-          "generalKey": "0x0207"
+      "X1": {
+        "GeneralKey": {
+          "length": "2",
+          "data": "0x0207000000000000000000000000000000000000000000000000000000000000"
         }
-      ]
+      }
     }
   },
   {
@@ -658,8 +767,8 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x1": {
-        "parachain": 2004
+      "X1": {
+        "Parachain": "2004"
       }
     }
   },
@@ -715,12 +824,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2000
+          "Parachain": "2000"
         },
         {
-          "generalKey": "0x0080"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x0080000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -758,14 +870,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
-        {
-          "parachain": 2001
-        },
-        {
-          "generalKey": "0x0404"
+      "X1": {
+        "GeneralKey": {
+          "length": "2",
+          "data": "0x0404000000000000000000000000000000000000000000000000000000000000"
         }
-      ]
+      }
     }
   },
   {
@@ -782,14 +892,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
-        {
-          "parachain": 2001
-        },
-        {
-          "generalKey": "0x0001"
+      "X1": {
+        "GeneralKey": {
+          "length": "2",
+          "data": "0x0001000000000000000000000000000000000000000000000000000000000000"
         }
-      ]
+      }
     }
   },
   {
@@ -844,9 +952,37 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x1": {
-        "parachain": 2007
+      "X1": {
+        "Parachain": "2007"
       }
     }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2001,
+      "localId": {
+        "BLP": "2"
+      },
+      "name": "Bifrost Stable Pool Token 2",
+      "symbol": "BLP2",
+      "decimals": "12",
+      "minimalBalance": "1000000"
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2001,
+      "localId": {
+        "BLP": "3"
+      },
+      "name": "Bifrost Stable Pool Token 3",
+      "symbol": "BLP3",
+      "decimals": "12",
+      "minimalBalance": "1000000"
+    },
+    "hasLocation": false
   }
 ]

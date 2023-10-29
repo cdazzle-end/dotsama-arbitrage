@@ -1,8 +1,9 @@
 {
   "name": "hko_assets",
   "dependencies": {
-    "@parallel-finance/api": "^1.7.14",
+    "@parallel-finance/api": "^2.0.1",
     "@parallel-finance/type-definitions": "^1.7.14",
-    "@parallel-finance/types": "^1.7.14"
+    "@parallel-finance/types": "^1.7.14",
+    "@polkadot/api": "^10.10.1"
   }
 }

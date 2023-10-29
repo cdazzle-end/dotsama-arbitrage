@@ -10,15 +10,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "X3": [
+      "x3": [
         {
-          "Parachain": "1000"
+          "parachain": 1000
         },
         {
-          "PalletInstance": "50"
+          "palletInstance": 50
         },
         {
-          "GeneralIndex": "1984"
+          "generalIndex": 1984
         }
       ]
     }
@@ -61,15 +61,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "X2": [
+      "x2": [
         {
-          "Parachain": "2001"
+          "parachain": 2001
         },
         {
-          "GeneralKey": {
-            "length": "2",
-            "data": "0x0207000000000000000000000000000000000000000000000000000000000000"
-          }
+          "generalKey": "0x5b6f626a656374204f626a6563745d"
         }
       ]
     }
@@ -118,12 +115,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "X2": [
+      "x2": [
         {
-          "Parachain": "2023"
+          "parachain": 2023
         },
         {
-          "PalletInstance": "10"
+          "palletInstance": 10
         }
       ]
     }
@@ -183,15 +180,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "X2": [
+      "x2": [
         {
-          "Parachain": "2001"
+          "parachain": 2001
         },
         {
-          "GeneralKey": {
-            "length": "2",
-            "data": "0x0404000000000000000000000000000000000000000000000000000000000000"
-          }
+          "generalKey": "0x5b6f626a656374204f626a6563745d"
         }
       ]
     }
@@ -207,15 +201,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "X2": [
+      "x2": [
         {
-          "Parachain": "2001"
+          "parachain": 2001
         },
         {
-          "GeneralKey": {
-            "length": "2",
-            "data": "0x0001000000000000000000000000000000000000000000000000000000000000"
-          }
+          "generalKey": "0x5b6f626a656374204f626a6563745d"
         }
       ]
     }
@@ -242,15 +233,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "X3": [
+      "x3": [
         {
-          "Parachain": "1000"
+          "parachain": 1000
         },
         {
-          "PalletInstance": "50"
+          "palletInstance": 50
         },
         {
-          "GeneralIndex": "8"
+          "generalIndex": 8
         }
       ]
     }
@@ -277,15 +268,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "X2": [
+      "x2": [
         {
-          "Parachain": "2001"
+          "parachain": 2001
         },
         {
-          "GeneralKey": {
-            "length": "2",
-            "data": "0x0104000000000000000000000000000000000000000000000000000000000000"
-          }
+          "generalKey": "0x5b6f626a656374204f626a6563745d"
         }
       ]
     }
@@ -335,7 +323,7 @@
     "hasLocation": true,
     "tokenLocation": {
       "x1": {
-        "parachain": 2110
+        "parachain": 2100
       }
     }
   },
@@ -371,15 +359,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "X2": [
+      "x2": [
         {
-          "Parachain": "2121"
+          "parachain": 2121
         },
         {
-          "GeneralKey": {
-            "length": "2",
-            "data": "0x0096000000000000000000000000000000000000000000000000000000000000"
-          }
+          "generalKey": "0x5b6f626a656374204f626a6563745d"
         }
       ]
     }
@@ -417,15 +402,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "X2": [
+      "x2": [
         {
-          "Parachain": "2001"
+          "parachain": 2001
         },
         {
-          "GeneralKey": {
-            "length": "2",
-            "data": "0x0101000000000000000000000000000000000000000000000000000000000000"
-          }
+          "generalKey": "0x5b6f626a656374204f626a6563745d"
         }
       ]
     }

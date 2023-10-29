@@ -97,13 +97,13 @@ function getLocationString(token: any): string {
 
 async function saveAssets() {
     await bncHandler.saveAssets()
-    await karHandler.saveAssets()
-    await hkoHandler.saveAssets()
-    await movrHandler.saveAssets()
-    await sdnHandler.saveAssets()
+    // await karHandler.saveAssets()
+    // await hkoHandler.saveAssets()
+    // await movrHandler.saveAssets()
+    // await sdnHandler.saveAssets()
     // await kucoinHandler.saveAssets()
-    await mgxHandler.saveAssets()
-    await bsxHandler.saveAssets()
+    // await mgxHandler.saveAssets()
+    // await bsxHandler.saveAssets()
 }
 
 async function main() {
@@ -112,7 +112,7 @@ async function main() {
     // testJson()
     // getAllAssets()
     // getAllAssets2()
-    saveAssets
+    saveAssets()
 }
 
 main()

@@ -61,6 +61,10 @@ export interface MyJunction {
     }
     PalletInstance?: number,
     GeneralIndex?: number,
+    GeneralKey?: {
+        length: number,
+        data: string
+    }
     OnlyChild?: boolean,
     Plurality?: {
         id: string,

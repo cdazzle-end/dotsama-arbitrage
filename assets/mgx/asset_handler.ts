@@ -1,6 +1,13 @@
 import * as fs from 'fs';
 import { MyJunction, MyAsset, MyAssetRegistryObject, MyMultiLocation } from '../asset_types';
 import { Keyring, ApiPromise, WsProvider } from '@polkadot/api';
+import { Mangata } from '@mangata-finance/sdk';
+
+const MAINNET_1 = 'wss://mangata-x.api.onfinality.io/public-ws'
+const MAINNET_2 = 'wss://prod-kusama-collator-01.mangatafinance.cloud'
+const MAINNET_3 = 'wss://mangatax.api.onfinality.io/public-ws'
+const MAINNET_4 = 'wss://prod-kusama-collator-02.mangatafinance.cloud'
+const MAINNET_5 = 'wss://kusama-rpc.mangata.online'
 const NATIVE_KUSAMA_ID = 4;
 const MGX_ID = 0;
 const KAR_ID = 6;
@@ -10,16 +17,17 @@ export async function getAssets() {
 }
 
 export async function saveAssets() {
-    const provider = new WsProvider('wss://mangata-x.api.onfinality.io/public-ws');
-    const api = await ApiPromise.create({ provider: provider });
+    const mangata = Mangata.getInstance([MAINNET_5])
+    const api = await mangata.getApi();
     await api.isReady;
 
     let mgxLocationToAssets = await api.query.assetRegistry.locationToAssetId.entries();
     let mgxAssets = await queryAssets()
 
-    // let parachainId = await api.query.parachainInfo.parachainId();
+    // 1 get all assets from metadata query
+    // 2 Check if ID is KAR, MGX, or KSM
     let assetRegistry = mgxAssets.map((asset) => {
-        if (asset != null) {
+        if (asset != null) { // Not sure why this is needed **LMAO copilot just suggested this comment to me as i was about to type it. I suck
             // console.log(asset)
             if (asset.localId == NATIVE_KUSAMA_ID) {
                 // console.log("Found kusama")
@@ -35,7 +43,7 @@ export async function saveAssets() {
             }
             if (asset.localId == MGX_ID) {
                 let tokenLocation = {
-                    x1: { parachain: 2100 }
+                    x1: { parachain: 2110 }
                 }
                 let formattedLocation = api.createType('Junctions', tokenLocation).toJSON()
                 let newAssetRegistryObject: MyAssetRegistryObject = {
@@ -60,16 +68,18 @@ export async function saveAssets() {
 
             let assetLocation0 = mgxLocationToAssets.find(([location, id]) => {
                 if (id.toHuman() == asset.localId) {
-                    console.log("found lcoation match")
+                    // console.log("found lcoation match")
                     return true
                 }
             })
             // console.log(assetLocation0)
 
             if (assetLocation0 != undefined) {
+                // console.log("ASSET")
+                // console.log(asset)
                 let [location, id] = assetLocation0   
                 let locationData = (location.toHuman() as any)[0];
-                console.log(locationData)
+                // console.log(locationData)
                 const junction = Object.keys(locationData.interior)[0]
                 if (junction == "X1") {
                     const junctionData = locationData.interior[junction];
@@ -90,17 +100,35 @@ export async function saveAssets() {
                     // console.log(newAssetRegistryObject)
                     return newAssetRegistryObject
                 } else {
+                    console.log("Junction is not X1")
+                    console.log(asset)
+                    console.log(locationData)
                     const junctions = locationData.interior[junction];
                     let junctionList: MyJunction[] = [];
                     for (const x in junctions) {
                         let junctionType = Object.keys(junctions[x])[0]
                         let junctionValue = junctions[x][junctionType]
-                        junctionValue = junctionValue.toString().replace(/,/g, "")
-                        let newJunction: MyJunction = {};
-                        newJunction[junctionType] = junctionValue;
-                        junctionList.push(newJunction)
-                    }
 
+                        if (junctionType == "GeneralKey") {
+                            let keys = Object.keys(junctions[x])[0]
+                            let val = junctions[x][keys]
+                            let newJunction: MyJunction = {
+                                GeneralKey: {
+                                    length: val.length,
+                                    data: val.data
+                                }
+                            };
+                            junctionList.push(newJunction)
+
+                        } else {
+                            junctionValue = junctionValue.toString().replace(/,/g, "")
+                            let newJunction: MyJunction = {};
+                            newJunction[junctionType] = junctionValue;
+                            junctionList.push(newJunction)
+                        }
+                    
+                        
+                    }
                     let newLocation: MyMultiLocation = {
                         [junction]: junctionList
                     }
@@ -108,9 +136,8 @@ export async function saveAssets() {
                     let newAssetRegistryObject: MyAssetRegistryObject = {
                         tokenData: asset,
                         hasLocation: true,
-                        tokenLocation: formattedLocation
+                        tokenLocation: newLocation
                     }
-                    // console.log(newAssetRegistryObject)
                     return newAssetRegistryObject
                 }
             } else {
@@ -125,25 +152,27 @@ export async function saveAssets() {
         
     })
     console.log("TEST")
-    console.log(assetRegistry)
+    // console.log(assetRegistry)
     assetRegistry.forEach((asset) => {
         console.log("A R Object")
         console.log(asset)
+        console.log(asset?.tokenLocation)
     })
-    fs.writeFileSync('./asset_registry.json', JSON.stringify(assetRegistry, null, 2));
+    fs.writeFileSync('./mgx/asset_registry.json', JSON.stringify(assetRegistry, null, 2));
 }
 
 async function queryAssets() {
-    const provider = new WsProvider('wss://mangata-x.api.onfinality.io/public-ws');
-    const api = await ApiPromise.create({ provider: provider });
+    // const provider = new WsProvider(MAINNET_5);
+    const mangata = Mangata.getInstance([MAINNET_5])
+    const api = await mangata.getApi();
     await api.isReady;
 
     let mgxAssetsMeta = await api.query.assetRegistry.metadata.entries();
     let parachainIdResult = await api.query.parachainInfo.parachainId();
     let parachainId = parachainIdResult.toHuman() as string;
-    console.log(parachainId)
+    // console.log(parachainId)
     let formatParachainId = parachainId.replace(/,/g, "") as any as number
-    console.log(formatParachainId)
+    // console.log(formatParachainId)
     
     let myAssets =  mgxAssetsMeta.map(([id, assetMeta]) => {
 
@@ -176,4 +205,4 @@ async function main() {
     saveAssets()
 }
 
-main()
+// main()

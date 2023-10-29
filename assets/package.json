@@ -9,6 +9,7 @@
     "sdn_assets"
   ],
   "dependencies": {
+    "@mangata-finance/sdk": "1.16.1",
     "@polkadot/api": "^10.9.1"
   }
 }

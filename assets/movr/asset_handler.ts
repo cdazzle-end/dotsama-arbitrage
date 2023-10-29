@@ -87,6 +87,24 @@ export async function getAssets(): Promise<MyAssetRegistryObject[]> {
     return assetRegistry
 }
 
+async function findValueByKey(obj: any, targetKey: any): Promise<any> {
+    if (typeof obj !== 'object' || obj === null) {
+        return null;
+    }
+    for (let key in obj) {
+        if (key === targetKey) {
+            return obj[key];
+        }
+
+        let foundValue: any = await findValueByKey(obj[key], targetKey);
+        if (foundValue !== null) {
+            return foundValue;
+        }
+    }
+
+    return null;
+}
+
 async function queryLocations() {
     const provider = new WsProvider('wss://moonriver.api.onfinality.io/public-ws');
     const api = await ApiPromise.create({ provider: provider });
@@ -94,39 +112,45 @@ async function queryLocations() {
 
     const locationEntries = await api.query.assetManager.assetIdType.entries();
     // console.log(locationEntries.length + " " + loc2.length)
-    let assetLocations = locationEntries.map(([key, value]) => {
+    let assetLocations = await Promise.all(locationEntries.map(async ([key, value]) => {
         const currencyId = (key.toHuman() as any)[0].replace(/,/g, "");
         const locationValue = (value.toJSON() as any)['xcm']['interior'];
         const junction = Object.keys(locationValue)[0]
+
+        let genKey = await findValueByKey(locationValue, "generalKey")
+
         if (junction == "here") {
-            // console.log(("HERE"))
             const newLocation = "here"
             return [newLocation, currencyId]
         } else {
-            // console.log(locationValue)
             const newLocation: MyMultiLocation = {
                 [junction]: locationValue[junction]
             }
-            // console.log(newLocation)
             return [newLocation, currencyId]
         }
 
-    })
+    }))
 
     const movrLocation = {
         x2: [{parachain: 2023},{palletInstance: 10}]
     }
+    const zlkOldGeneralKey = "0x0207";
+    // Remove '0x' prefix and calculate the length
+    const keyWithoutPrefix = zlkOldGeneralKey.slice(2);
+    const length = keyWithoutPrefix.length / 2;
+
+    // Right-pad the key with zeros to 64 characters (32 bytes)
+    const paddedData = keyWithoutPrefix.padEnd(64, '0');
+    const newGeneralKey = {
+        length: length,
+        data: '0x' + paddedData
+    }
+
     const zlkLocation = {
-        x2: [{ parachain: 2001 }, { generalKey: "0x0207" }]
+        x2: [{ parachain: 2001 }, { generalKey: newGeneralKey }]
     }
     assetLocations.push([movrLocation, "MOVR"])
     assetLocations.push([zlkLocation, "ZLK"])
-    //Make sure location and id are proper format
-    assetLocations.forEach(([multiLocation, currencyId]) => {
-        // console.log(api.createType('CurrencyId', currencyId).toHuman())
-        console.log(api.createType('Junctions', multiLocation).toHuman())
-    })
-
     return assetLocations;
 }
 
@@ -192,6 +216,7 @@ async function main() {
     // queryAssets()
     await saveAssets()
     // queryLocations()
+    process.exit(0)
 }
 
 // main()

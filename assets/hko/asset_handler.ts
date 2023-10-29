@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import path from 'path';
 import { MyJunction, MyAsset, MyAssetRegistryObject, MyMultiLocation } from '../asset_types';
 // import { Keyring, ApiPromise, WsProvider, } from '@polkadot/api';
 
@@ -46,9 +47,10 @@ export async function saveAssets() {
     // assetRegistry = assetRegistry.filter((asset) => {
     //     return asset != undefined
     // })
-    console.log(assetRegistry)
-    fs.writeFileSync('../../assets/hko/asset_registry.json', JSON.stringify(assetRegistry, null, 2))
-    
+    // console.log(assetRegistry)
+    // fs.writeFileSync('../../assets/hko/asset_registry.json', JSON.stringify(assetRegistry, null, 2))
+    const filePath = path.join(__dirname, 'asset_registry.json');
+    fs.writeFileSync(filePath, JSON.stringify(assetRegistry, null, 2));
 }
 
 export async function getAssets(): Promise < MyAssetRegistryObject[] > {
@@ -133,7 +135,8 @@ async function queryLocations() {
 async function main() {
     // queryAssets()
     // queryLocations()
-    saveAssets()
+    await saveAssets()
+    process.exit(0)
     // getAssets()
 }
 

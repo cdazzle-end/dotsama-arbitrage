@@ -56,7 +56,10 @@
           "parachain": 2085
         },
         {
-          "generalKey": "0x484b4f"
+          "generalKey": {
+            "length": 3,
+            "data": "0x484b4f0000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -80,7 +83,10 @@
           "parachain": 2092
         },
         {
-          "generalKey": "0x000b"
+          "generalKey": {
+            "length": 2,
+            "data": "0x000b000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -101,6 +107,25 @@
     "tokenLocation": {
       "x1": {
         "parachain": 2048
+      }
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "133300872918374599700079037156071917454",
+      "name": "Turing Network",
+      "symbol": "xcTUR",
+      "decimals": "10",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF6448d0746f2a66342b67ef9caf89478e"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x1": {
+        "parachain": 2114
       }
     }
   },
@@ -194,9 +219,63 @@
     "tokenData": {
       "network": "kusama",
       "chain": 2023,
+      "localId": "264344629840762281112027368930249420542",
+      "name": "Bifrost Voucher KSM",
+      "symbol": "xcvKSM",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFFc6deec7fc8b11a2c8dde9a59f8c62efe"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2001
+        },
+        {
+          "generalKey": {
+            "length": 2,
+            "data": "0x0104000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "72145018963825376852137222787619937732",
+      "name": "Bifrost Voucher BNC",
+      "symbol": "xcvBNC",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF3646a00f78cadf8883c5a2791bfcddc4"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2001
+        },
+        {
+          "generalKey": {
+            "length": 2,
+            "data": "0x0101000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
       "localId": "214920334981412447805621250067209749032",
-      "name": "Acala Dollar",
-      "symbol": "xcAUSD",
+      "name": "aSEED",
+      "symbol": "xcaSeed",
       "decimals": "12",
       "deposit": "0",
       "isFrozen": false,
@@ -209,7 +288,10 @@
           "parachain": 2000
         },
         {
-          "generalKey": "0x0081"
+          "generalKey": {
+            "length": 2,
+            "data": "0x0081000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -233,7 +315,10 @@
           "parachain": 2092
         },
         {
-          "generalKey": "0x000c"
+          "generalKey": {
+            "length": 2,
+            "data": "0x000c000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -257,7 +342,64 @@
           "parachain": 2015
         },
         {
-          "generalKey": "0x54454552"
+          "generalKey": {
+            "length": 4,
+            "data": "0x5445455200000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "118095707745084482624853002839493125353",
+      "name": "Mangata X Native Token",
+      "symbol": "xcMGX",
+      "decimals": "18",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF58d867eea1ce5126a4769542116324e9"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2110
+        },
+        {
+          "generalKey": {
+            "length": 4,
+            "data": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2023,
+      "localId": "203223821023327994093278529517083736593",
+      "name": "Bifrost Voucher MOVR",
+      "symbol": "xcvMOVR",
+      "decimals": "18",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF98e37bf6a393504b5adc5b53b4d0ba11"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "x2": [
+        {
+          "parachain": 2001
+        },
+        {
+          "generalKey": {
+            "length": 2,
+            "data": "0x010a000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -350,7 +492,10 @@
           "parachain": 2000
         },
         {
-          "generalKey": "0x0080"
+          "generalKey": {
+            "length": 2,
+            "data": "0x0080000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -374,7 +519,10 @@
           "parachain": 2001
         },
         {
-          "generalKey": "0x0001"
+          "generalKey": {
+            "length": 2,
+            "data": "0x0001000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -418,7 +566,10 @@
           "parachain": 2001
         },
         {
-          "generalKey": "0x0207"
+          "generalKey": {
+            "length": 2,
+            "data": "0x0207000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
