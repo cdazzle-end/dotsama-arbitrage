@@ -5,11 +5,15 @@ arb_handler/target/
 lps/lp_timestamps.txt
 lps/update_lps.ps1
 **/lps.json
+**/stablePools.json
 arb_handler/result_log_data/
 arb_handler/result_log.txt
 sql_database/dbs/
 notion/key.txt
 TODO.txt
+some_notes.txt
+
+
 
 # Logs
 logs
