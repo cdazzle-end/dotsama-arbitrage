@@ -82,6 +82,8 @@
 
 <script>
 import axios from 'axios';
+const serverUrl = "https://f212-2603-6080-eb02-d337-d8c0-f24a-3e98-a1d9.ngrok.io"
+const serverWs = "wss://f212-2603-6080-eb02-d337-d8c0-f24a-3e98-a1d9.ngrok.io"
 
 export default {
   data() {
@@ -99,7 +101,7 @@ export default {
   methods: {
     selectDatabase(dbName) {
       this.selectedDatabase = dbName;
-      axios.get(`http://localhost:3000/tables-with-last-value?database=${this.selectedDatabase}`)
+      axios.get(`${serverUrl}/tables-with-last-value?database=${this.selectedDatabase}`)
         .then(response => {
           this.tables = response.data;
         });
@@ -107,13 +109,13 @@ export default {
     },
     selectTable(tableName) {
       this.selectedTable = tableName;
-      axios.get(`http://localhost:3000/table-content?database=${this.selectedDatabase}&table=${tableName}`)
+      axios.get(`${serverUrl}/table-content?database=${this.selectedDatabase}&table=${tableName}`)
         .then(response => {
           this.tableContent = response.data;
         });
     },
     fetchLatestTable() {
-      axios.get('http://localhost:3000/latest-table').then(response => {
+      axios.get(`${serverUrl}/latest-table`).then(response => {
         this.latestTable = response.data;
         this.latestTableContents = response.data.contents;
       });
@@ -130,14 +132,14 @@ export default {
   },
 
   mounted() {
-    axios.get('http://localhost:3000/databases').then(response => {
+    axios.get(`${serverUrl}/databases`).then(response => {
         this.databases = response.data;
     })
     .catch(error => {
         console.error("Error fetching databases:", error);
     });
     this.fetchLatestTable();
-    this.ws = new WebSocket('ws://localhost:3000');
+    this.ws = new WebSocket(`${serverWs}`);
 
     this.ws.addEventListener('open', (event) => {
       console.log('Connected to WebSocket server');

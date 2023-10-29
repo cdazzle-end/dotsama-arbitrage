@@ -13,22 +13,15 @@ import * as path from 'path';
 
 const app = express();
 const port = 3000;
+app.use(cors());  // Enable CORS for all routes
+// app.use(cors({
+//     origin: 'http://localhost:8080'
+// }));
+
 export const server = http.createServer(app);
 export const wss = new ws.Server({ server });
 
-// const wsClient: WSWebSocket = new ws('ws://localhost:4000');
-// wsClient.on('open', () => {
-//     console.log('Connected to run_sql WebSocket server');
-// });
-
-// wsClient.on('message', (message:string) => {
-//     console.log('Received message:', message);
-//     if (message === 'NEW_TABLE_CREATED') {
-//         // Fetch the latest table or update the UI
-//     }
-// });
-
-app.use(cors());  // Enable CORS for all routes
+// app.use(cors());  // Enable CORS for all routes
 
 
 wss.on('error', (error) => {
