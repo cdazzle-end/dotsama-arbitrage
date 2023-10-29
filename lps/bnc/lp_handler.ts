@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import path from 'path';
 import { MyJunction, MyAsset, MyAssetRegistryObject, MyMultiLocation } from '../../assets/asset_types';
 import { MyLp } from '../lp_types';
 const axios = require('axios').default;
@@ -69,7 +70,9 @@ export async function saveLps() {
     const zenTokens = tokensMeta.map((item: AssetMeta) => {
         return new Token(item);
     });
-    const bncAssets = JSON.parse(fs.readFileSync('../../assets/bnc/asset_registry.json', 'utf8'))
+    const filePath = path.join(__dirname, '../../assets/bnc/asset_registry.json');
+    // fs.writeFileSync(filePath, JSON.stringify(assetRegistry, null, 2))
+    const bncAssets = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
     // console.log(zenTokens.name + " " + zenTokens.symbol)
     zenTokens.forEach((token: any) => {

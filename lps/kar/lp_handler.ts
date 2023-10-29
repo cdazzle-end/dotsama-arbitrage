@@ -14,7 +14,7 @@ const endpoint5 = 'wss://karura-rpc-2.aca-api.network/ws'
 declare const fetch: any;
 
 export async function updateLps() {
-    const provider = new WsProvider(endpoint3);
+    const provider = new WsProvider(endpoint2);
     const api = new ApiPromise(options({ provider }));
     await api.isReady;
 
@@ -23,6 +23,11 @@ export async function updateLps() {
     const assetRegistry = JSON.parse(fs.readFileSync('../assets/kar/asset_registry.json', 'utf8')).map((asset: any) => {
         return asset.tokenData
     });
+
+    //When running program locally
+    // const assetRegistry = JSON.parse(fs.readFileSync('../../assets/kar/asset_registry.json', 'utf8')).map((asset: any) => {
+    //     return asset.tokenData
+    // });
     const lpEntries = await api.query.dex.liquidityPool.entries();
     const lps = lpEntries.map((lp: any) => {
         const lpAssetIds = lp[0].toHuman()[0];
@@ -38,8 +43,16 @@ export async function updateLps() {
                     || Object.keys(lpAssetId)[0] === "StableAssetPoolToken"
                     && Object.keys(asset.localId)[0] === "StableAssetId"
                     && Object.values(lpAssetId)[0] === Object.values(asset.localId)[0]
+                    || Object.keys(lpAssetId)[0] === "Erc20"
+                    && Object.keys(asset.localId)[0] === "Erc20"
+                    && Object.values(lpAssetId)[0] === Object.values(asset.localId)[0]
             })
-            return matchedAsset.localId
+            if (!matchedAsset) {
+                throw new Error("No matching asset found for lpAssetId: " + JSON.stringify(lpAssetId));
+            }
+            return matchedAsset.localId;
+
+            // return matchedAsset.localId
         })
         liquidity = liquidity.map((l: any) => {
             return l.toString().replace(/,/g, "")
@@ -83,6 +96,9 @@ async function saveLps() {
                     && Object.values(lpAssetId)[0] === (Object.values(asset.localId)[0] as any)["Token"]
                     || Object.keys(lpAssetId)[0] === "StableAssetPoolToken"
                     && Object.keys(asset.localId)[0] === "StableAssetId"
+                    && Object.values(lpAssetId)[0] === Object.values(asset.localId)[0]
+                    || Object.keys(lpAssetId)[0] === "Erc20"
+                    && Object.keys(asset.localId)[0] === "Erc20"
                     && Object.values(lpAssetId)[0] === Object.values(asset.localId)[0]
             })
             // console.log(matchedAsset.localId)
@@ -473,13 +489,14 @@ async function getSwapAmount(pool: StableSwapPool, tokenIn: number, tokenOut: nu
 }
 
 async function main() {
-    const provider = new WsProvider('wss://karura.api.onfinality.io/public-ws');
-    const api = new ApiPromise(options({ provider }));
-    await api.isReady;
+    // const provider = new WsProvider('wss://karura.api.onfinality.io/public-ws');
+    // const api = new ApiPromise(options({ provider }));
+    // await api.isReady;
     // await saveLps()
     // await getLps()
-    await queryStableLps(api);
-    await swapKsmLksm(api);
+    // await queryStableLps(api);
+    // await swapKsmLksm(api);
+    await updateLps()
 
     process.exit(0)
 }
