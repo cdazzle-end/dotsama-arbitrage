@@ -163,9 +163,7 @@ async function queryLocations() {
     const assetLocations = locationEntries.map(([location, id]) => {
         const currencyId = id.toJSON() as string;
         let locationData = (location.toHuman() as any)[0];
-        // console.log(locationData)
         const junction = Object.keys(locationData.interior)[0]
-        // console.log(locationData.interior)
         if (locationData.interior == "Here") {
             console.log("FOUND HERE")
             let newLocation = "here"
@@ -176,22 +174,22 @@ async function queryLocations() {
             let junctionValue = junctionData[junctionType]
             let newLocation: MyMultiLocation;
             let newJunction: MyJunction = {};
-            // junctionValue = junctionValue.toString().replace(/,/g, "")
-            // let newJunction: MyJunction = {};
-            // newJunction[junctionType] = junctionValue;
-            // let newLocation: MyMultiLocation = {
-            //     X1: newJunction
-            // }
+
             if (junctionType == "GeneralKey") {
                 // let keys = Object.keys(junctions[x])[0]
                 // let val = junctions[x][keys]
+                const paraJunction = { Parachain: "2001" }
                 newJunction = {
                     GeneralKey: {
                         length: junctionValue.length,
                         data: junctionValue.data
                     }
                 };
-                console.log
+                let junctionList: MyJunction[] = []
+                let jList = [paraJunction, newJunction]
+                newLocation = {
+                    X2: jList
+                }
                 
             } else {
                 junctionValue = junctionValue.toString().replace(/,/g, "")
@@ -199,15 +197,17 @@ async function queryLocations() {
                 newJunction[junctionType] = junctionValue;
                 // junctionList.push(newJunction)
                 // return newJunction
+                newLocation = {
+                    [junction]: newJunction
+                }
             }
-            newLocation = {
-                [junction]: newJunction
-            }
+            
             // let formattedLocation = api.createType('Junctions', newLocation).toJSON()
             return [newLocation, currencyId]
         } else {
             const junctions = locationData.interior[junction];
             let junctionList: MyJunction[] = [];
+
             for (const x in junctions) {
                 let junctionType = Object.keys(junctions[x])[0]
                 let junctionValue = junctions[x][junctionType]

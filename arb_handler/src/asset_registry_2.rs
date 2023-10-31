@@ -129,6 +129,8 @@ impl AssetRegistry2{
         }
         location_assets
     }
+
+    // queries first asset in bucket aside from kucoin asset, then gets decimals. Throws if no other asset in kucoin asset bucket
     pub fn get_kucoin_asset_decimals(&self, asset_location: AssetLocation) -> u64 {
         let related_assets = self.get_assets_at_location(asset_location);
         for asset in related_assets{

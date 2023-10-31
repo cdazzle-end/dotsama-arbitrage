@@ -53,7 +53,7 @@ function convertToNewGeneralKey(oldKey: any) {
     const paddedData = keyWithoutPrefix.padEnd(64, '0');
 
     return {
-        length: length,
+        length: JSON.stringify(length),
         data: '0x' + paddedData
     };
 }
@@ -65,7 +65,7 @@ export async function saveAssets() {
 
     //Asset metadata and asset locations
     const assetData: KaruraAsset[] = await queryAssets(api);
-    const assetLocations: [MultiLocation , CurrencyId][] = await queryAssetLocations(api);
+    const assetLocations: [MultiLocation , CurrencyId][] = await queryLocations(api);
 
     //Combine metadata and location to create Asset Registry objects
     let assetRegistry = await Promise.all(assetData.map(async (asset: KaruraAsset) => {
@@ -284,6 +284,11 @@ export async function saveAssets() {
         }
 
     }));
+    assetRegistry.forEach((asset) => {
+        console.log(asset?.tokenData.name)
+        console.log(JSON.stringify(asset?.tokenLocation))
+    })
+
     const filePath = path.join(__dirname, 'asset_registry.json');
     fs.writeFileSync(filePath, JSON.stringify(assetRegistry, null, 2));
 }
@@ -304,6 +309,90 @@ async function queryAssets(api: ApiPromise): Promise<KaruraAsset[]> {
         return asset
     })
     return assets;
+}
+function updateValueByKey(obj: any, targetKey: any): any {
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
+    }
+
+    for (let key in obj) {
+        if (key === targetKey && typeof obj[key] === 'string') {
+            // Remove commas if the value is a string
+            obj[key] = JSON.stringify(obj[key]).replace(/,/g, '');
+        } else {
+            // Recursively check and update nested objects
+            obj[key] = updateValueByKey(obj[key], targetKey);
+        }
+    }
+
+    return obj;
+}
+function removeCommasFromAllValues(obj: any): any {
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
+    }
+
+    for (let key in obj) {
+        if (typeof obj[key] === 'string') {
+            // Remove commas if the value is a string
+            obj[key] = obj[key].replace(/,/g, '');
+        } else {
+            // Recursively remove commas from nested objects
+            obj[key] = removeCommasFromAllValues(obj[key]);
+        }
+    }
+
+    return obj;
+}
+async function queryLocations(api: any) {
+    // const provider = new WsProvider('wss://basilisk-rpc.dwellir.com');
+    // const api = await ApiPromise.create({ provider: provider });
+    // await api.isReady;
+    let locationEntries = await api.query.assetRegistry.locationToCurrencyIds.entries();
+    let locations = locationEntries.map(([location, id]: any) => {
+        // const currencyId = (id.toHuman() as any)[0].replace(/,/g, "");
+        const currencyId = id;
+        let locationData = (location.toHuman() as any)[0];
+        locationData = removeCommasFromAllValues(locationData)
+        // locationData = updateValueByKey(locationData, "length")
+        console.log(locationData.interior)
+        const junction = Object.keys(locationData.interior)[0]
+        let junctionList: MyJunction[] = [];
+
+        if (locationData.interior == "Here") {
+            const newLocation = "here"
+            return [newLocation, currencyId]
+        } else {
+            const junctionData = locationData.interior[junction];
+
+            if (!Array.isArray(junctionData)) { // If junction is X1
+                let newLocation: MyMultiLocation;
+                let newJunction: MyJunction = junctionData;
+                newLocation = {
+                    [junction]: newJunction
+                }
+                return [newLocation, currencyId]
+
+            } else {
+                const junctions = locationData.interior[junction];
+                junctions.forEach((junction: any) => {
+                    const newJunction: MyJunction = junction;
+                    junctionList.push(newJunction)
+                })
+                let newLocation: MyMultiLocation = {
+                    [junction]: junctionList
+                }
+                return [newLocation, currencyId]
+            }
+        }
+
+    })
+    locations.forEach(([location, id]: any) => {
+        console.log(id.toHuman())
+        console.log(JSON.stringify(location))
+    })
+    return locations;
+
 }
 
 //Karura js API only retrieves ForeignAssets
@@ -382,8 +471,12 @@ async function queryAssetLocations(api: ApiPromise): Promise<[MultiLocation, Cur
 }
     
 async function main() {
+    const provider = new WsProvider('wss://karura.api.onfinality.io/public-ws');
+    const api = new ApiPromise(options({ provider }));
+    await api.isReady;
     // getAssets()
     await saveAssets()
+    // await queryLocations(api)
     // getAssetLocations(api)
     process.exit(0)
 }

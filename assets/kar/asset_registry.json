@@ -35,7 +35,7 @@
         },
         {
           "GeneralKey": {
-            "length": 2,
+            "length": "2",
             "data": "0x0083000000000000000000000000000000000000000000000000000000000000"
           }
         }
@@ -71,7 +71,7 @@
     "hasLocation": true,
     "tokenLocation": {
       "X1": {
-        "Parachain": "2,084"
+        "Parachain": "2084"
       }
     }
   },
@@ -104,7 +104,7 @@
     "hasLocation": true,
     "tokenLocation": {
       "X1": {
-        "Parachain": "2,024"
+        "Parachain": "2024"
       }
     }
   },
@@ -128,7 +128,7 @@
         },
         {
           "GeneralKey": {
-            "length": 2,
+            "length": "2",
             "data": "0x0085000000000000000000000000000000000000000000000000000000000000"
           }
         }
@@ -151,7 +151,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,118"
+          "Parachain": "2118"
         },
         {
           "GeneralKey": {
@@ -206,7 +206,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,015"
+          "Parachain": "2015"
         },
         {
           "GeneralKey": {
@@ -239,7 +239,7 @@
         },
         {
           "GeneralKey": {
-            "length": 2,
+            "length": "2",
             "data": "0x0080000000000000000000000000000000000000000000000000000000000000"
           }
         }
@@ -268,7 +268,7 @@
         },
         {
           "GeneralKey": {
-            "length": 2,
+            "length": "2",
             "data": "0x0001000000000000000000000000000000000000000000000000000000000000"
           }
         }
@@ -311,7 +311,7 @@
         },
         {
           "GeneralKey": {
-            "length": 2,
+            "length": "2",
             "data": "0x0084000000000000000000000000000000000000000000000000000000000000"
           }
         }
@@ -361,7 +361,7 @@
     "hasLocation": true,
     "tokenLocation": {
       "X1": {
-        "Parachain": "2,114"
+        "Parachain": "2114"
       }
     }
   },
@@ -381,7 +381,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,085"
+          "Parachain": "2085"
         },
         {
           "GeneralKey": {
@@ -408,7 +408,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,107"
+          "Parachain": "2107"
         },
         {
           "GeneralKey": {
@@ -434,7 +434,7 @@
     "hasLocation": true,
     "tokenLocation": {
       "X1": {
-        "Parachain": "2,095"
+        "Parachain": "2095"
       }
     }
   },
@@ -468,7 +468,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,106"
+          "Parachain": "2106"
         },
         {
           "PalletInstance": "10"
@@ -492,7 +492,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,096"
+          "Parachain": "2096"
         },
         {
           "GeneralKey": {
@@ -582,7 +582,7 @@
     "tokenLocation": {
       "X3": [
         {
-          "Parachain": "1,000"
+          "Parachain": "1000"
         },
         {
           "PalletInstance": "50"
@@ -615,7 +615,7 @@
         },
         {
           "GeneralKey": {
-            "length": 2,
+            "length": "2",
             "data": "0x000c000000000000000000000000000000000000000000000000000000000000"
           }
         }
@@ -638,7 +638,7 @@
     "tokenLocation": {
       "X3": [
         {
-          "Parachain": "1,000"
+          "Parachain": "1000"
         },
         {
           "PalletInstance": "50"
@@ -664,7 +664,7 @@
     "hasLocation": true,
     "tokenLocation": {
       "X1": {
-        "Parachain": "2,012"
+        "Parachain": "2012"
       }
     }
   },
@@ -690,7 +690,7 @@
         },
         {
           "GeneralKey": {
-            "length": 2,
+            "length": "2",
             "data": "0x0404000000000000000000000000000000000000000000000000000000000000"
           }
         }
@@ -727,7 +727,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,102"
+          "Parachain": "2102"
         },
         {
           "GeneralKey": {
@@ -768,7 +768,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,105"
+          "Parachain": "2105"
         },
         {
           "PalletInstance": "5"
@@ -857,7 +857,7 @@
         },
         {
           "GeneralKey": {
-            "length": 2,
+            "length": "2",
             "data": "0x0081000000000000000000000000000000000000000000000000000000000000"
           }
         }
@@ -880,7 +880,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,090"
+          "Parachain": "2090"
         },
         {
           "GeneralIndex": "0"
@@ -910,7 +910,7 @@
         },
         {
           "GeneralKey": {
-            "length": 2,
+            "length": "2",
             "data": "0x000b000000000000000000000000000000000000000000000000000000000000"
           }
         }
@@ -947,7 +947,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,088"
+          "Parachain": "2088"
         },
         {
           "GeneralKey": {
@@ -988,13 +988,13 @@
     "tokenLocation": {
       "X3": [
         {
-          "Parachain": "1,000"
+          "Parachain": "1000"
         },
         {
           "PalletInstance": "50"
         },
         {
-          "GeneralIndex": "1,984"
+          "GeneralIndex": "1984"
         }
       ]
     }
@@ -1014,7 +1014,7 @@
     "hasLocation": true,
     "tokenLocation": {
       "X1": {
-        "Parachain": "2,007"
+        "Parachain": "2007"
       }
     }
   },
@@ -1038,7 +1038,7 @@
         },
         {
           "GeneralKey": {
-            "length": 2,
+            "length": "2",
             "data": "0x0086000000000000000000000000000000000000000000000000000000000000"
           }
         }
@@ -1061,7 +1061,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,024"
+          "Parachain": "2024"
         },
         {
           "GeneralKey": {
@@ -1088,7 +1088,7 @@
     "tokenLocation": {
       "X2": [
         {
-          "Parachain": "2,023"
+          "Parachain": "2023"
         },
         {
           "PalletInstance": "10"

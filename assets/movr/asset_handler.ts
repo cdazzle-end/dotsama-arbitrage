@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+import path from 'path'
 import * as fs from 'fs';
 import { MyJunction, MyAsset, MyAssetRegistryObject, MyMultiLocation } from '../asset_types';
 import { parse } from 'path'
@@ -78,7 +79,8 @@ export async function saveAssets() {
         }
         return newAssetRegistryObject
     })
-    await fs.writeFileSync('../movr/asset_registry.json', JSON.stringify(assetRegistry, null, 2))
+    const filePath = path.join(__dirname, '/asset_registry.json')
+    await fs.writeFileSync(filePath, JSON.stringify(assetRegistry, null, 2))
     process.exit(0)
 }
 
@@ -104,6 +106,23 @@ async function findValueByKey(obj: any, targetKey: any): Promise<any> {
 
     return null;
 }
+function removeCommasFromAllValues(obj: any): any {
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
+    }
+
+    for (let key in obj) {
+        if (typeof obj[key] === 'string') {
+            // Remove commas if the value is a string
+            obj[key] = obj[key].replace(/,/g, '');
+        } else {
+            // Recursively remove commas from nested objects
+            obj[key] = removeCommasFromAllValues(obj[key]);
+        }
+    }
+
+    return obj;
+}
 
 async function queryLocations() {
     const provider = new WsProvider('wss://moonriver.api.onfinality.io/public-ws');
@@ -114,25 +133,45 @@ async function queryLocations() {
     // console.log(locationEntries.length + " " + loc2.length)
     let assetLocations = await Promise.all(locationEntries.map(async ([key, value]) => {
         const currencyId = (key.toHuman() as any)[0].replace(/,/g, "");
-        const locationValue = (value.toJSON() as any)['xcm']['interior'];
-        const junction = Object.keys(locationValue)[0]
+        let locationData = (value.toHuman() as any)['Xcm']['interior'];
+        locationData = removeCommasFromAllValues(locationData);
+        const junction = Object.keys(locationData)[0]
 
-        let genKey = await findValueByKey(locationValue, "generalKey")
+        let genKey = await findValueByKey(locationData, "generalKey")
 
-        if (junction == "here") {
+        let junctionList: MyJunction[] = []
+        if (locationData == "Here") {
             const newLocation = "here"
             return [newLocation, currencyId]
         } else {
-            const newLocation: MyMultiLocation = {
-                [junction]: locationValue[junction]
-            }
-            return [newLocation, currencyId]
-        }
+            const junctionData = locationData[junction]
 
+            if (!Array.isArray(junctionData)) { // If junction is X1
+                let newLocation: MyMultiLocation;
+                let newJunction: MyJunction = junctionData;
+                newLocation = {
+                    [junction]: newJunction
+                }
+                return [newLocation, currencyId]
+
+            } else {
+                const junctions = locationData[junction];
+                junctions.forEach((junction: any) => {
+                    const newJunction: MyJunction = junction;
+                    junctionList.push(newJunction)
+                })
+                let newLocation: MyMultiLocation = {
+                    [junction]: junctionList
+                }
+                return [newLocation, currencyId]
+            }
+        }
     }))
 
+
+
     const movrLocation = {
-        x2: [{parachain: 2023},{palletInstance: 10}]
+        X2: [{Parachain: "2023"},{PalletInstance: "10"}]
     }
     const zlkOldGeneralKey = "0x0207";
     // Remove '0x' prefix and calculate the length
@@ -142,15 +181,21 @@ async function queryLocations() {
     // Right-pad the key with zeros to 64 characters (32 bytes)
     const paddedData = keyWithoutPrefix.padEnd(64, '0');
     const newGeneralKey = {
-        length: length,
+        length: JSON.stringify(length),
         data: '0x' + paddedData
     }
 
     const zlkLocation = {
-        x2: [{ parachain: 2001 }, { generalKey: newGeneralKey }]
+        X2: [{ Parachain: "2001" }, { GeneralKey: newGeneralKey }]
     }
     assetLocations.push([movrLocation, "MOVR"])
     assetLocations.push([zlkLocation, "ZLK"])
+
+    assetLocations.forEach(([location, id]) => {
+        console.log(id)
+        console.log(JSON.stringify(location))
+    })
+
     return assetLocations;
 }
 
@@ -215,7 +260,7 @@ async function queryAssets(): Promise<MyAsset[]> {
 async function main() {
     // queryAssets()
     await saveAssets()
-    // queryLocations()
+    // await queryLocations()
     process.exit(0)
 }
 

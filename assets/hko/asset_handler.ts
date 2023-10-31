@@ -97,35 +97,77 @@ async function queryAssets(): Promise<MyAsset[]> {
     return hkoAssets
 }
 
+function removeCommasFromAllValues(obj: any): any {
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
+    }
+
+    for (let key in obj) {
+        if (typeof obj[key] === 'string') {
+            // Remove commas if the value is a string
+            obj[key] = obj[key].replace(/,/g, '');
+        } else {
+            // Recursively remove commas from nested objects
+            obj[key] = removeCommasFromAllValues(obj[key]);
+        }
+    }
+
+    return obj;
+}
+
 async function queryLocations() {
+    // console.log("Querying Locations")
     const provider = new WsProvider('wss://heiko-rpc.parallel.fi');
     const api = new ApiPromise(options({ provider }));
     await api.isReady;
     const locationEntries = await api.query.assetRegistry.assetIdType.entries();
+    // console.log(locationEntries)
     let assetLocations = locationEntries.map(([key, value]) => {
+        console.log(key.toHuman())
+        console.log(value.toHuman())
         const currencyId = (key.toHuman() as any)[0].replace(/,/g, "");
-        const locationValue = (value.toJSON() as any)['xcm']['interior'];
-        const junction = Object.keys(locationValue)[0]
-        if (junction == "here") {
+        let locationData = (value.toHuman() as any)['Xcm']['interior']
+        locationData = removeCommasFromAllValues(locationData)
+        console.log(locationData)
+        const junction = Object.keys(locationData)[0]
+        let junctionList: MyJunction[] = []
+
+        if (locationData == "Here") {
             // console.log(("HERE"))
             const newLocation = "here"
             return [newLocation, currencyId]
         } else {
-            // console.log(locationValue)
-            const newLocation: MyMultiLocation = {
-                [junction]: locationValue[junction]
+            const junctionData = locationData[junction]
+            
+            if (!Array.isArray(junctionData)) { // If junction is X1
+                let newLocation: MyMultiLocation;
+                let newJunction: MyJunction = junctionData;
+                newLocation = {
+                    [junction]: newJunction
+                }
+                return [newLocation, currencyId]
+
+            } else {
+                const junctions = locationData[junction];
+                junctions.forEach((junction: any) => {
+                    const newJunction: MyJunction = junction;
+                    junctionList.push(newJunction)
+                })
+                let newLocation: MyMultiLocation = {
+                    [junction]: junctionList
+                }
+                return [newLocation, currencyId]
             }
-            // console.log(newLocation)
-            return [newLocation, currencyId]
+
         }
 
     })
-    console.log(assetLocations)
+    // console.log(assetLocations)
 
     //Make sure location and id are proper format
     assetLocations.forEach(([multiLocation, currencyId]) => {
-        console.log(api.createType('CurrencyId', currencyId).toHuman())
-        console.log(api.createType('Junctions', multiLocation).toHuman())
+        console.log(currencyId)
+        console.log(JSON.stringify(multiLocation))
     })
 
     return assetLocations;
@@ -134,7 +176,7 @@ async function queryLocations() {
 
 async function main() {
     // queryAssets()
-    // queryLocations()
+    // await queryLocations()
     await saveAssets()
     process.exit(0)
     // getAssets()

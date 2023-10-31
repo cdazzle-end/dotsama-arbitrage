@@ -13,8 +13,8 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x1": {
-        "parachain": 2004
+      "X1": {
+        "Parachain": "2004"
       }
     }
   },
@@ -32,12 +32,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2000
+          "Parachain": "2000"
         },
         {
-          "generalKey": "0x0083"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x0083000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -60,6 +63,25 @@
     "tokenData": {
       "network": "kusama",
       "chain": 2007,
+      "localId": "18446744073709551633",
+      "name": "Quartz",
+      "symbol": "QTZ",
+      "decimals": "18",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF00000000000000010000000000000011"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "X1": {
+        "Parachain": "2095"
+      }
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2007,
       "localId": "18446744073709551625",
       "name": "Crab Native Token",
       "symbol": "CRAB",
@@ -70,12 +92,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2105
+          "Parachain": "2105"
         },
         {
-          "palletInstance": 5
+          "PalletInstance": "5"
         }
       ]
     }
@@ -94,12 +116,12 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2023
+          "Parachain": "2023"
         },
         {
-          "palletInstance": 10
+          "PalletInstance": "10"
         }
       ]
     }
@@ -118,12 +140,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2092
+          "Parachain": "2092"
         },
         {
-          "generalKey": "0x000b"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x000b000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -142,12 +167,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2092
+          "Parachain": "2092"
         },
         {
-          "generalKey": "0x000c"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x000c000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -166,12 +194,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2024
+          "Parachain": "2024"
         },
         {
-          "generalKey": "0x657164"
+          "GeneralKey": {
+            "length": "3",
+            "data": "0x6571640000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -224,8 +255,8 @@
       "network": "kusama",
       "chain": 2007,
       "localId": "18446744073709551616",
-      "name": "Acala Dollar",
-      "symbol": "aUSD",
+      "name": "aUSD SEED",
+      "symbol": "aSEED",
       "decimals": "12",
       "deposit": "0",
       "isFrozen": false,
@@ -233,12 +264,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2000
+          "Parachain": "2000"
         },
         {
-          "generalKey": "0x0081"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x0081000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -257,8 +291,8 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x1": {
-        "parachain": 2012
+      "X1": {
+        "Parachain": "2012"
       }
     }
   },
@@ -276,12 +310,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2000
+          "Parachain": "2000"
         },
         {
-          "generalKey": "0x0080"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x0080000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -300,8 +337,8 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x1": {
-        "parachain": 2024
+      "X1": {
+        "Parachain": "2024"
       }
     }
   },
@@ -323,6 +360,33 @@
     "tokenData": {
       "network": "kusama",
       "chain": 2007,
+      "localId": "18446744073709551632",
+      "name": " Metaverse.Network Pioneer",
+      "symbol": "NEER",
+      "decimals": "18",
+      "deposit": "0",
+      "isFrozen": false,
+      "contractAddress": "0xFFFFFFFF00000000000000010000000000000010"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "X2": [
+        {
+          "Parachain": "2096"
+        },
+        {
+          "GeneralKey": {
+            "length": "9",
+            "data": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2007,
       "localId": "18446744073709551626",
       "name": "Sakura",
       "symbol": "SKU",
@@ -333,8 +397,8 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x1": {
-        "parachain": 2016
+      "X1": {
+        "Parachain": "2016"
       }
     }
   },
@@ -352,12 +416,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2001
+          "Parachain": "2001"
         },
         {
-          "generalKey": "0x0404"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x0404000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -376,15 +443,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x3": [
+      "X3": [
         {
-          "parachain": 1000
+          "Parachain": "1000"
         },
         {
-          "palletInstance": 50
+          "PalletInstance": "50"
         },
         {
-          "generalIndex": 1984
+          "GeneralIndex": "1984"
         }
       ]
     }
@@ -403,12 +470,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2001
+          "Parachain": "2001"
         },
         {
-          "generalKey": "0x0104"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x0104000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -427,12 +497,15 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x2": [
+      "X2": [
         {
-          "parachain": 2001
+          "Parachain": "2001"
         },
         {
-          "generalKey": "0x0001"
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x0001000000000000000000000000000000000000000000000000000000000000"
+          }
         }
       ]
     }
@@ -463,8 +536,8 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "x1": {
-        "parachain": 2007
+      "X1": {
+        "Parachain": "2007"
       }
     }
   }

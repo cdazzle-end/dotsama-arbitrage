@@ -3,7 +3,7 @@ import { ApiPromise } from '@polkadot/api';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { options } from '@astar-network/astar-api'
 import { AssetId, AssignmentId  } from '@polkadot/types/interfaces';
-import { MyAsset, MyAssetRegistryObject, MyMultiLocation } from '../asset_types';
+import { MyAsset, MyAssetRegistryObject, MyMultiLocation, MyJunction } from '../asset_types';
 
 export async function saveAssets() {
     const assets = await queryAssets();
@@ -28,7 +28,23 @@ export async function saveAssets() {
 export async function getAssets() {
     return JSON.parse(fs.readFileSync('./sdn/asset_registry.json', 'utf8'));
 }
+function removeCommasFromAllValues(obj: any): any {
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
+    }
 
+    for (let key in obj) {
+        if (typeof obj[key] === 'string') {
+            // Remove commas if the value is a string
+            obj[key] = obj[key].replace(/,/g, '');
+        } else {
+            // Recursively remove commas from nested objects
+            obj[key] = removeCommasFromAllValues(obj[key]);
+        }
+    }
+
+    return obj;
+}
 async function queryLocations() {
     const provider = new WsProvider('wss://shiden.api.onfinality.io/public-ws');
     const api = new ApiPromise(options({ provider }));
@@ -36,22 +52,49 @@ async function queryLocations() {
 
     let locations = await api.query.xcAssetConfig.assetIdToLocation.entries();
     let assetLocations = locations.map(([assetId, location]) => {
-        const locationData = (location.toJSON() as any).v1.interior
-        const formattedAssetId = (assetId.args[0].toHuman() as string).replace(/,/g, '')
-        if (Object.keys(locationData)[0] == "here") {
-            const newLocation = "here"  
-            return [newLocation, formattedAssetId]
-        } 
-        else {
-            const newLocation = api.createType('Junctions', locationData).toJSON()
-            return [newLocation, formattedAssetId]
+        let locationData = (location.toHuman() as any)['V3']['interior']
+        locationData = removeCommasFromAllValues(locationData)
+        const currencyId = (assetId.args[0].toHuman() as string).replace(/,/g, '')
+        const junction = Object.keys(locationData)[0]
+
+        // let genKey = await findValueByKey(locationData, "generalKey")
+
+        let junctionList: MyJunction[] = []
+        if (locationData == "Here") {
+            const newLocation = "here"
+            return [newLocation, currencyId]
+        } else {
+            const junctionData = locationData[junction]
+
+            if (!Array.isArray(junctionData)) { // If junction is X1
+                let newLocation: MyMultiLocation;
+                let newJunction: MyJunction = junctionData;
+                newLocation = {
+                    [junction]: newJunction
+                }
+                return [newLocation, currencyId]
+
+            } else {
+                const junctions = locationData[junction];
+                junctions.forEach((junction: any) => {
+                    const newJunction: MyJunction = junction;
+                    junctionList.push(newJunction)
+                })
+                let newLocation: MyMultiLocation = {
+                    [junction]: junctionList
+                }
+                return [newLocation, currencyId]
+            }
         }
 
     })
     const sdnLocation = {
-        x1: { parachain: 2007 }
+        X1: { Parachain: "2007" }
     }
     assetLocations.push([sdnLocation, "SDN"])
+
+    assetLocations.forEach((location) => console.log(JSON.stringify(location)))
+
     return assetLocations
 }
 
@@ -102,6 +145,7 @@ async function main() {
     await saveAssets()
     // getAssets()
     // await queryAssets()
+    // await queryLocations()
 
     process.exit(0);
 }

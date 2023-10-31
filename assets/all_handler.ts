@@ -50,7 +50,7 @@ async function getAllAssets2() {
     const mgxAssets = JSON.parse(fs.readFileSync('./mgx/asset_registry.json', 'utf8'))
     const bsxAssets = JSON.parse(fs.readFileSync('./bsx/asset_registry.json', 'utf8'))
     let allAssets = bncAssets.concat(karAssets).concat(hkoAssets).concat(movrAssets).concat(sdnAssets).concat(kucoinAssets).concat(mgxAssets).concat(bsxAssets)
-    console.log(allAssets)
+    // console.log(allAssets)
     let assetBuckets: { [key: string]: MyAssetRegistryObject[] } = {};
     allAssets.forEach((token: any) => {
         let locationString = JSON.stringify(token.tokenLocation);
@@ -59,16 +59,46 @@ async function getAllAssets2() {
         }
         assetBuckets[locationString].push(token)
     })
-    Object.entries(assetBuckets).forEach(([key, value]) => {
+
+    const sortedKeys = Object.keys(assetBuckets).sort((keyA, keyB) => {
+        const nameA = assetBuckets[keyA][0]?.tokenData.name || "";
+        const nameB = assetBuckets[keyB][0]?.tokenData.name || "";
+        return nameA.localeCompare(nameB);
+    })
+
+    sortedKeys.forEach((key) => {
         console.log(key)
-        value.forEach((token: MyAssetRegistryObject) => {
+        assetBuckets[key].forEach((token: MyAssetRegistryObject) => {
             if ('exchange' in token.tokenData) {
                 console.log(token.tokenData.name + " " + token.tokenData.exchange);
             } else {
                 console.log(token.tokenData.name + " " + token.tokenData.chain);
             }
         });
+        console.log("-----------------")
+        
     })
+
+    // Object.entries(sortedKeys).forEach(([key, value]) => {
+    //     console.log(key)
+    //     value.forEach((token: MyAssetRegistryObject) => {
+    //         if ('exchange' in token.tokenData) {
+    //             console.log(token.tokenData.name + " " + token.tokenData.exchange);
+    //         } else {
+    //             console.log(token.tokenData.name + " " + token.tokenData.chain);
+    //         }
+    //     });
+    // })
+    // Object.entries(assetBuckets).forEach(([key, value]) => {
+    //     console.log(key)
+    //     value.forEach((token: MyAssetRegistryObject) => {
+    //         if ('exchange' in token.tokenData) {
+    //             console.log(token.tokenData.name + " " + token.tokenData.exchange);
+    //         } else {
+    //             console.log(token.tokenData.name + " " + token.tokenData.chain);
+    //         }
+    //     });
+    // })
 }
 
 async function testJson() {
@@ -96,9 +126,9 @@ function getLocationString(token: any): string {
 }
 
 async function saveAssets() {
-    await bncHandler.saveAssets()
+    // await bncHandler.saveAssets()
     // await karHandler.saveAssets()
-    // await hkoHandler.saveAssets()
+    await hkoHandler.saveAssets()
     // await movrHandler.saveAssets()
     // await sdnHandler.saveAssets()
     // await kucoinHandler.saveAssets()
@@ -111,8 +141,8 @@ async function main() {
     // getAllAssets()
     // testJson()
     // getAllAssets()
-    // getAllAssets2()
-    saveAssets()
+    getAllAssets2()
+    // saveAssets()
 }
 
 main()

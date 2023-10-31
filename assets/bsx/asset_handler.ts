@@ -10,6 +10,8 @@ export async function saveAssets() {
     let assetData = await queryAssets(api);
     let assetLocations = await queryLocations(api);
 
+    console.log(assetLocations)
+
     let assetRegistry = await assetData.map(([asset, assetId]: any) => {
         let matchedLocation = assetLocations.find(([location, locationId]: any) => {
             return assetId == locationId
@@ -22,6 +24,7 @@ export async function saveAssets() {
             }
             return newAssetRegistryObject
         } else {
+            console.log(matchedLocation[0])
             const newAssetRegistryObject: MyAssetRegistryObject = {
                 tokenData: asset,
                 hasLocation: true,
@@ -30,13 +33,14 @@ export async function saveAssets() {
             return newAssetRegistryObject
         }
     });
-    assetRegistry.forEach((asset: any) => {
-        console.log(asset)
-        console.log(asset.tokenLocation)
-    })
+    // assetRegistry.forEach((asset: any) => {
+    //     console.log(asset)
+    //     console.log(asset.tokenLocation)
+    // })
 
     const filePath = path.join(__dirname, 'asset_registry.json')
     fs.writeFileSync(filePath, JSON.stringify(assetRegistry, null, 2))
+    process.exit(0)
 }
 
 async function queryAssets(api:any) {
@@ -77,44 +81,125 @@ async function queryAssets(api:any) {
     return assetRegistry
 }
 
+// Find parachain value and remove commas
+function updateValueByKey(obj: any, targetKey: any): any {
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
+    }
+
+    for (let key in obj) {
+        if (key === targetKey && typeof obj[key] === 'string') {
+            // Remove commas if the value is a string
+            obj[key] = obj[key].replace(/,/g, '');
+        } else {
+            // Recursively check and update nested objects
+            obj[key] = updateValueByKey(obj[key], targetKey);
+        }
+    }
+
+    return obj;
+}
+//Remove all commas
+function removeCommasFromAllValues(obj: any): any {
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
+    }
+
+    for (let key in obj) {
+        if (typeof obj[key] === 'string') {
+            // Remove commas if the value is a string
+            obj[key] = obj[key].replace(/,/g, '');
+        } else {
+            // Recursively remove commas from nested objects
+            obj[key] = removeCommasFromAllValues(obj[key]);
+        }
+    }
+
+    return obj;
+}
+
+function findValueByKey(obj: any, targetKey: any): any {
+    if (typeof obj !== 'object' || obj === null) {
+        return null;
+    }
+    for (let key in obj) {
+        if (key === targetKey) {
+            return obj[key];
+        }
+
+        let foundValue: any = findValueByKey(obj[key], targetKey);
+        if (foundValue !== null) {
+            return foundValue;
+        }
+    }
+
+    return null;
+}
+
 async function queryLocations(api:any) {
     // const provider = new WsProvider('wss://basilisk-rpc.dwellir.com');
     // const api = await ApiPromise.create({ provider: provider });
     // await api.isReady;
-    let locationData = await api.query.assetRegistry.assetLocations.entries();
-    let locations = locationData.map(([id, data]: any) => {
-        console.log(data.toHuman())
+    let locationEntries = await api.query.assetRegistry.assetLocations.entries();
+    let locations = locationEntries.map(([id, location]: any) => {
         const currencyId = (id.toHuman() as any)[0].replace(/,/g, "");
-        const locationValue = (data.toJSON() as any)['interior'];
-        const junction = Object.keys(locationValue)[0]
-        if (junction == "here") {
-            // console.log(("HERE"))
+        let locationData = (location.toHuman() as any);
+        // console.log(JSON.stringify(locationData))
+        // let para = findValueByKey(locationData, "Parachain")
+        // console.log(para)
+        // locationData = updateValueByKey(locationData, "Parachain")
+        // console.log(JSON.stringify(para))
+        locationData = removeCommasFromAllValues(locationData)
+        const junction = Object.keys(locationData.interior)[0]
+        let junctionList: MyJunction[] = [];
+
+        if (locationData.interior == "Here") {
             const newLocation = "here"
             return [newLocation, currencyId]
         } else {
-            // console.log(locationValue)
-            const newLocation: MyMultiLocation = {
-                [junction]: locationValue[junction]
+            const junctionData = locationData.interior[junction];
+
+            if (!Array.isArray(junctionData)) { // If junction is X1
+                let newLocation: MyMultiLocation;
+                let newJunction: MyJunction = junctionData;
+                newLocation = {
+                    [junction]: newJunction
+                }
+                return [newLocation, currencyId]
+
+            } else {
+                const junctions = locationData.interior[junction];
+                junctions.forEach((junction: any) => {
+                    const newJunction: MyJunction = junction;
+                    junctionList.push(newJunction)
+                })
+                let newLocation: MyMultiLocation = {
+                    [junction]: junctionList
+                }
+                return [newLocation, currencyId]
             }
-            // console.log(newLocation)
-            return [newLocation, currencyId]
         }
+
     })
     let bsxLocation = {
-        x2: [
-            { parachain: 2090 },
-            { generalIndex: 0 }
+        X2: [
+            { Parachain: 2090 },
+            { GeneralIndex: 0 }
         ]
     }
-    locations.push([bsxLocation, 0])
+    locations.push([bsxLocation, 0]) 
+    locations.forEach(([location, id]: any) => {
+        console.log(id)
+        console.log(JSON.stringify(location))
+    })
     return locations;
 
 }
 
 async function main() {
-    // const provider = new WsProvider('wss://basilisk-rpc.dwellir.com');
-    // const api = await ApiPromise.create({ provider: provider });
-    // await api.isReady;
+    const provider = new WsProvider('wss://basilisk-rpc.dwellir.com');
+    const api = await ApiPromise.create({ provider: provider });
+    await api.isReady;
     // await queryAssets(api);
     // await queryLocations(api);
     await saveAssets();
@@ -122,4 +207,4 @@ async function main() {
     process.exit(0)
 }
 
-// main()
+main()

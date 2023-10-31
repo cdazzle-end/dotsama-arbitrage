@@ -1,3 +1,4 @@
+import path from 'path';
 import * as fs from 'fs';
 import { MyJunction, MyAsset, MyAssetRegistryObject, MyMultiLocation } from '../asset_types';
 import { Keyring, ApiPromise, WsProvider } from '@polkadot/api';
@@ -43,25 +44,25 @@ export async function saveAssets() {
             }
             if (asset.localId == MGX_ID) {
                 let tokenLocation = {
-                    x1: { parachain: 2110 }
+                    X1: { parachain: "2110" }
                 }
                 let formattedLocation = api.createType('Junctions', tokenLocation).toJSON()
                 let newAssetRegistryObject: MyAssetRegistryObject = {
                     tokenData: asset,
                     hasLocation: true,
-                    tokenLocation: formattedLocation
+                    tokenLocation: tokenLocation
                 }
                 return newAssetRegistryObject
             }
             if (asset.localId == KAR_ID) {
                 let tokenLocation = {
-                    x2: [{ parachain: 2000 }, { generalKey: "0x0080" }]
+                    X2: [{ Parachain: "2000" }, { GeneralKey: { "length": "2", "data": "0x0080000000000000000000000000000000000000000000000000000000000000" }}]
                 }
                 let formattedLocation = api.createType('Junctions', tokenLocation).toJSON()
                 let newAssetRegistryObject: MyAssetRegistryObject = {
                     tokenData: asset,
                     hasLocation: true,
-                    tokenLocation: formattedLocation
+                    tokenLocation: tokenLocation
                 }
                 return newAssetRegistryObject
             }
@@ -82,6 +83,9 @@ export async function saveAssets() {
                 // console.log(locationData)
                 const junction = Object.keys(locationData.interior)[0]
                 if (junction == "X1") {
+                    console.log("X1")
+                    console.log(asset)
+                    console.log(JSON.stringify(locationData))
                     const junctionData = locationData.interior[junction];
                     const junctionType = Object.keys(junctionData)[0]
                     let junctionValue = junctionData[junctionType]
@@ -95,14 +99,15 @@ export async function saveAssets() {
                     let newAssetRegistryObject: MyAssetRegistryObject = {
                         tokenData: asset,
                         hasLocation: true,
-                        tokenLocation: formattedLocation
+                        tokenLocation: newLocation
                     }
+                    console.log(JSON.stringify(newAssetRegistryObject))
                     // console.log(newAssetRegistryObject)
                     return newAssetRegistryObject
                 } else {
-                    console.log("Junction is not X1")
-                    console.log(asset)
-                    console.log(locationData)
+                    // console.log("Junction is not X1")
+                    // console.log(asset)
+                    // console.log(locationData)
                     const junctions = locationData.interior[junction];
                     let junctionList: MyJunction[] = [];
                     for (const x in junctions) {
@@ -153,12 +158,13 @@ export async function saveAssets() {
     })
     console.log("TEST")
     // console.log(assetRegistry)
-    assetRegistry.forEach((asset) => {
-        console.log("A R Object")
-        console.log(asset)
-        console.log(asset?.tokenLocation)
-    })
-    fs.writeFileSync('./mgx/asset_registry.json', JSON.stringify(assetRegistry, null, 2));
+    // assetRegistry.forEach((asset) => {
+    //     console.log("A R Object")
+    //     console.log(asset)
+    //     console.log(asset?.tokenLocation)
+    // })
+    const filePath = path.join(__dirname, './asset_registry.json')
+    fs.writeFileSync(filePath, JSON.stringify(assetRegistry, null, 2));
 }
 
 async function queryAssets() {
@@ -202,7 +208,10 @@ async function queryLocations() {
 }
 
 async function main() {
-    saveAssets()
+    await saveAssets()
+    process.exit(0)
 }
 
 // main()
+// {"X2":[{"Parachain":"2001"},{"GeneralKey":{"length":"2","data":"0x0207000000000000000000000000000000000000000000000000000000000000"}}]}
+// {"X2":[{"Parachain":"2001"},{"GeneralKey":{"length":2,"data":"0x0207000000000000000000000000000000000000000000000000000000000000"}}]}
