@@ -1,16 +1,19 @@
 // const express = require('express');
 import express from 'express';
-// const sqlite3 = require('sqlite3');
+import { MongoClient } from 'mongodb'
 import * as sqlite3 from 'sqlite3';
+
 // const cors = require('cors');
 import cors from 'cors';
 import ws, { WebSocket } from 'ws';
 import http from 'http';
-
+import dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
 
 
+const dotenvPath = path.join(__dirname, "/.env")
+dotenv.config({ path: dotenvPath });
 const app = express();
 const port = 3000;
 app.use(cors());  // Enable CORS for all routes
@@ -41,7 +44,6 @@ wss.on('connection', (ws) => {
         const translatedMessage = message.toString().toUpperCase();
         console.log('Received message:', translatedMessage);
 
-        // Send "TABLE_SUCCESS" to all connected clients(sql and web dashboard)
         wss.clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send("TABLE_SUCCESS");
@@ -49,14 +51,7 @@ wss.on('connection', (ws) => {
         });
     });
 
-    // existing code...
 });
-
-
-
-// server.listen(3000, () => {
-//     console.log('Server is listening on port 3000');
-// });
 
 app.get('/tables', (req, res) => {
     // Check if database parameter is provided
@@ -152,14 +147,10 @@ app.get('/latest-table', (req, res) => {
     });
 });
 
-
-
-
-// Endpoint to get a list of all .db files in the /dbs/ folder
 app.get('/databases', (req: any, res: any) => {
-    console.log("Received request for /databases");
+    // console.log("Received request for /databases");
     const dbsPath = path.join(__dirname, '..', 'sql_database', 'dbs');
-    // const pathToDbs = '..\\sql_database\\dbs\\'
+    const pathToDbs = '..\\sql_database\\dbs\\'
     fs.readdir(dbsPath, (err, files) => {
         if (err) {
             res.status(500).json({ error: err.message });
@@ -170,6 +161,102 @@ app.get('/databases', (req: any, res: any) => {
     });
 });
 
+app.get('/getMongodbData', async (req, res) => {
+    console.log("Fetching MONDODB data...")
+    if (!process.env.MONGODB_URI) {
+        res.status(500).json({ error: "MONGODB_URI environment variable is not set" });
+        throw new Error('MONGODB_URI environment variable is not defined!');
+        // return;
+    }
+    // const client = new MongoClient(process.env.MONGODB_URI);
+    const dbName = "DailyRecordsTest1";
+    const collectionName = "Records";
+
+    // const db = client.db(dbName);
+    // const data = db.collection(collectionName).find({}).toArray();
+    try {
+        const client = new MongoClient(process.env.MONGODB_URI);
+        await client.connect();  // Await connection
+
+        const db = client.db(dbName);
+        const data = await db.collection(collectionName).find({}).toArray();  // Await data fetching
+
+        console.log("Mondodb data successfully fetched")
+
+        res.status(200).json(data);  // Send data as response
+
+        await client.close();  // Close the connection
+    } catch (error) {
+        console.log("Error fetching mongodb")
+        console.log("ERROR: " + error);
+        res.status(500).json({ error: error });
+    }
+})
+
+
+app.get('/getMongoLatest', async (req, res) => {
+    const uri = process.env.MONGODB_URI;
+    const dbName = "DailyRecordsTest1";
+    const collectionName = "Records";
+
+    if (!uri) {
+        console.error('MONGODB_URI is not defined in your environment.');
+        return;
+    }
+
+    const client = new MongoClient(uri);
+
+    try {
+        await client.connect();
+
+        const database = client.db(dbName);
+        const collection = database.collection(collectionName);
+
+        const latestDateEntry = await collection.find().sort({ 'date': -1 }).limit(1).toArray();
+        const latestDate = latestDateEntry[0].date;
+
+        const latestRecord = await collection.find({ 'date': latestDate }).sort({ 'time': -1 }).limit(1).toArray();
+
+        res.status(200).json(latestRecord[0]);  // Send data as response
+
+        await client.close();  // Close the connection
+
+    } catch (error) {
+        console.error('An error occurred while retrieving the most recent record:', error);
+    } finally {
+        // Close the connection to the MongoDB cluster
+        await client.close();
+    }
+})
+app.get('/getMongoDates', async(req, res) => {
+    const uri = process.env.MONGODB_URI;
+    const dbName = "DailyRecordsTest1";
+    const collectionName = "Records";
+
+    if (!uri) {
+        console.error('MONGODB_URI is not defined in your environment.');
+        return;
+    }
+
+    const client = new MongoClient(uri);
+
+    try {
+        await client.connect();
+
+        const database = client.db(dbName);
+        const collection = database.collection(collectionName);
+
+        const uniqueDates = await collection.distinct('date'); // Make sure 'date' is the field name in your documents
+
+        console.log(uniqueDates);
+        res.status(200).json(uniqueDates);
+        await client.close()
+    } catch (error) {
+        console.error('An error occurred while retrieving unique dates:', error);
+    } finally {
+        await client.close();
+    }
+})
 app.get('/table-content', (req, res) => {
     if (!req.query.database || !req.query.table) {
         res.status(400).json({ error: "Database and table parameters are required" });
@@ -192,17 +279,91 @@ app.get('/table-content', (req, res) => {
     });
     db.close();
 });
+app.get('/getMongoDate', async (req, res) => {
+    const uri = process.env.MONGODB_URI;
+    const dbName = "DailyRecordsTest1";
+    const collectionName = "Records";
 
-// Additional endpoints (e.g., fetch table contents) can be added here
+    const date = req.query.date as string;
 
-// app.listen(port, () => {
-//     console.log(`Server running at http://localhost:${port}/`);
-// });
+    if (!uri) {
+        console.error('MONGODB_URI is not defined in your environment.');
+        return;
+    }
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db(dbName);
+        const collection = database.collection(collectionName);
 
-async function main() {
+        const recordsForDate = await collection.find({ 'date': date }).toArray();
 
+        console.log(recordsForDate);
+        let timeStamps = recordsForDate.map((record) => {
+            return record.time;
+        })
+        res.status(200).json(timeStamps);
+        return recordsForDate; // Since limit is 1, we can take the first element of the array
+
+    } catch (error) {
+        console.error('An error occurred while retrieving the most recent record:', error);
+    } finally {
+        await client.close();
+    }
+});
+app.get('/getMongoDateTime', async (req, res) => {
+    const uri = process.env.MONGODB_URI;
+    const dbName = "DailyRecordsTest1";
+    const collectionName = "Records";
+
+    const date = req.query.date as string;
+    const time = req.query.time as string;
+
+    if (!uri) {
+        console.error('MONGODB_URI is not defined in your environment.');
+        return;
+    }
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db(dbName);
+        const collection = database.collection(collectionName);
+
+        const table = await collection.find({ 'date': date, 'time': time }).toArray();
+
+        res.status(200).json(table);
+        return table; // Since limit is 1, we can take the first element of the array
+
+    } catch (error) {
+        console.error('An error occurred while retrieving the most recent record:', error);
+    } finally {
+        await client.close();
+    }
+});
+async function getRecordsForDate(date: string) {
+    // Load environment variables
+    const uri = process.env.MONGODB_URI;
+    const dbName = "DailyRecordsTest1";
+    const collectionName = "Records";
+
+    if (!uri) {
+        console.error('MONGODB_URI is not defined in your environment.');
+        return;
+    }
+
+    const client = new MongoClient(uri);
+
+    try {
+        await client.connect();
+
+        const database = client.db(dbName);
+        const collection = database.collection(collectionName);
+
+        const recordsForDate = await collection.find({ 'date': date }).toArray();
+        return recordsForDate; // Since limit is 1, we can take the first element of the array
+    } catch (error) {
+        console.error('An error occurred while retrieving the most recent record:', error);
+    } finally {
+        await client.close();
+    }
 }
-
-main()
-
-// module.exports.wss = wss;  // Export the WebSocket Server instance

@@ -1,23 +1,23 @@
 <template>
   <div>
   <!-- Only show this section if no table is selected -->
-    <div v-if="selectedTable === null && selectedDatabase === null">
+    <div v-if="selectedTable === null && selectedDate === null">
       <div class="container">
         <!-- List of Databases -->
         <div class="left" v-if="selectedDatabase === null">
           <h2>Databases</h2>
           <ul>
-            <li v-for="db in reversedDbs" :key="db" @click="selectDatabase(db)">
+            <li v-for="db in reversedDbs" :key="db" @click="selectDate(db)">
               {{ db }}
             </li>
           </ul>
         </div>
 
           <!-- Display the latest table -->
-        <div class="right" v-if="latestTable && selectedDatabase == null">
+        <div class="right" v-if="latestTable && selectedDate == null">
             <h3>Most recent table:</h3>
-            <p>Database: {{ latestTable.database }}</p>
-            <p>Table: {{ latestTable.table.name }}</p>
+            <p>Database: {{ latestTable.date }}</p>
+            <p>Table: {{ latestTable.time }}</p>
 
             <!-- Display table contents -->
             <table>
@@ -42,7 +42,7 @@
     </div>
 
     <!-- List of Tables in a Selected Database -->
-    <div v-else-if="selectedTable === null">
+    <!-- <div v-else-if="selectedTable === null">
       <h2>Tables in {{ selectedDatabase }}</h2>
       <button @click="selectedDatabase = null">Back to databases</button>
       <ul>
@@ -50,14 +50,23 @@
           {{ table.name }} - {{ table.lastPathValue }}
         </li>
       </ul>
-    </div>
-
+    </div> -->
+      <div v-else-if="selectedTime === null">
+        <h2>Tables in {{ selectedDate }}</h2>
+        <button @click="selectedDate = null">Back to dates</button>
+        <ul>
+          <li v-for="table in reversedTables" :key="table" @click="selectTime(table)">
+            <!-- {{ table }} - {{ table.lastPathValue }} -->
+            {{ table }}
+          </li>
+        </ul>
+      </div>
   </div>
 
     <!-- Display content of a selected table -->
-      <div v-if="selectedTable">
-        <button @click="selectedTable = null">Back to tables</button>
-        <h2>Content of {{ selectedTable }}</h2>
+      <div v-if="selectedTime">
+        <button @click="selectedTime = null">Back to tables</button>
+        <h2>Content of {{ selectedTime }}</h2>
         <table>
           <thead>
             <tr>
@@ -82,8 +91,10 @@
 
 <script>
 import axios from 'axios';
-const serverUrl = "https://f212-2603-6080-eb02-d337-d8c0-f24a-3e98-a1d9.ngrok.io"
-const serverWs = "wss://f212-2603-6080-eb02-d337-d8c0-f24a-3e98-a1d9.ngrok.io"
+// const serverUrl = "https://f212-2603-6080-eb02-d337-d8c0-f24a-3e98-a1d9.ngrok.io"
+const serverUrl = "http://localhost:3000"
+// const serverWs = "wss://f212-2603-6080-eb02-d337-d8c0-f24a-3e98-a1d9.ngrok.io"
+const serverWs = "ws://localhost:3000"
 
 export default {
   data() {
@@ -92,6 +103,8 @@ export default {
       tables: [],
       selectedDatabase: null,
       selectedTable: null,
+      selectedTime: null,
+      selectedDate: null,
       tableContent: [],
       latestTable: null,
       latestTableContents: [],
@@ -99,25 +112,41 @@ export default {
     };
   },
   methods: {
-    selectDatabase(dbName) {
-      this.selectedDatabase = dbName;
-      axios.get(`${serverUrl}/tables-with-last-value?database=${this.selectedDatabase}`)
+    // selectDatabase(dbName) {
+    //   this.selectedDatabase = dbName;
+    //   axios.get(`${serverUrl}/tables-with-last-value?database=${this.selectedDatabase}`)
+    //     .then(response => {
+    //       this.tables = response.data;
+    //     });
+    //     console.log("Database selected: " + dbName)
+    // },
+    selectDate(date) {
+      this.selectedDate = date;
+      axios.get(`${serverUrl}/getMongoDate?date=${this.selectedDate}`)
         .then(response => {
           this.tables = response.data;
         });
-        console.log("Database selected: " + dbName)
     },
-    selectTable(tableName) {
-      this.selectedTable = tableName;
-      axios.get(`${serverUrl}/table-content?database=${this.selectedDatabase}&table=${tableName}`)
+    selectTime(time) {
+      this.selectedTime = time;
+      axios.get(`${serverUrl}/getMongoDateTime?date=${this.selectedDate}&time=${this.selectedTime}`)
         .then(response => {
-          this.tableContent = response.data;
+          console.log(response.data[0])
+          console.log(response.data[0].record)
+          this.tableContent = response.data[0].record;
         });
     },
+    // fetchLatestTable() {
+    //   axios.get(`${serverUrl}/latest-table`).then(response => {
+    //     this.latestTable = response.data;
+    //     this.latestTableContents = response.data.contents;
+    //   });
+    //   console.log("Latest table fetched")
+    // }
     fetchLatestTable() {
-      axios.get(`${serverUrl}/latest-table`).then(response => {
+      axios.get(`${serverUrl}/getMongoLatest`).then(response => {
         this.latestTable = response.data;
-        this.latestTableContents = response.data.contents;
+        this.latestTableContents = response.data.record;
       });
       console.log("Latest table fetched")
     }
@@ -131,13 +160,14 @@ export default {
     }
   },
 
-  mounted() {
-    axios.get(`${serverUrl}/databases`).then(response => {
-        this.databases = response.data;
+  async mounted() {
+    axios.get(`${serverUrl}/getMongoDates`).then(response => {
+      this.databases = response.data;
     })
     .catch(error => {
-        console.error("Error fetching databases:", error);
+      console.error("There was an error fetching the MONGODB data:", error);
     });
+
     this.fetchLatestTable();
     this.ws = new WebSocket(`${serverWs}`);
 
