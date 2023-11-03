@@ -92,9 +92,11 @@
 <script>
 import axios from 'axios';
 // const serverUrl = "https://f212-2603-6080-eb02-d337-d8c0-f24a-3e98-a1d9.ngrok.io"
-const serverUrl = "http://localhost:3000"
+// const serverUrl = "http://localhost:3000"
+const serverUrl = "https://arb-server-a7fa597e65ca.herokuapp.com"
 // const serverWs = "wss://f212-2603-6080-eb02-d337-d8c0-f24a-3e98-a1d9.ngrok.io"
-const serverWs = "ws://localhost:3000"
+// const serverWs = "ws://localhost:3000"
+const serverWs = "wss://arb-server-a7fa597e65ca.herokuapp.com"
 
 export default {
   data() {
