@@ -102,23 +102,23 @@ async function main() {
     });
     db.close();
 
-    const ws = new WebSocket('ws://localhost:3000');
-    ws.on('error', console.error);
-    ws.on('open', function open() {
-        ws.send('NEW_TABLE_CREATED');
-    });
+    // const ws = new WebSocket('ws://localhost:3000');
+    // ws.on('error', console.error);
+    // ws.on('open', function open() {
+    //     ws.send('NEW_TABLE_CREATED');
+    // });
 
-    ws.on('message', function message(data) {
-        const message = data.toString();
-        // console.log('received: %s', data.toString());
-        if (message == "TABLE_SUCCESS") {
-            // console.log("Closing database and websocket connection")
-            // db.close();
-            ws.close();
-            // console.log("Closed database connection")
+    // ws.on('message', function message(data) {
+    //     const message = data.toString();
+    //     // console.log('received: %s', data.toString());
+    //     if (message == "TABLE_SUCCESS") {
+    //         // console.log("Closing database and websocket connection")
+    //         // db.close();
+    //         ws.close();
+    //         // console.log("Closed database connection")
 
-        }
-    });
+    //     }
+    // });
     // console.log("Closing database connection")
 
 }
