@@ -43,7 +43,7 @@ async function updateLps() {
         bncHandler.updateLps().then(() => console.log("bnc complete")),
         hkoHandler.updateLps().then(() => console.log("hko complete")),
         karHandler.updateLps().then(() => console.log("kar complete")),
-        kucoinHandler.updateLps().then(() => console.log("kucoin complete")),
+        // kucoinHandler.updateLps().then(() => console.log("kucoin complete")),
         mgxHandler.updateLps().then(() => console.log("mgx complete")),
         bsxHandler.updateLps().then(() => console.log("bsx complete")),
         movrHandler.updateLps().then(() => console.log("movr complete")),
