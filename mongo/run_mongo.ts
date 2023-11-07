@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import { MongoClient, ServerApiVersion } from 'mongodb';
+import axios from 'axios';
 // const { MongoClient, ServerApiVersion } = require('mongodb');
 const password = process.env.DB_PASSWORD
 const uri = `mongodb+srv://dazzlec123:${password}@cluster0.i2n4fzh.mongodb.net/?retryWrites=true&w=majority`;
@@ -26,4 +27,16 @@ async function run() {
         await client.close();
     }
 }
-run().catch(console.dir);
+// run().catch(console.dir);
+
+async function testUpdate() {
+    try {
+        const response = await axios.post("https://arb-server-a7fa597e65ca.herokuapp.com/notify-update", {
+            message: 'Data uploaded to mongo',
+        });
+        console.log('Heroku server notified', response.data);
+    } catch (error) {
+        console.error('Error notifying heroku server', error);
+    }
+}
+testUpdate().catch(console.dir);

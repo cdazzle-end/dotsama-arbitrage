@@ -1,5 +1,6 @@
 import path from "path";
 import dotenv from 'dotenv';
+import axios from "axios";
 const dotenvPath = path.join(__dirname, "/.env")
 dotenv.config({path: dotenvPath});
 import fs from "fs";
@@ -50,6 +51,17 @@ async function uploadLatestRecord() {
         }
         await client.close()
         
+        try {
+            const response = await axios.post("https://arb-server-a7fa597e65ca.herokuapp.com/notify-update", {
+                message: 'Data uploaded to mongo',
+            });
+            console.log('Heroku server notified', response.data);
+        } catch (error) {
+            console.error('Error notifying heroku server', error);
+        }
+
+    } else {
+        console.log("Record already exists in database")
     }
     
    
