@@ -183,8 +183,8 @@ async function queryLocations(api:any) {
     })
     let bsxLocation = {
         X2: [
-            { Parachain: 2090 },
-            { GeneralIndex: 0 }
+            { Parachain: "2090" },
+            { GeneralIndex: "0" }
         ]
     }
     locations.push([bsxLocation, 0]) 

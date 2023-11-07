@@ -44,7 +44,7 @@ export async function saveAssets() {
             }
             if (asset.localId == MGX_ID) {
                 let tokenLocation = {
-                    X1: { parachain: "2110" }
+                    X2: [{ Parachain: "2110" }, { GeneralKey: { "length": "4", "data": "0x0000000000000000000000000000000000000000000000000000000000000000" } }]
                 }
                 let formattedLocation = api.createType('Junctions', tokenLocation).toJSON()
                 let newAssetRegistryObject: MyAssetRegistryObject = {
