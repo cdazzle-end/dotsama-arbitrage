@@ -114,14 +114,74 @@ export default {
     };
   },
   methods: {
-    // selectDatabase(dbName) {
-    //   this.selectedDatabase = dbName;
-    //   axios.get(`${serverUrl}/tables-with-last-value?database=${this.selectedDatabase}`)
-    //     .then(response => {
-    //       this.tables = response.data;
-    //     });
-    //     console.log("Database selected: " + dbName)
-    // },
+    setupWebSocket() {
+      
+      if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+        console.log('WebSocket connection already exists or is in the process of connecting.');
+        return;
+      }
+      this.ws = new WebSocket(`${serverWs}`);
+
+      // Set up WebSocket event listeners
+      this.ws.onopen = (event) => {
+        console.log('WebSocket connected:', event);
+      };
+
+      this.ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      this.ws.addEventListener('message', (event) => {
+        const message = JSON.parse(event.data);
+
+        if (event.data === "TABLE_SUCCESS") {
+          // console.log('New table created successfully');
+          setTimeout(() => {
+            this.fetchLatestTable();
+            console.log('Latest table fetched');
+          }, 5000);
+        }
+
+        if (message.type == 'update') {
+          console.log('Received update message');
+          setTimeout(() => {
+            this.updateLatestTable(message.data);
+          }, 1000);
+        }
+      });
+      // Handle the WebSocket closing
+      this.ws.onclose = (event) => {
+        if (!event.wasClean) {
+          console.error(`WebSocket error: ${event.code} ${event.reason}`);
+        } else {
+          console.log('WebSocket closed');
+          // console.log(event)
+        }
+        // console.log('WebSocket closed: ' + event.code + ' ' + event.reason);
+        // Reset the WebSocket instance to null
+        this.ws = null;
+      };
+      // this.ws.addEventListener('open', (event) => {
+      //   console.log('Connected to WebSocket server');
+      //   console.log(event)
+      // });
+
+      // this.ws.addEventListener('error', (error) => {
+      //   console.error('WebSocket Error:', error);
+      // });
+
+    },
+     handleVisibilityChange() {
+      if (document.visibilityState === 'hidden') {
+        // Optionally close the WebSocket connection here
+        if (this.ws) {
+          this.ws.close();
+        }
+      } else if (document.visibilityState === 'visible') {
+        // Re-establish the WebSocket connection
+        this.setupWebSocket();
+      }
+    },
     selectDate(date) {
       this.selectedDate = date;
       axios.get(`${serverUrl}/getMongoDate?date=${this.selectedDate}`)
@@ -138,19 +198,21 @@ export default {
           this.tableContent = response.data[0].record;
         });
     },
-    // fetchLatestTable() {
-    //   axios.get(`${serverUrl}/latest-table`).then(response => {
-    //     this.latestTable = response.data;
-    //     this.latestTableContents = response.data.contents;
-    //   });
-    //   console.log("Latest table fetched")
-    // }
     fetchLatestTable() {
       axios.get(`${serverUrl}/getMongoLatest`).then(response => {
         this.latestTable = response.data;
         this.latestTableContents = response.data.record;
       });
       console.log("Latest table fetched")
+    },
+    updateLatestTable(tableData) {
+      console.log("Updating latest table")
+      console.log(tableData)
+      console.log(tableData.date)
+      console.log(tableData.time)
+      this.latestTable = tableData;
+      this.latestTableContents = tableData.record;
+      console.log("Latest table updated")
     }
   },
   computed: {
@@ -171,51 +233,20 @@ export default {
     });
 
     this.fetchLatestTable();
-    this.ws = new WebSocket(`${serverWs}`);
+    // this.ws = new WebSocket(`${serverWs}`);
+    this.setupWebSocket()
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
 
-    this.ws.addEventListener('open', (event) => {
-      console.log('Connected to WebSocket server');
-      console.log(event)
-    });
 
-    this.ws.addEventListener('error', (error) => {
-      console.error('WebSocket Error:', error);
-    }); 
 
-    this.ws.addEventListener('message', (event) => {
-      const message = event.data;
-      console.log('Received message from server:', message)
-      if (event.data === 'Test message from server') {
-        console.log('Received test message');
-      }
-      if (event.data === "TABLE_SUCCESS") {
-        // console.log('New table created successfully');
-        setTimeout(() => {
-          this.fetchLatestTable();
-          console.log('Latest table fetched');
-        }, 5000);
-      }
-    });
-
-    // this.ws.addEventListener('message', (event) => {
-    //   if (event.data === 'NEW_TABLE_CREATED') {
-    //     console.log('A new table has been created!');
-    //     // You can fetch the new table or update the UI here
-    //     this.fetchLatestTable();
-    //     console.log('New table created!')
-    //   }
-    // });
-
-    // this.ws.onmessage = (event) => {
-    //   if (event.data === 'NEW_TABLE_CREATED') {
-    //     // Fetch the latest table or perform any other update logic
-    //     this.fetchLatestTable();
-    //     console.log('New table created!')
-    //   }
-    // };
+   
   },
   beforeUnmount() {
-    this.ws.close();
+    // this.ws.close();
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+    if (this.ws) {
+      this.ws.close(); // Close the WebSocket connection when the component is destroyed
+    }
   }
 }
 </script>
