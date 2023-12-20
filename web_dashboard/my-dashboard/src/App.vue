@@ -16,8 +16,8 @@
           <!-- Display the latest table -->
         <div class="right" v-if="latestTable && selectedDate == null">
             <h3>Most recent table:</h3>
-            <p>Database: {{ latestTable.date }}</p>
-            <p>Table: {{ latestTable.time }}</p>
+            <p>Date: {{ latestTable.date }}</p>
+            <p>Time: {{ latestTable.time }}</p>
 
             <!-- Display table contents -->
             <table>
@@ -273,4 +273,5 @@ export default {
 .right {
   flex: 2;
   /* Take up double the available space compared to the left */
-}</style>
+}
+</style>
