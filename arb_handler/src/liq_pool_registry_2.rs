@@ -129,11 +129,12 @@ impl LiqPoolRegistry2{
                             pool
                         } else {
                             let lp_data: MyLpJson = serde_json::from_value(lp.clone()).map_err(|e| e).unwrap();
+
                             let chain_id = lp_data.chainId;
                             let contract_address = lp_data.contractAddress;
                             let pool_assets = lp_data.poolAssets;
                             let liquidity_stats = lp_data.liquidityStats;
-
+                            
                             let liquidity_0 = liquidity_stats[0].as_str().parse().map_err(|e| e).unwrap();
                             let liquidity_1 = liquidity_stats[1].as_str().parse().map_err(|e| e).unwrap();
                             let assets = pool_assets.into_iter().filter_map(|asset| {

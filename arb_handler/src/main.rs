@@ -19,8 +19,9 @@ async fn main() {
     // cross_chain();
     // test_arb_2()
     // test_asset_registry();
-    async_search().await
-    // search_ksm().await;
+    // async_search().await
+
+    search_ksm().await;
     // test_arb_3()
     // test_table_2();
     // search_rmrk().await;
