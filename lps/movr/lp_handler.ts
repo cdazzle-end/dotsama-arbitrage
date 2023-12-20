@@ -67,7 +67,7 @@ export async function updateLps() {
         lp.poolAssets = [token0? token0.tokenData.localId : lp.poolAssets[0], token1? token1.tokenData.localId : lp.poolAssets[1]]
     })
 
-    const updatedLps = await Promise.all(lps.map(async (lp: any) => {
+    const updatedLps = (await Promise.all(lps.map(async (lp: any) => {
         
         const pool = await new ethers.Contract(lp.contractAddress, altDexContractAbi, provider);
         let reserves = await pool.getReserves();
@@ -78,15 +78,24 @@ export async function updateLps() {
         let reserve_0 = removeLastChar(reserves[0].toString());
         let reserve_1 = removeLastChar(reserves[1].toString());
         // console.log(reserve_0, reserve_1)
-        const newPool: MyLp = {
-            chainId: 2023,
-            contractAddress: lp.contractAddress,
-            poolAssets: lp.poolAssets,
-            liquidityStats: [reserve_0, reserve_1]
+        // const newPool: MyLp = {
+        //     chainId: 2023,
+        //     contractAddress: lp.contractAddress,
+        //     poolAssets: lp.poolAssets,
+        //     liquidityStats: [reserve_0, reserve_1]
+        // }
+        // // console.log(newPool)
+        // return newPool;
+        if (reserve_0 !== "" && reserve_1 !== "") {
+            const newPool: MyLp = {
+                chainId: 2023,
+                contractAddress: lp.contractAddress,
+                poolAssets: lp.poolAssets,
+                liquidityStats: [reserve_0, reserve_1]
+            };
+            return newPool;
         }
-        // console.log(newPool)
-        return newPool;
-    }))
+    }))).filter(pool => pool != null); // Filter out null entries
     fs.writeFileSync('./movr/lps.json', JSON.stringify(updatedLps, null, 2))
     provider.destroy()
 
