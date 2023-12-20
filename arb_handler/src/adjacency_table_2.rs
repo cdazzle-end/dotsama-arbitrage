@@ -63,6 +63,7 @@ impl AdjacencyTable2{
         for lp in &lp_registry.liq_pools{   
             // println!("lp: {:?}", lp);
             let (asset_0, asset_1) = (Rc::clone(&lp.assets[0]), Rc::clone(&lp.assets[1]));
+            // This is for cex pools (NOT IN OPERATION ATM)
             if let Some(x) = &lp.exchange{
                 let (bid_price, ask_price) = (lp.prices.unwrap().0 as u128, lp.prices.unwrap().0 as u128);
                 let (bid_decimals, ask_decimals) = (lp.price_decimals.unwrap().0 as u128, lp.price_decimals.unwrap().0 as u128);
@@ -78,6 +79,8 @@ impl AdjacencyTable2{
                     bid_price, bid_decimals,
                     ask_price, ask_decimals
                 );
+
+            // This is for stable pools
             } else if let Some(x) = &lp.a {
                 for asset in &lp.assets{
                     println!("LIQUIDITY: {:?}", lp.liquidity);
@@ -103,7 +106,7 @@ impl AdjacencyTable2{
                     }
                     adjacency_table.add_stable_pair_to_table(base_asset, base_asset_liquidity, base_token_precision, adjacent_assets, adjacent_liquidity, lp.a.unwrap().into(), adjacent_token_precisions);
                 }
-                
+            // This is for regular dex pools, which is most of what were working with
             } else {
                 let (liquidity_0, liquidity_1) = (lp.liquidity[0], lp.liquidity[1]);
                 adjacency_table.add_dex_pair_to_table(
