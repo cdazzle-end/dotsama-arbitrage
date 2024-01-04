@@ -1,0 +1,20 @@
+[
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2012,
+      "localId": "0",
+      "name": "CSM",
+      "symbol": "CSM",
+      "decimals": "12",
+      "deposit": "0",
+      "isFrozen": false
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "X1": {
+        "Parachain": "2012"
+      }
+    }
+  }
+]

@@ -1,0 +1,15 @@
+[
+    {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 0,
+      "localId": "KSM",
+      "name": "KSM",
+      "symbol": "KSM",
+      "decimals": "12",
+      "minimalBalance": "100000000"
+    },
+    "hasLocation": true,
+    "tokenLocation": "here"
+  }
+]

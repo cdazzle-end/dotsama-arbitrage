@@ -1,0 +1,54 @@
+[
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2092,
+      "localId": {
+        "Token": "KINT"
+      },
+      "name": "KINT",
+      "symbol": "KINT",
+      "decimals": "12"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "X2": [
+        {
+          "Parachain": "2092"
+        },
+        {
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x000c000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2092,
+      "localId": {
+        "Token": "KBTC"
+      },
+      "name": "KBTC",
+      "symbol": "KBTC",
+      "decimals": "8"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "X2": [
+        {
+          "Parachain": "2092"
+        },
+        {
+          "GeneralKey": {
+            "length": "2",
+            "data": "0x000b000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ]
+    }
+  }
+]

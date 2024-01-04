@@ -65,7 +65,7 @@ pub struct MyAssetRegistryObject {
     tokenLocation: Option<serde_json::Value>,
 }
 // vec!["kar", "bnc", "movr", "hko", "sdn"];
-
+// New asset registry files for statemine, crust, kintsugi...
 impl AssetRegistry2{
     pub fn build_asset_registry() -> AssetRegistry2{
         let chains = vec!["kar", "bnc", "movr", "hko", "sdn", "kucoin", "mgx", "bsx"];

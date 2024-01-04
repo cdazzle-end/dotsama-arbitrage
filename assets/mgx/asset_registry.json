@@ -27,6 +27,17 @@
     "tokenData": {
       "network": "kusama",
       "chain": 2110,
+      "localId": "48",
+      "name": "LiquidityPoolToken0x00000030",
+      "symbol": "TKN0x00000007-TKN0x0000000E",
+      "decimals": "18"
+    },
+    "hasLocation": false
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
+      "chain": 2110,
       "localId": "7",
       "name": "Turing native token",
       "symbol": "TUR",
@@ -334,9 +345,17 @@
     },
     "hasLocation": true,
     "tokenLocation": {
-      "X1": {
-        "parachain": "2110"
-      }
+      "X2": [
+        {
+          "Parachain": "2110"
+        },
+        {
+          "GeneralKey": {
+            "length": "4",
+            "data": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ]
     }
   },
   {
