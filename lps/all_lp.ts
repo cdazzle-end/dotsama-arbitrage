@@ -36,20 +36,20 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 // const estTime = formatter.format(date);
 
 
+// export async function updateLpsChop() {
+//     await Promise.all([
+//         bncHandler.updateLps().then(() => console.log("bnc complete")),
+//         hkoHandler.updateLps().then(() => console.log("hko complete")),
+//         karHandler.updateLps().then(() => console.log("kar complete")),
+//         // kucoinHandler.updateLps().then(() => console.log("kucoin complete")),
+//         mgxHandler.updateLps().then(() => console.log("mgx complete")),
+//         bsxHandler.updateLps().then(() => console.log("bsx complete")),
+//         movrHandler.updateLps().then(() => console.log("movr complete")),
+//         sdnHandler.updateLps().then(() => console.log("sdn complete"))
+//     ]);
+// }
 
 
-async function updateLps() {
-    await Promise.all([
-        bncHandler.updateLps().then(() => console.log("bnc complete")),
-        hkoHandler.updateLps().then(() => console.log("hko complete")),
-        karHandler.updateLps().then(() => console.log("kar complete")),
-        // kucoinHandler.updateLps().then(() => console.log("kucoin complete")),
-        mgxHandler.updateLps().then(() => console.log("mgx complete")),
-        bsxHandler.updateLps().then(() => console.log("bsx complete")),
-        movrHandler.updateLps().then(() => console.log("movr complete")),
-        sdnHandler.updateLps().then(() => console.log("sdn complete"))
-    ]);
-}
 async function startTimer() {
     console.log("startTimer")
     const date = new Date();
@@ -64,10 +64,27 @@ async function updateLpTimeStamp() {
     fs.appendFileSync("lp_timestamps.txt", "LPs updated at: " + startTime + "\n");
 }
 
+async function updateLps(chopsticks: boolean) {
+    await Promise.all([
+        bncHandler.updateLps(chopsticks).then(() => console.log("bnc complete")),
+        hkoHandler.updateLps(chopsticks).then(() => console.log("hko complete")),
+        karHandler.updateLps(chopsticks).then(() => console.log("kar complete")),
+        // kucoinHandler.updateLps().then(() => console.log("kucoin complete")),
+        mgxHandler.updateLps(chopsticks).then(() => console.log("mgx complete")),
+        bsxHandler.updateLps(chopsticks).then(() => console.log("bsx complete")),
+        movrHandler.updateLps().then(() => console.log("movr complete")),
+        sdnHandler.updateLps().then(() => console.log("sdn complete"))
+    ]);
+}
+
 async function main() {
 
+    let chopsticks = await process.argv.includes("true")
+
+    console.log("chopsticks: " + chopsticks)
+
     startTimer()
-    await updateLps()
+    await updateLps(chopsticks)
     updateLpTimeStamp()
 }
 

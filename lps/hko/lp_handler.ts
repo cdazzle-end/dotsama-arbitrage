@@ -9,8 +9,12 @@ import { WsProvider } from '@polkadot/rpc-provider';
 // import { BigNumber } from 'ethers';
 import {BN} from '@polkadot/util';
 
-export async function updateLps() {
-    const provider = new WsProvider('wss://heiko-rpc.parallel.fi');
+const localRpc = "ws://172.26.130.75:8012"
+const liveRpc = 'wss://heiko-rpc.parallel.fi'
+
+export async function updateLps(chopsticks: boolean) {
+    let rpc = chopsticks ? localRpc : liveRpc
+    const provider = new WsProvider(rpc);
     const api = new ApiPromise(options({ provider }));
     await api.isReady;
 

@@ -12,9 +12,11 @@ const endpoint5 = 'wss://karura-rpc-2.aca-api.network/ws'
 // wss://karura-rpc-3.aca-api.network/ws
 
 declare const fetch: any;
-
-export async function updateLps() {
-    const provider = new WsProvider(endpoint2);
+const localRpc = "ws://172.26.130.75:8008"
+const liveRpc = endpoint2
+export async function updateLps(chopsticks: boolean) {
+    let rpc = chopsticks ? localRpc : liveRpc
+    const provider = new WsProvider(rpc);
     const api = new ApiPromise(options({ provider }));
     await api.isReady;
 
@@ -496,7 +498,7 @@ async function main() {
     // await getLps()
     // await queryStableLps(api);
     // await swapKsmLksm(api);
-    await updateLps()
+    // await updateLps()
 
     process.exit(0)
 }

@@ -8,8 +8,12 @@ import { ModuleBApi, BifrostConfig } from '@zenlink-dex/sdk-api';
 import { Percent, Token, TokenAmount, TradeType, StandardPair, StandardPool, StablePair, StableSwap,  AssetMeta } from '@zenlink-dex/sdk-core';
 import { firstValueFrom } from 'rxjs';
 
-export async function updateLps() {
-    const provider = new WsProvider(BifrostConfig.wss[0]);
+const localRpc = "ws://172.26.130.75:8009"
+const liveRpc = BifrostConfig.wss[0]
+
+export async function updateLps(chopsticks: boolean) {
+    let rpc = chopsticks ? localRpc : liveRpc
+    const provider = new WsProvider(rpc);
     await provider.isReady;
     const dexApi = new ModuleBApi(
         provider,

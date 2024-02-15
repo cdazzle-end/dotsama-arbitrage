@@ -2,9 +2,11 @@ import * as fs from 'fs';
 import { MyLp } from '../lp_types';
 import { Keyring, ApiPromise, WsProvider } from '@polkadot/api';
 import { BigNumber } from 'bignumber.js';
-
-export async function updateLps() {
-    const provider = new WsProvider('wss://basilisk-rpc.dwellir.com');
+const localRpc = "ws://172.26.130.75:8010"
+const liveRpc = 'wss://basilisk-rpc.dwellir.com'
+export async function updateLps(chopsticks: boolean) {
+    let rpc = chopsticks ? localRpc : liveRpc
+    const provider = new WsProvider(rpc);
     const api = await ApiPromise.create({ provider: provider });
     await api.isReady;
 

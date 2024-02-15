@@ -1,15 +1,17 @@
 import { Mangata } from '@mangata-finance/sdk';
 import { MyLp } from '../lp_types';
 import * as fs from 'fs';
-
-export async function updateLps() {
+const localRpc = "ws://172.26.130.75:8011"
+const liveRpc = 'wss://kusama-rpc.mangata.online'
+export async function updateLps(chopsticks: boolean) {
+    let rpc = chopsticks ? localRpc : liveRpc
     const MAINNET_1 = 'wss://mangata-x.api.onfinality.io/public-ws'
     const MAINNET_2 = 'wss://prod-kusama-collator-01.mangatafinance.cloud'
     const MAINNET_3 = 'wss://mangatax.api.onfinality.io/public-ws'
     const MAINNET_4 = 'wss://prod-kusama-collator-02.mangatafinance.cloud'
     const MAINNET_5 = 'wss://kusama-rpc.mangata.online'
     // const mangata = Mangata.getInstance([MAINNET_1, MAINNET_2])
-    const mangata = Mangata.getInstance([MAINNET_5])
+    const mangata = Mangata.getInstance([rpc])
 
     // Retrieve the chainName, nodeName & nodeVersion information
     const [chain, nodeName, nodeVersion] = await Promise.all([

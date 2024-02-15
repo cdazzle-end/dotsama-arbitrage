@@ -56,6 +56,8 @@ const tokenContractAbi = [
     "event Transfer(address indexed src, address indexed dst, uint val)"
 ]
 
+
+
 export async function updateLps() {
     
     const lps = JSON.parse(fs.readFileSync('./movr/lps_base.json', 'utf8'))
