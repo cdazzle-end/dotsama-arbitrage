@@ -32,6 +32,7 @@ export async function saveAssets() {
             // console.log(asset)
             if (asset.localId == NATIVE_KUSAMA_ID) {
                 // console.log("Found kusama")
+                
                 // console.log(asset)
                 let tokenLocation = "here";
                 // let formattedLocation = api.createType('Junctions', tokenLocation).toJSON()

@@ -169,4 +169,4 @@ async function main() {
     buildAllAssetRegistry()
 }
 
-main()
+main()  

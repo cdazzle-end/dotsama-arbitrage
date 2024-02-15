@@ -8,6 +8,7 @@ lps/update_lps.ps1
 **/stablePools.json
 arb_handler/result_log_data/
 arb_handler/result_log.txt
+arb_handler/fallback_log_data/
 sql_database/dbs/
 notion/key.txt
 TODO.txt
