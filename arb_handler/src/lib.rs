@@ -34,11 +34,14 @@ use std::fs::OpenOptions;
 // use std::io::prelude::*;
 type NodePath = Vec<Rc<RefCell<GraphNode>>>;
 
+// This is the object that we log at the end
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PathNode{
     pub node_key: String,
     pub asset_name: String,
     pub path_value: f64,
+    pub path_identifier: u64, // 0 - 3 for transfer code
+    // pub path_id: String, // Any extra info like pool ID
 }
 
 pub fn build_sub_assets(){
@@ -46,36 +49,38 @@ pub fn build_sub_assets(){
 }
 
 pub async fn async_search(){
-    let future1 = task::spawn(search_rmrk());
+    // let future1 = task::spawn(search_rmrk());
     let future2 = task::spawn(search_ksm());
-    let future3 = task::spawn(search_movr());
-    let (result1, result2, result3) = join!(future1, future2, future3);
+    let future3 =  task::spawn(search_ksm_small());
+    let (result2, result3) = join!(future2, future3);
     // future1
     let (ksm_display, ksm_log) = result2.unwrap();
     println!();
-    println!("------------------------------------");
-    println!("RESULTS");
-    println!("------------------------------------");
-    println!("Result of function 1: {:?}", result1);
-    println!("------------------------------------");
-    println!("Result of function 2: {:?}", ksm_display);
-    println!("------------------------------------");
-    println!("Result of function 3: {:?}", result3);
+    // println!("------------------------------------");
+    // println!("RESULTS");
+    // println!("------------------------------------");
+    // println!("Result of function 1: {:?}", result1);
+    // println!("------------------------------------");
+    // println!("Result of function 2: {:?}", ksm_display);
+    // println!("------------------------------------");
+    // println!("Result of function 3: {:?}", result3);
 
-    for node in ksm_log{
-        println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
-    }
+    // for node in ksm_log{
+        // println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+    // }
 }
 
 pub fn log_results(path: NodePath) -> Vec<PathNode>{
     let start_node = path[0].borrow();
     let path_values = &start_node.path_values;
+    let path_value_types = &start_node.path_value_types;
     let mut result_log: Vec<PathNode> = Vec::new();
     for(i, node) in path.iter().enumerate(){
         let path_node = PathNode{
             node_key: node.borrow().get_asset_key(),
             asset_name: node.borrow().get_asset_name(),
             path_value: path_values[i].clone(),
+            path_identifier: path_value_types[i].clone(),
         };
         result_log.push(path_node);
     }
@@ -88,6 +93,111 @@ pub fn log_results(path: NodePath) -> Vec<PathNode>{
 
     // Construct the directory path for the current date
     let log_folder_path = format!("result_log_data/{}", date);
+
+    // Create a directory for the current date if it doesn't exist
+    match std::fs::create_dir_all(&log_folder_path) {
+        Ok(_) => println!("Directory created successfully"),
+        Err(e) => println!("Error creating directory: {:?}", e),
+    }
+
+    // Construct the file path including the directory
+    let log_data_path = format!("{}/{}_{}.json", log_folder_path, start_node.get_asset_name(), time);
+    println!("Log data path: {}", log_data_path);
+    // let log_data_path = format!("result_log_data/{}_{}.json", start_node.get_asset_name(), timestamp);
+    // println!("Log data path: {}", log_data_path);
+    // When creating the file, use the log_data_path which includes the directory
+    let mut file = File::create(log_data_path).expect("Failed to create file");
+    file.write_all(json.as_bytes()).expect("Failed to write data");
+
+    // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
+    let best_path_value = result_log[result_log.len()-1].path_value;
+    let result_log_string = format!("{} {} - {}", timestamp, start_node.get_asset_name(), best_path_value);
+    let mut file = OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open("result_log.txt")
+        .expect("Failed to open or create file");
+    writeln!(file, "{}", result_log_string).expect("Failed to write data");
+
+    result_log.clone()
+}
+
+pub fn log_results_target(path: NodePath) -> Vec<PathNode> {
+    let target_node = path[path.len() - 1].borrow();
+    let path_values = &target_node.path_values;
+    let path_value_types = &target_node.path_value_types;
+    let mut result_log: Vec<PathNode> = Vec::new();
+    for(i, node) in path.iter().enumerate(){
+        let path_node = PathNode{
+            node_key: node.borrow().get_asset_key(),
+            asset_name: node.borrow().get_asset_name(),
+            path_value: path_values[i].clone(),
+            path_identifier: path_value_types[i].clone(),
+        };
+        println!("{} : {}", node.borrow().get_asset_name(), path_values[i] );
+        result_log.push(path_node);
+    }
+
+    let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
+    // Get the current timestamp
+    let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
+    let date = chrono::Local::now().format("%Y-%m-%d").to_string();
+    let time = chrono::Local::now().format("%H-%M-%S").to_string();
+
+    // Construct the directory path for the current date
+    let log_folder_path = format!("fallback_log_data/{}", date);
+
+    // Create a directory for the current date if it doesn't exist
+    match std::fs::create_dir_all(&log_folder_path) {
+        Ok(_) => println!("Directory created successfully"),
+        Err(e) => println!("Error creating directory: {:?}", e),
+    }
+
+    // Construct the file path including the directory
+    let log_data_path = format!("{}/{}_{}.json", log_folder_path, target_node.get_asset_name(), time);
+    println!("Log data path: {}", log_data_path);
+    // let log_data_path = format!("result_log_data/{}_{}.json", start_node.get_asset_name(), timestamp);
+    // println!("Log data path: {}", log_data_path);
+    // When creating the file, use the log_data_path which includes the directory
+    let mut file = File::create(log_data_path).expect("Failed to create file");
+    file.write_all(json.as_bytes()).expect("Failed to write data");
+
+    // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
+    let best_path_value = result_log[result_log.len()-1].path_value;
+    let result_log_string = format!("{} {} - {}", timestamp, target_node.get_asset_name(), best_path_value);
+    let mut file = OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open("result_log.txt")
+        .expect("Failed to open or create file");
+    writeln!(file, "{}", result_log_string).expect("Failed to write data");
+
+    result_log.clone()
+}
+
+pub fn log_results_small(path: NodePath) -> Vec<PathNode>{
+    let start_node = path[0].borrow();
+    let path_values = &start_node.path_values;
+    let path_value_types = &start_node.path_value_types;
+    let mut result_log: Vec<PathNode> = Vec::new();
+    for(i, node) in path.iter().enumerate(){
+        let path_node = PathNode{
+            node_key: node.borrow().get_asset_key(),
+            asset_name: node.borrow().get_asset_name(),
+            path_value: path_values[i].clone(),
+            path_identifier: path_value_types[i].clone(),
+        };
+        result_log.push(path_node);
+    }
+
+    let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
+    // Get the current timestamp
+    let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
+    let date = chrono::Local::now().format("%Y-%m-%d").to_string();
+    let time = chrono::Local::now().format("%H-%M-%S").to_string();
+
+    // Construct the directory path for the current date
+    let log_folder_path = format!("result_log_data/{}_small", date);
 
     // Create a directory for the current date if it doesn't exist
     match std::fs::create_dir_all(&log_folder_path) {
@@ -176,6 +286,45 @@ pub async fn search_ksm() -> (String, Vec<PathNode>){
     let input_amount = 1 as f64;
     let (display_string, path) = graph.find_arbitrage_3(key_1, input_amount);
     let loggable_results = log_results(path);
+    (display_string, loggable_results)
+
+    // "lol".to_string()
+}
+pub async fn search_best_path_a_to_b(start_key: String, destination_key: String, input_amount: f64){
+    let mut asset_registry = AssetRegistry2::build_asset_registry();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
+    lp_registry.display_stable_pools();
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+    // let key_1 = start_key;
+    let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount);
+
+    let target_node = path[path.len() - 1].clone();
+    let path_values = target_node.borrow().path_values.clone();
+    for (i, node) in path.clone().iter().enumerate(){
+        println!("SEARCH RESULT {}: {} {}", node.borrow().get_asset_key(), node.borrow().get_asset_name(), path_values[i]);
+    }
+
+    let loggable_results = log_results_target(path);
+    println!("{}", display_string);
+
+
+    for node in loggable_results.iter(){
+        println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+    }
+    // (display_string, loggable_results)
+    // "lol".to_string()
+}
+pub async fn search_ksm_small() -> (String, Vec<PathNode>){
+    let mut asset_registry = AssetRegistry2::build_asset_registry();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
+    lp_registry.display_stable_pools();
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+    let key_1 = "2000{\"NativeAssetId\":{\"Token\":\"KSM\"}}".to_string();
+    let input_amount = 0.05 as f64;
+    let (display_string, path) = graph.find_arbitrage_3(key_1, input_amount);
+    let loggable_results = log_results_small(path);
     (display_string, loggable_results)
 
     // "lol".to_string()

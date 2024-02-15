@@ -10,6 +10,7 @@ use num;
 use std::cell::RefCell;
 use std::collections::{VecDeque, HashMap};
 use std::rc::Rc;
+use std::vec;
 // use crate::{asset_registry::{AssetRegistry, Asset}};
 use crate::AssetRegistry2;
 use crate::asset_registry_2::{Asset, AssetLocation, TokenData};
@@ -217,6 +218,7 @@ impl TokenGraph2{
         let formatted_input = &input_amount * f64::powi(10.0, starting_node.borrow().get_asset_decimals() as i32);
         starting_node.borrow_mut().best_path_value = formatted_input as u128;
         starting_node.borrow_mut().path_values.push(input_amount);
+        starting_node.borrow_mut().path_value_types.push(0);
         starting_node.borrow_mut().best_path.push(Rc::clone(&starting_node));
 
         
@@ -243,6 +245,8 @@ impl TokenGraph2{
                             adjacent_pair.adjacent_node.borrow_mut().best_path.push(Rc::clone(&adjacent_pair.adjacent_node));
                             adjacent_pair.adjacent_node.borrow_mut().path_values = current_node.borrow().path_values.clone();
                             adjacent_pair.adjacent_node.borrow_mut().path_values.push(current_node.borrow().best_path_value_display(&self));
+                            adjacent_pair.adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
+                            adjacent_pair.adjacent_node.borrow_mut().path_value_types.push(0);
                             if !current_path_contains_adjacent_node{
                                 node_queue.push_back(Rc::clone(&adjacent_pair.adjacent_node));
                             }
@@ -264,6 +268,8 @@ impl TokenGraph2{
                             dex_pair.adjacent_node.borrow_mut().path_values = current_node.borrow().path_values.clone();
                             let formatted_path_value = dex_pair.adjacent_node.borrow().best_path_value_display(&self).clone();
                             dex_pair.adjacent_node.borrow_mut().path_values.push(formatted_path_value);
+                            dex_pair.adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
+                            dex_pair.adjacent_node.borrow_mut().path_value_types.push(1);
                             
                             if !test{
                                 node_queue.push_back(Rc::clone(&dex_pair.adjacent_node));
@@ -286,6 +292,8 @@ impl TokenGraph2{
                             cex_pair.adjacent_node.borrow_mut().path_values = current_node.borrow().path_values.clone();
                             let formatted_path_value = cex_pair.adjacent_node.borrow().best_path_value_display(&self).clone();
                             cex_pair.adjacent_node.borrow_mut().path_values.push(formatted_path_value);
+                            cex_pair.adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
+                            cex_pair.adjacent_node.borrow_mut().path_value_types.push(3);
                             
                             if !test{
                                 node_queue.push_back(Rc::clone(&cex_pair.adjacent_node));
@@ -312,7 +320,8 @@ impl TokenGraph2{
                                 stable_pair.adjacent_nodes[i].borrow_mut().path_values = current_node.borrow().path_values.clone();
                                 let formatted_path_value = stable_pair.adjacent_nodes[i].borrow().best_path_value_display(&self).clone();
                                 stable_pair.adjacent_nodes[i].borrow_mut().path_values.push(formatted_path_value);
-                                
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_value_types.push(2);
                                 if !test{
                                     node_queue.push_back(Rc::clone(&stable_pair.adjacent_nodes[i]));
                                 }
@@ -333,6 +342,201 @@ impl TokenGraph2{
         path_and_display
     }
 
+    pub fn find_best_route(&self, asset_key_1: String, asset_key_2: String, input_amount: f64) -> (String, Vec<Rc<RefCell<GraphNode>>>) {
+
+        let starting_node = &self.get_node(asset_key_1).clone();
+        let formatted_input = &input_amount * f64::powi(10.0, starting_node.borrow().get_asset_decimals() as i32);
+        starting_node.borrow_mut().best_path_value = formatted_input as u128;
+        starting_node.borrow_mut().path_values.push(input_amount);
+        starting_node.borrow_mut().path_value_types.push(0);
+        starting_node.borrow_mut().best_path.push(Rc::clone(&starting_node));
+        // starting_node.borrow_mut()
+        let destination_node = &self.get_node(asset_key_2).clone();
+        let destination_asset_location = destination_node.borrow().get_asset_location().unwrap();
+        let all_destination_assets = &self.asset_registry.get_assets_at_location(destination_asset_location);
+        let mut destination_nodes = vec![];
+        for dest_asset in all_destination_assets{
+            if(!dest_asset.borrow().is_cex_token()){
+                let dest_node = &self.get_node(dest_asset.borrow().get_map_key()).clone();
+                destination_nodes.push(Rc::clone(&dest_node));
+            }
+            
+        }
+        
+        // let formatted_input = &input_amount * f64::powi(10.0, starting_node.borrow().get_asset_decimals() as i32);
+
+        let mut node_queue = VecDeque::new();
+        node_queue.push_back(Rc::clone(starting_node));
+
+        while !node_queue.is_empty() {
+            println!("queue length: {}", node_queue.len());
+            let current_node = node_queue.pop_front().unwrap();
+            for adjacent_pair in &current_node.borrow().adjacent_pairs2{
+                // let path_value;
+                match adjacent_pair {
+                    AdjacentNodePair2::XcmPair(adjacent_pair) => {
+                        if current_node.borrow().best_path_value > adjacent_pair.adjacent_node.borrow().best_path_value{
+                            let mut current_path_contains_adjacent_node= false;
+                            let mut is_destination_node = false;
+                            for dest_node in &destination_nodes{
+                                if dest_node.borrow().get_asset_key() == adjacent_pair.adjacent_node.borrow().get_asset_key(){
+                                    is_destination_node = true;
+                                }
+                            }
+                            for path_node in &current_node.borrow().best_path{
+                                if path_node.borrow().get_asset_key() == adjacent_pair.adjacent_node.borrow().get_asset_key(){
+                                    current_path_contains_adjacent_node = true;
+                                }
+                            }
+                            
+                            adjacent_pair.adjacent_node.borrow_mut().best_path_value = current_node.borrow().best_path_value;
+                            adjacent_pair.adjacent_node.borrow_mut().best_path = current_node.borrow().best_path.clone();
+                            adjacent_pair.adjacent_node.borrow_mut().best_path.push(Rc::clone(&adjacent_pair.adjacent_node));
+                            adjacent_pair.adjacent_node.borrow_mut().path_values = current_node.borrow().path_values.clone();
+                            adjacent_pair.adjacent_node.borrow_mut().path_values.push(current_node.borrow().best_path_value_display(&self));
+                            adjacent_pair.adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
+                            adjacent_pair.adjacent_node.borrow_mut().path_value_types.push(0);
+                            if !current_path_contains_adjacent_node && !is_destination_node{
+                                node_queue.push_back(Rc::clone(&adjacent_pair.adjacent_node));
+                            }
+                            
+                        }
+                    },
+                    AdjacentNodePair2::DexPair(dex_pair) =>  {
+                        let path_value = calculate_dex_edge( adjacent_pair, current_node.borrow().best_path_value);
+                        if path_value > dex_pair.adjacent_node.borrow().best_path_value{
+                            let mut test= false;
+                            for path_node in &current_node.borrow().best_path{
+                                if path_node.borrow().get_asset_key() == dex_pair.adjacent_node.borrow().get_asset_key(){
+                                    test = true;
+                                }
+                            }
+                            let mut is_destination_node = false;
+                            for dest_node in &destination_nodes{
+                                if dest_node.borrow().get_asset_key() == dex_pair.adjacent_node.borrow().get_asset_key(){
+                                    is_destination_node = true;
+                                }
+                            }
+                            dex_pair.adjacent_node.borrow_mut().best_path_value = path_value;
+                            dex_pair.adjacent_node.borrow_mut().best_path = current_node.borrow().best_path.clone();
+                            dex_pair.adjacent_node.borrow_mut().best_path.push(Rc::clone(&dex_pair.adjacent_node));
+                            dex_pair.adjacent_node.borrow_mut().path_values = current_node.borrow().path_values.clone();
+                            let formatted_path_value = dex_pair.adjacent_node.borrow().best_path_value_display(&self).clone();
+                            dex_pair.adjacent_node.borrow_mut().path_values.push(formatted_path_value);
+                            dex_pair.adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
+                            dex_pair.adjacent_node.borrow_mut().path_value_types.push(1);
+                            
+                            if !test && !is_destination_node{
+                                node_queue.push_back(Rc::clone(&dex_pair.adjacent_node));
+                            }
+                            
+                        }
+                    },
+                    AdjacentNodePair2::CexPair(cex_pair) => {
+                        let path_value = calculate_cex_edge( &self, &current_node, adjacent_pair, current_node.borrow().best_path_value);
+                        if path_value > cex_pair.adjacent_node.borrow().best_path_value{
+                            let mut test= false;
+                            for path_node in &current_node.borrow().best_path{
+                                if path_node.borrow().get_asset_key() == cex_pair.adjacent_node.borrow().get_asset_key(){
+                                    test = true;
+                                }
+                            }
+                            let mut is_destination_node = false;
+                            for dest_node in &destination_nodes{
+                                if dest_node.borrow().get_asset_key() == cex_pair.adjacent_node.borrow().get_asset_key(){
+                                    is_destination_node = true;
+                                }
+                            }
+                            cex_pair.adjacent_node.borrow_mut().best_path_value = path_value;
+                            cex_pair.adjacent_node.borrow_mut().best_path = current_node.borrow().best_path.clone();
+                            cex_pair.adjacent_node.borrow_mut().best_path.push(Rc::clone(&cex_pair.adjacent_node));
+                            cex_pair.adjacent_node.borrow_mut().path_values = current_node.borrow().path_values.clone();
+                            let formatted_path_value = cex_pair.adjacent_node.borrow().best_path_value_display(&self).clone();
+                            cex_pair.adjacent_node.borrow_mut().path_values.push(formatted_path_value);
+                            cex_pair.adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
+                            cex_pair.adjacent_node.borrow_mut().path_value_types.push(3);
+                            
+                            if !test && !is_destination_node{
+                                node_queue.push_back(Rc::clone(&cex_pair.adjacent_node));
+                            }
+                            
+                        }
+                    },
+                    AdjacentNodePair2::StablePair(stable_pair) => {
+                        // for (i, adj_node) in stable_pair.adjacent_nodes.iter().enumerate(){
+                        //     let path_value = calculate_stable_edge( &self, &current_node, &adjacent_pair, current_node.borrow().best_path_value, i);
+                        // }
+                        for i in 0..stable_pair.adjacent_nodes.len(){
+                            let path_value = calculate_stable_edge( &self, &current_node, &adjacent_pair, current_node.borrow().best_path_value, i);
+                            if path_value > stable_pair.adjacent_nodes[i].borrow().best_path_value{
+                                let mut test= false;
+                                for path_node in &current_node.borrow().best_path{
+                                    if path_node.borrow().get_asset_key() == stable_pair.adjacent_nodes[i].borrow().get_asset_key(){
+                                        test = true;
+                                    }
+                                }
+                                let mut is_destination_node = false;
+                                for dest_node in &destination_nodes{
+                                    if dest_node.borrow().get_asset_key() == stable_pair.adjacent_nodes[i].borrow().get_asset_key(){
+                                        is_destination_node = true;
+                                    }
+                                }
+                                stable_pair.adjacent_nodes[i].borrow_mut().best_path_value = path_value;
+                                stable_pair.adjacent_nodes[i].borrow_mut().best_path = current_node.borrow().best_path.clone();
+                                stable_pair.adjacent_nodes[i].borrow_mut().best_path.push(Rc::clone(&stable_pair.adjacent_nodes[i]));
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_values = current_node.borrow().path_values.clone();
+                                let formatted_path_value = stable_pair.adjacent_nodes[i].borrow().best_path_value_display(&self).clone();
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_values.push(formatted_path_value);
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_value_types.push(2);
+                                if !test && !is_destination_node{
+                                    node_queue.push_back(Rc::clone(&stable_pair.adjacent_nodes[i]));
+                                }
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        let mut possible_destination_nodes = vec![];
+
+        for node in destination_nodes{
+            // node.borrow().display_path();
+            let best_path = node.borrow().best_path.clone();
+            if best_path.len() > 0 {
+                possible_destination_nodes.push(Rc::clone(&node));
+            }
+        }
+        let mut highest_value: Option<u128> = None;
+        let mut highest_value_node: Option<Rc<RefCell<GraphNode>>> = None;
+
+        for possible_node in possible_destination_nodes{
+            // println!("POSSIBLE NODE PATHS");
+            possible_node.borrow().display_path();
+
+            // println!("GETTING HIGHEST VALUE PATH");
+            let best_path_value = possible_node.borrow().best_path_value;
+            match highest_value {
+                None => {
+                    highest_value = Some(best_path_value);
+                    highest_value_node = Some(Rc::clone(&possible_node));
+                },
+                Some(current_highest) if best_path_value > current_highest => {
+                    highest_value = Some(best_path_value);
+                    highest_value_node = Some(Rc::clone(&possible_node));
+                },
+                _ => {} // If the current node's value isn't higher, do nothing.
+            }
+        }
+
+        let highest_value_path = highest_value_node.clone().unwrap().borrow().best_path.clone();
+        let return_string = highest_value_node.unwrap().borrow().get_display_path().to_string();
+
+        let path_and_display: (String, Vec<Rc<RefCell<GraphNode>>>) = (return_string, highest_value_path);
+        path_and_display
+    }
     pub fn get_asset_decimals_for_kucoin_asset(&self, kucoin_node: &GraphNodePointer) -> u64 {
         self.asset_registry.get_kucoin_asset_decimals(kucoin_node.borrow().get_asset_location().unwrap())
     }
@@ -353,6 +557,7 @@ pub fn create_graph_nodes(asset_registry: &AssetRegistry2) -> Vec<GraphNodePoint
             path_edges: Vec::new(),
             best_path: Vec::new(),
             path_values: Vec::new(),
+            path_value_types: Vec::new(),
         }));
         graph_nodes.push(Rc::clone(&new_node));
     }
@@ -371,11 +576,11 @@ pub fn create_node_map(graph_nodes: &[GraphNodePointer]) -> HashMap<String, Vec<
 //Get adjacent assets & liquidity for current node
 pub fn add_adjacent_assets_2(current_node: GraphNodePointer, node_map: &HashMap<String, Vec<GraphNodePointer>>, adjacency_table: &AdjacencyTable2){
     let adjacent_assets = adjacency_table.get_adjacent_assets_2(current_node.borrow().asset.clone());
-    for adj_pair in adjacent_assets{
-        match adj_pair.group_type {
+    for adj_group in adjacent_assets{
+        match adj_group.group_type {
             GroupType::Stable => {
                 let mut adjacent_nodes = vec![];
-                for adjacent_asset in adj_pair.adjacent_asset{
+                for adjacent_asset in adj_group.adjacent_asset{
                     let bucket = node_map.get(&adjacent_asset.borrow().get_map_key()).unwrap();
                     for potential_adjacent_node in bucket{
                         if adjacent_asset.borrow().get_map_key() == potential_adjacent_node.borrow().asset_key{
@@ -385,42 +590,42 @@ pub fn add_adjacent_assets_2(current_node: GraphNodePointer, node_map: &HashMap<
                         }
                     }
                 }
-                let adjacent_node_2 = AdjacentNodePair2::StablePair(StablePair{adjacent_nodes: adjacent_nodes, liquidity: adj_pair.liquidity.clone().unwrap()});
+                let adjacent_node_2 = AdjacentNodePair2::StablePair(StablePair{adjacent_nodes: adjacent_nodes, liquidity: adj_group.liquidity.clone().unwrap()});
                 
                 current_node.borrow_mut().adjacent_pairs2.push(adjacent_node_2);
             },
             GroupType::Dex =>{
                 //Find node that corresponds to adjacent asset. Add it to current node's adjacency list
-                let bucket = node_map.get(&adj_pair.adjacent_asset[0].borrow().get_map_key()).unwrap();
+                let bucket = node_map.get(&adj_group.adjacent_asset[0].borrow().get_map_key()).unwrap();
                 for potential_adjacent_node in bucket{
-                    if adj_pair.adjacent_asset[0].borrow().get_map_key() == potential_adjacent_node.borrow().asset_key{
-                        let adjacent_node = AdjacentNodePair::new(&potential_adjacent_node, adj_pair.liquidity.clone());
+                    if adj_group.adjacent_asset[0].borrow().get_map_key() == potential_adjacent_node.borrow().asset_key{
+                        let adjacent_node = AdjacentNodePair::new(&potential_adjacent_node, adj_group.liquidity.clone(), 1);
                         current_node.borrow_mut().adjacent_pairs.push(adjacent_node);
 
-                        let dex_lp: DexLp = if let Liquidity::Dex(x) = adj_pair.liquidity.clone().unwrap(){
+                        let dex_lp: DexLp = if let Liquidity::Dex(x) = adj_group.liquidity.clone().unwrap(){
                             x
                         } else {
                             panic!("Dex liquidity should be DexLp")
                         };
-                        let adjacent_node_2 = AdjacentNodePair2::DexPair(DexPair{adjacent_node: Rc::clone(&potential_adjacent_node), liquidity: adj_pair.liquidity.clone().unwrap()});
+                        let adjacent_node_2 = AdjacentNodePair2::DexPair(DexPair{adjacent_node: Rc::clone(&potential_adjacent_node), liquidity: adj_group.liquidity.clone().unwrap()});
                         current_node.borrow_mut().adjacent_pairs2.push(adjacent_node_2);
                         println!("found DEx")
                     }
                 }
             },
-            GroupType::Cex => {
-                //Find node that corresponds to adjacent asset. Add it to current node's adjacency list
-                let bucket = node_map.get(&adj_pair.adjacent_asset[0].borrow().get_map_key()).unwrap();
-                for potential_adjacent_node in bucket{
-                    if adj_pair.adjacent_asset[0].borrow().get_map_key() == potential_adjacent_node.borrow().asset_key{
-                        let adjacent_node = AdjacentNodePair::new(&potential_adjacent_node, adj_pair.liquidity.clone());
-                        current_node.borrow_mut().adjacent_pairs.push(adjacent_node);
+            GroupType::Cex => { },
+            //     //Find node that corresponds to adjacent asset. Add it to current node's adjacency list
+            //     let bucket = node_map.get(&adj_group.adjacent_asset[0].borrow().get_map_key()).unwrap();
+            //     for potential_adjacent_node in bucket{
+            //         if adj_group.adjacent_asset[0].borrow().get_map_key() == potential_adjacent_node.borrow().asset_key{
+            //             let adjacent_node = AdjacentNodePair::new(&potential_adjacent_node, adj_group.liquidity.clone(), 3);
+            //             current_node.borrow_mut().adjacent_pairs.push(adjacent_node);
 
-                        let adjacent_node_2 = AdjacentNodePair2::CexPair(CexPair{adjacent_node: Rc::clone(&potential_adjacent_node), liquidity: adj_pair.liquidity.clone().unwrap()});
-                        current_node.borrow_mut().adjacent_pairs2.push(adjacent_node_2);
-                    }
-                }
-            },
+            //             let adjacent_node_2 = AdjacentNodePair2::CexPair(CexPair{adjacent_node: Rc::clone(&potential_adjacent_node), liquidity: adj_group.liquidity.clone().unwrap()});
+            //             current_node.borrow_mut().adjacent_pairs2.push(adjacent_node_2);
+            //         }
+            //     }
+            // },
             _ => {}
 
         }
@@ -441,7 +646,7 @@ pub fn add_cross_chain_assets_2(current_node: GraphNodePointer, node_map: &HashM
             for graph_node in bucket{
                 if cross_chain_asset.borrow().get_map_key() == graph_node.borrow().asset.borrow().get_map_key(){
                     // current_node.borrow_mut().adjacent_pairs.push((Rc::clone(graph_node), ((0,0),(0,0))));
-                    let adjacent_node = AdjacentNodePair::new(&graph_node, None);
+                    let adjacent_node = AdjacentNodePair::new(&graph_node, None, 0);
                     current_node.borrow_mut().adjacent_pairs.push(adjacent_node);
 
                     let adjacent_node_2 = AdjacentNodePair2::XcmPair(XcmPair{adjacent_node: Rc::clone(&graph_node)});
@@ -466,11 +671,13 @@ pub struct GraphNode{
     pub path_edges: Vec<((String,u128),(String, u128))>,
     pub best_path: Vec<GraphNodePointer>,
     pub path_values: Vec<f64>,
+    pub path_value_types: Vec<u64>,
 }
 #[derive(Debug, PartialEq)]
 pub struct AdjacentNodePair{
     pub adjacent_node: GraphNodePointer,
     pub liquidity: Option<Liquidity>,
+    pub pair_type: u64,
 }
 #[derive(Debug, PartialEq)]
 pub enum AdjacentNodePair2{
@@ -500,10 +707,11 @@ pub struct XcmPair{
 }
 
 impl AdjacentNodePair{
-    pub fn new(adjacent_node: &GraphNodePointer, liquidity: Option<Liquidity>) -> AdjacentNodePair{
+    pub fn new(adjacent_node: &GraphNodePointer, liquidity: Option<Liquidity>, pair_type: u64) -> AdjacentNodePair{
         AdjacentNodePair{
             adjacent_node: Rc::clone(adjacent_node),
             liquidity,
+            pair_type
         }
     }
     pub fn get_dex_liquidity(&self) -> (u128, u128){
@@ -586,7 +794,7 @@ impl GraphNode{
         println!("Node: {} {} {}", &self.get_asset_key(), &self.get_asset_name(), &self.get_asset_decimals());
         print!("Path: ");
         for (i, path_node) in self.best_path.iter().enumerate(){
-            print!("{} {} {} ->", path_node.borrow().get_asset_key(), path_node.borrow().get_asset_name(), &self.path_values[i]);
+            println!("{} {} {} ->", path_node.borrow().get_asset_key(), path_node.borrow().get_asset_name(), &self.path_values[i]);
         }
     }
 
