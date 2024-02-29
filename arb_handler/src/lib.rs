@@ -69,7 +69,328 @@ pub async fn async_search(){
         // println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
     // }
 }
+pub async fn async_search_default(){
+    let start_key = "2000{\"NativeAssetId\":{\"Token\":\"KSM\"}}".to_string();
+    let destination_key = "2000{\"NativeAssetId\":{\"Token\":\"KSM\"}}".to_string();
+    let input_amount = 1 as f64;
+    let mut asset_registry = AssetRegistry2::build_asset_registry();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
+    lp_registry.display_stable_pools();
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
 
+    let start_node = &graph.get_node(start_key).clone();
+    
+    let start_node_asset_name = start_node.borrow().get_asset_name();
+
+    let start_asset_location = start_node.borrow().get_asset_location().unwrap();
+    let all_start_assets = &graph.asset_registry.get_assets_at_location(start_asset_location);
+    let mut start_nodes = vec![];
+    for start_asset in all_start_assets{
+        if(!start_asset.borrow().is_cex_token()){
+            let new_start_node = &graph.get_node(start_asset.borrow().get_map_key()).clone();
+            start_nodes.push(Rc::clone(&new_start_node));
+        }
+    }
+
+    let mut handles = Vec::new();
+
+    for node in start_nodes{
+        let key = node.borrow().get_asset_key();
+        println!("Searching for {}", key);
+        let dest_key = destination_key.clone();
+
+        // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
+        let handle = task::spawn(async move {
+            search_best_path_a_to_b_async(key, dest_key, input_amount).await
+        });
+        handles.push(handle);
+    }
+
+    let mut path_nodes = vec![];
+    // Await all the spawned tasks
+    for handle in handles {
+        let result = handle.await;
+        match result {
+            Ok(ok) => {
+                println!("Task completed with result: {:?}", ok);
+                let (display_string, path) = ok;
+                path_nodes.push((display_string, path));
+            },
+            Err(e) => println!("Task failed with error: {:?}", e),
+        }
+    }
+
+    let mut highest_value: f64 = 0.0;
+    let mut highest_value_path: Vec<PathNode> = vec![];
+
+    for (display, path) in path_nodes.iter(){
+        println!("*****************************************");
+        let path_value = path[path.len()-1].path_value;
+        if path_value > highest_value{
+            highest_value_path = path.clone();
+            highest_value = path_value;
+        }
+        println!("Final path value: {}", path_value);
+        println!("Display: {}", display);
+        for node in path{
+            println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+        }
+        println!("*****************************************");
+    }
+
+    println!("Highest value: {}", highest_value);
+    for node in highest_value_path.clone(){
+        println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+    }
+    log_results_default(highest_value_path, start_node_asset_name);
+}
+pub async fn async_search_best_path_a_to_b(start_key: String, destination_key: String, input_amount: f64){
+    let mut asset_registry = AssetRegistry2::build_asset_registry();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
+    lp_registry.display_stable_pools();
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+
+    let start_node = &graph.get_node(start_key).clone();
+    
+    let start_node_asset_name = start_node.borrow().get_asset_name();
+
+    let start_asset_location = start_node.borrow().get_asset_location().unwrap();
+    let all_start_assets = &graph.asset_registry.get_assets_at_location(start_asset_location);
+    let mut start_nodes = vec![];
+    for start_asset in all_start_assets{
+        if(!start_asset.borrow().is_cex_token()){
+            let new_start_node = &graph.get_node(start_asset.borrow().get_map_key()).clone();
+            start_nodes.push(Rc::clone(&new_start_node));
+        }
+    }
+
+    let mut handles = Vec::new();
+
+    for node in start_nodes{
+        let key = node.borrow().get_asset_key();
+        println!("Searching for {}", key);
+        let dest_key = destination_key.clone();
+
+        // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
+        let handle = task::spawn(async move {
+            search_best_path_a_to_b_async(key, dest_key, input_amount).await
+        });
+        handles.push(handle);
+    }
+
+    let mut path_nodes = vec![];
+    // Await all the spawned tasks
+    for handle in handles {
+        let result = handle.await;
+        match result {
+            Ok(ok) => {
+                println!("Task completed with result: {:?}", ok);
+                let (display_string, path) = ok;
+                path_nodes.push((display_string, path));
+            },
+            Err(e) => println!("Task failed with error: {:?}", e),
+        }
+    }
+
+    let mut highest_value: f64 = 0.0;
+    let mut highest_value_path: Vec<PathNode> = vec![];
+
+    for (display, path) in path_nodes.iter(){
+        println!("*****************************************");
+        let path_value = path[path.len()-1].path_value;
+        if path_value > highest_value{
+            highest_value_path = path.clone();
+            highest_value = path_value;
+        }
+        println!("Final path value: {}", path_value);
+        println!("Display: {}", display);
+        for node in path{
+            println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+        }
+        println!("*****************************************");
+    }
+
+    println!("Highest value: {}", highest_value);
+    for node in highest_value_path.clone(){
+        println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+    }
+
+    log_async_search_target(highest_value_path, start_node_asset_name);
+
+}
+
+pub async fn async_search_default_polkadot(){
+    let start_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+    let destination_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+    let input_amount = 1 as f64;
+    let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+
+    let start_node = &graph.get_node(start_key).clone();
+    
+    let start_node_asset_name = start_node.borrow().get_asset_name();
+
+    let start_asset_location = start_node.borrow().get_asset_location().unwrap();
+    let all_start_assets = &graph.asset_registry.get_assets_at_location(start_asset_location);
+    let mut start_nodes = vec![];
+    for start_asset in all_start_assets{
+        if(!start_asset.borrow().is_cex_token()){
+            let new_start_node = &graph.get_node(start_asset.borrow().get_map_key()).clone();
+            start_nodes.push(Rc::clone(&new_start_node));
+        }
+    }
+
+    let mut handles = Vec::new();
+
+    for node in start_nodes{
+        let key = node.borrow().get_asset_key();
+        println!("Searching for {}", key);
+        let dest_key = destination_key.clone();
+
+        // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
+        let handle = task::spawn(async move {
+            search_best_path_a_to_b_async_polkadot(key, dest_key, input_amount).await
+        });
+        handles.push(handle);
+    }
+
+    let mut path_nodes = vec![];
+    // Await all the spawned tasks
+    for handle in handles {
+        let result = handle.await;
+        match result {
+            Ok(ok) => {
+                println!("Task completed with result: {:?}", ok);
+                let (display_string, path) = ok;
+                path_nodes.push((display_string, path));
+            },
+            Err(e) => println!("Task failed with error: {:?}", e),
+        }
+    }
+
+    let mut highest_value: f64 = 0.0;
+    let mut highest_value_path: Vec<PathNode> = vec![];
+
+    for (display, path) in path_nodes.iter(){
+        println!("*****************************************");
+        let path_value = path[path.len()-1].path_value;
+        if path_value > highest_value{
+            highest_value_path = path.clone();
+            highest_value = path_value;
+        }
+        println!("Final path value: {}", path_value);
+        println!("Display: {}", display);
+        for node in path{
+            println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+        }
+        println!("*****************************************");
+    }
+
+    println!("Highest value: {}", highest_value);
+    for node in highest_value_path.clone(){
+        println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+    }
+    log_results_default_polkadot(highest_value_path, start_node_asset_name);
+}
+
+pub fn log_results_default_polkadot(result_log: Vec<PathNode>, start_node_name: String){
+    let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
+    // Get the current timestamp
+    let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
+    let date = chrono::Local::now().format("%Y-%m-%d").to_string();
+    let time = chrono::Local::now().format("%H-%M-%S").to_string();
+
+    // Construct the directory path for the current date
+    let log_folder_path = format!("result_log_data_polkadot/{}", date);
+
+    // Create a directory for the current date if it doesn't exist
+    match std::fs::create_dir_all(&log_folder_path) {
+        Ok(_) => println!("Directory created successfully"),
+        Err(e) => println!("Error creating directory: {:?}", e),
+    }
+
+    // Construct the file path including the directory
+    let log_data_path = format!("{}/{}_{}.json", log_folder_path, start_node_name, time);
+    println!("Log data path: {}", log_data_path);
+    let mut file = File::create(log_data_path).expect("Failed to create file");
+    file.write_all(json.as_bytes()).expect("Failed to write data");
+
+    // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
+    let best_path_value = result_log[result_log.len()-1].path_value;
+    let result_log_string = format!("{} {} - {}", timestamp, start_node_name, best_path_value);
+    let mut file = OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open("result_log.txt")
+        .expect("Failed to open or create file");
+    writeln!(file, "{}", result_log_string).expect("Failed to write data");
+}
+pub async fn search_best_path_a_to_b_async(start_key: String, destination_key: String, input_amount: f64) -> (String, Vec<PathNode>){
+    let mut asset_registry = AssetRegistry2::build_asset_registry();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
+    lp_registry.display_stable_pools();
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+    // let key_1 = start_key;
+    let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount);
+
+    let return_path = return_path_nodes(path);
+
+    (display_string, return_path)
+}
+pub async fn search_best_path_a_to_b_async_polkadot(start_key: String, destination_key: String, input_amount: f64) -> (String, Vec<PathNode>){
+    let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+    // let key_1 = start_key;
+    let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount);
+
+    let return_path = return_path_nodes(path);
+
+    (display_string, return_path)
+}
+pub fn log_results_default(result_log: Vec<PathNode>, start_node_name: String){
+    let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
+    // Get the current timestamp
+    let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
+    let date = chrono::Local::now().format("%Y-%m-%d").to_string();
+    let time = chrono::Local::now().format("%H-%M-%S").to_string();
+
+    // Construct the directory path for the current date
+    let log_folder_path = format!("result_log_data/{}", date);
+
+    // Create a directory for the current date if it doesn't exist
+    match std::fs::create_dir_all(&log_folder_path) {
+        Ok(_) => println!("Directory created successfully"),
+        Err(e) => println!("Error creating directory: {:?}", e),
+    }
+
+    // Construct the file path including the directory
+    let log_data_path = format!("{}/{}_{}.json", log_folder_path, start_node_name, time);
+    println!("Log data path: {}", log_data_path);
+    // let log_data_path = format!("result_log_data/{}_{}.json", start_node.get_asset_name(), timestamp);
+    // println!("Log data path: {}", log_data_path);
+    // When creating the file, use the log_data_path which includes the directory
+    let mut file = File::create(log_data_path).expect("Failed to create file");
+    file.write_all(json.as_bytes()).expect("Failed to write data");
+
+    // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
+    let best_path_value = result_log[result_log.len()-1].path_value;
+    let result_log_string = format!("{} {} - {}", timestamp, start_node_name, best_path_value);
+    let mut file = OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open("result_log.txt")
+        .expect("Failed to open or create file");
+    writeln!(file, "{}", result_log_string).expect("Failed to write data");
+
+    // result_log.clone()
+}
 pub fn log_results(path: NodePath) -> Vec<PathNode>{
     let start_node = path[0].borrow();
     let path_values = &start_node.path_values;
@@ -122,7 +443,114 @@ pub fn log_results(path: NodePath) -> Vec<PathNode>{
     result_log.clone()
 }
 
+pub fn return_path_nodes(path: NodePath) -> Vec<PathNode> {
+    let target_node = path[path.len() - 1].borrow();
+    let path_values = &target_node.path_values;
+    let path_value_types = &target_node.path_value_types;
+    let mut result_log: Vec<PathNode> = Vec::new();
+    for(i, node) in path.iter().enumerate(){
+        let path_node = PathNode{
+            node_key: node.borrow().get_asset_key(),
+            asset_name: node.borrow().get_asset_name(),
+            path_value: path_values[i].clone(),
+            path_identifier: path_value_types[i].clone(),
+        };
+        result_log.push(path_node);
+    }
+    result_log.clone()
+
+}
+
+pub fn log_async_search_target(path: Vec<PathNode>, asset_name: String) {
+    let json = serde_json::to_string_pretty(&path.clone()).unwrap();
+    // Get the current timestamp
+    let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
+    let date = chrono::Local::now().format("%Y-%m-%d").to_string();
+    let time = chrono::Local::now().format("%H-%M-%S").to_string();
+
+    // Construct the directory path for the current date
+    let log_folder_path = format!("target_log_data/{}", date);
+
+    // Create a directory for the current date if it doesn't exist
+    match std::fs::create_dir_all(&log_folder_path) {
+        Ok(_) => println!("Directory created successfully"),
+        Err(e) => println!("Error creating directory: {:?}", e),
+    }
+
+    // Construct the file path including the directory
+    let log_data_path = format!("{}/{}_{}.json", log_folder_path, asset_name.clone(), time);
+    println!("Log data path: {}", log_data_path);
+    // let log_data_path = format!("result_log_data/{}_{}.json", start_node.get_asset_name(), timestamp);
+    // println!("Log data path: {}", log_data_path);
+    // When creating the file, use the log_data_path which includes the directory
+    let mut file = File::create(log_data_path).expect("Failed to create file");
+    file.write_all(json.as_bytes()).expect("Failed to write data");
+
+    // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
+    let best_path_value = path[path.len()-1].path_value;
+    let result_log_string = format!("{} {} - {}", timestamp, asset_name, best_path_value);
+    let mut file = OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open("result_log.txt")
+        .expect("Failed to open or create file");
+    writeln!(file, "{}", result_log_string).expect("Failed to write data");
+}
+
 pub fn log_results_target(path: NodePath) -> Vec<PathNode> {
+    let target_node = path[path.len() - 1].borrow();
+    let path_values = &target_node.path_values;
+    let path_value_types = &target_node.path_value_types;
+    let mut result_log: Vec<PathNode> = Vec::new();
+    for(i, node) in path.iter().enumerate(){
+        let path_node = PathNode{
+            node_key: node.borrow().get_asset_key(),
+            asset_name: node.borrow().get_asset_name(),
+            path_value: path_values[i].clone(),
+            path_identifier: path_value_types[i].clone(),
+        };
+        println!("{} : {}", node.borrow().get_asset_name(), path_values[i] );
+        result_log.push(path_node);
+    }
+
+    let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
+    // Get the current timestamp
+    let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
+    let date = chrono::Local::now().format("%Y-%m-%d").to_string();
+    let time = chrono::Local::now().format("%H-%M-%S").to_string();
+
+    // Construct the directory path for the current date
+    let log_folder_path = format!("target_log_data/{}", date);
+
+    // Create a directory for the current date if it doesn't exist
+    match std::fs::create_dir_all(&log_folder_path) {
+        Ok(_) => println!("Directory created successfully"),
+        Err(e) => println!("Error creating directory: {:?}", e),
+    }
+
+    // Construct the file path including the directory
+    let log_data_path = format!("{}/{}_{}.json", log_folder_path, target_node.get_asset_name(), time);
+    println!("Log data path: {}", log_data_path);
+    // let log_data_path = format!("result_log_data/{}_{}.json", start_node.get_asset_name(), timestamp);
+    // println!("Log data path: {}", log_data_path);
+    // When creating the file, use the log_data_path which includes the directory
+    let mut file = File::create(log_data_path).expect("Failed to create file");
+    file.write_all(json.as_bytes()).expect("Failed to write data");
+
+    // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
+    let best_path_value = result_log[result_log.len()-1].path_value;
+    let result_log_string = format!("{} {} - {}", timestamp, target_node.get_asset_name(), best_path_value);
+    let mut file = OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open("result_log.txt")
+        .expect("Failed to open or create file");
+    writeln!(file, "{}", result_log_string).expect("Failed to write data");
+
+    result_log.clone()
+}
+
+pub fn log_results_fallback(path: NodePath) -> Vec<PathNode> {
     let target_node = path[path.len() - 1].borrow();
     let path_values = &target_node.path_values;
     let path_value_types = &target_node.path_value_types;
@@ -226,7 +654,20 @@ pub fn log_results_small(path: NodePath) -> Vec<PathNode>{
 
     result_log.clone()
 }
+pub fn test_polkadot_assets(){
+    
+    let asset_registry = AssetRegistry2::build_asset_registry_polkadot();
+    asset_registry.display_assets_by_location();
 
+    let liq_pool_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&asset_registry);
+    liq_pool_registry.display_stable_pools();
+
+    let graph: TokenGraph2 = TokenGraph2::build_graph_2(asset_registry, AdjacencyTable2::build_table_2(&liq_pool_registry));
+    let key_1 = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+    let input_amount = 1 as f64;
+    let (display_string, path) = graph.find_arbitrage_3(key_1, input_amount);
+    // display_string
+}
 pub fn test_table_2(){
     let mut asset_registry = AssetRegistry2::build_asset_registry();
     // asset_registry.display_all_assets();
@@ -287,8 +728,11 @@ pub async fn search_ksm() -> (String, Vec<PathNode>){
     let (display_string, path) = graph.find_arbitrage_3(key_1, input_amount);
     let loggable_results = log_results(path);
     (display_string, loggable_results)
+}
 
-    // "lol".to_string()
+pub async fn test_assets(){
+    let mut asset_registry = AssetRegistry2::build_asset_registry();
+    asset_registry.display_all_assets();
 }
 pub async fn search_best_path_a_to_b(start_key: String, destination_key: String, input_amount: f64){
     let mut asset_registry = AssetRegistry2::build_asset_registry();
@@ -308,6 +752,29 @@ pub async fn search_best_path_a_to_b(start_key: String, destination_key: String,
     let loggable_results = log_results_target(path);
     println!("{}", display_string);
 
+    for node in loggable_results.iter(){
+        println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+    }
+}
+
+
+pub async fn fallback_search_a_to_b(start_key: String, destination_key: String, input_amount: f64){
+    let mut asset_registry = AssetRegistry2::build_asset_registry();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
+    lp_registry.display_stable_pools();
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+    // let key_1 = start_key;
+    let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount);
+
+    let target_node = path[path.len() - 1].clone();
+    let path_values = target_node.borrow().path_values.clone();
+    for (i, node) in path.clone().iter().enumerate(){
+        println!("SEARCH RESULT {}: {} {}", node.borrow().get_asset_key(), node.borrow().get_asset_name(), path_values[i]);
+    }
+
+    let loggable_results = log_results_fallback(path);
+    println!("{}", display_string);
 
     for node in loggable_results.iter(){
         println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
@@ -315,6 +782,20 @@ pub async fn search_best_path_a_to_b(start_key: String, destination_key: String,
     // (display_string, loggable_results)
     // "lol".to_string()
 }
+
+pub async fn print_asset_keys(start_key: String){
+    let mut asset_registry = AssetRegistry2::build_asset_registry();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
+    lp_registry.display_stable_pools();
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+    // let key_1 = start_key;
+    graph.get_asset_keys(start_key);
+    // (display_string, loggable_results)
+    // "lol".to_string()
+}
+
+
 pub async fn search_ksm_small() -> (String, Vec<PathNode>){
     let mut asset_registry = AssetRegistry2::build_asset_registry();
     let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
@@ -325,7 +806,7 @@ pub async fn search_ksm_small() -> (String, Vec<PathNode>){
     let input_amount = 0.05 as f64;
     let (display_string, path) = graph.find_arbitrage_3(key_1, input_amount);
     let loggable_results = log_results_small(path);
-    (display_string, loggable_results)
+    (display_string, loggable_results)  
 
     // "lol".to_string()
 }

@@ -14,7 +14,14 @@ notion/key.txt
 TODO.txt
 some_notes.txt
 web_dashboard/mongo.ts
-
+arb_handler/result_log_data_polkadot/
+arb_handler/target_log_data/
+assets/polkadot/
+lps/polkadot
+assets/allAssets.json
+lps/kar/stablePools.json
+arb_handler/outputArb.txt
+lps/outputLp.txt
 
 
 # Logs

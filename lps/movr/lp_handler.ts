@@ -79,15 +79,7 @@ export async function updateLps() {
         // let reserve_1 = await hexToDec(reserves[1]["_hex"]);
         let reserve_0 = removeLastChar(reserves[0].toString());
         let reserve_1 = removeLastChar(reserves[1].toString());
-        // console.log(reserve_0, reserve_1)
-        // const newPool: MyLp = {
-        //     chainId: 2023,
-        //     contractAddress: lp.contractAddress,
-        //     poolAssets: lp.poolAssets,
-        //     liquidityStats: [reserve_0, reserve_1]
-        // }
-        // // console.log(newPool)
-        // return newPool;
+
         if (reserve_0 !== "" && reserve_1 !== "") {
             const newPool: MyLp = {
                 chainId: 2023,

@@ -13,6 +13,9 @@ use std::path::Path;
 // mod liq_pool;
 
 // use liq_pool::LiqPool;
+// cargo run search_best_path_a_to_b "2001{\`"Native\`":\`"BNC\`"}" "2000{\`"NativeAssetId\`":{\`"Token\`":\`"KSM\`"}}" 10
+// cargo run search_best_path_a_to_b "2000{\`"NativeAssetId\`":{\`"Token\`":\`"KSM\`"}}" "2000{\`"NativeAssetId\`":{\`"Token\`":\`"KSM\`"}}" 1
+
 #[tokio::main]
 async fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -24,7 +27,17 @@ async fn main() {
                 let key_1 = &args[2];
                 let key_2 = &args[3];
                 let input_amount: f64 = args[4].parse().expect("Input amount must be a float");
-                search_best_path_a_to_b(key_1.to_string(), key_2.to_string(), input_amount).await;
+                async_search_best_path_a_to_b(key_1.to_string(), key_2.to_string(), input_amount).await;
+            },
+            "fallback_search_a_to_b" if args.len() == 5 => {
+                let key_1 = &args[2];
+                let key_2 = &args[3];
+                let input_amount: f64 = args[4].parse().expect("Input amount must be a float");
+                fallback_search_a_to_b(key_1.to_string(), key_2.to_string(), input_amount).await;
+            },
+            "test" => {
+                let asset_key = "2000{\"NativeAssetId\":{\"Token\":\"KSM\"}}".to_string();
+                async_search_default_polkadot().await;
             },
             _ => {
                 eprintln!("Error: search_best_path_a_to_b incorrect parameters"); // Write an error message to stderr
@@ -33,28 +46,15 @@ async fn main() {
         }
     } else {
         println!("No arguments provided. Running default function.");
-        async_search().await;
+        async_search_default().await;
     }
-    // async_search().await;
-    // cross_chain();
-    // test_arb_2()
-    // test_asset_registry();
-
-
-    // async_search().await;
-    // let key_2 = "2000{\"NativeAssetId\":{\"Token\":\"KSM\"}}".to_string();
-    // let key_1 = "2001{\"Native\":\"BNC\"}".to_string();
-    // let input_amount = 1 as f64;
-    // search_best_path_a_to_b(key_1, key_2, input_amount).await;
-    // test_arb_3()
-    // test_table_2();
-    // search_rmrk().await;
-    // search_movr().await;
-    // async_search_2().await; 
-    // test_table_2();
 
 }
-
+// #[tokio::main]
+// async fn main(){
+//     let asset_key = "2000{\"NativeAssetId\":{\"Token\":\"KSM\"}}".to_string();
+//     let polkadot_assets = test_polkadot_assets();
+// }
 
 
 fn clean_string(s: &str) -> &str{

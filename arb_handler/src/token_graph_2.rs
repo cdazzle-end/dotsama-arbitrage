@@ -360,7 +360,6 @@ impl TokenGraph2{
                 let dest_node = &self.get_node(dest_asset.borrow().get_map_key()).clone();
                 destination_nodes.push(Rc::clone(&dest_node));
             }
-            
         }
         
         // let formatted_input = &input_amount * f64::powi(10.0, starting_node.borrow().get_asset_decimals() as i32);
@@ -537,6 +536,23 @@ impl TokenGraph2{
         let path_and_display: (String, Vec<Rc<RefCell<GraphNode>>>) = (return_string, highest_value_path);
         path_and_display
     }
+
+    pub fn get_asset_keys(&self, asset_key_2: String){
+        let destination_node = &self.get_node(asset_key_2).clone();
+        let destination_asset_location = destination_node.borrow().get_asset_location().unwrap();
+        let all_destination_assets = &self.asset_registry.get_assets_at_location(destination_asset_location);
+        let mut destination_nodes = vec![];
+        for dest_asset in all_destination_assets{
+            if(!dest_asset.borrow().is_cex_token()){
+                let dest_node = &self.get_node(dest_asset.borrow().get_map_key()).clone();
+                println!("{}", dest_node.borrow().get_asset_key());
+                destination_nodes.push(Rc::clone(&dest_node));
+            }
+            
+        }
+    }
+
+
     pub fn get_asset_decimals_for_kucoin_asset(&self, kucoin_node: &GraphNodePointer) -> u64 {
         self.asset_registry.get_kucoin_asset_decimals(kucoin_node.borrow().get_asset_location().unwrap())
     }

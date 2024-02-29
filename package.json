@@ -12,6 +12,12 @@
     "assets/mgx",
     "assets/movr",
     "assets/sdn",
+    "assets/polkadot/aca",
+    "assets/polkadot/astar",
+    "assets/polkadot/glmr",
+    "assets/polkadot/bnc",
+    "assets/polkadot/hdx",
+    "assets/polkadot/mgx",
     "lps",
     "lps/bnc",
     "lps/bsx",
@@ -25,7 +31,9 @@
     "web_dashboard/my-dashboard"
   ],
   "dependencies": {
+    "@acala-network/api": "^6.1.0",
     "@notionhq/client": "^2.2.6",
+    "@paraspell/sdk": "file: ./../../../xcm-sdk",
     "@polkadot/api": "^10.9.1",
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",

@@ -164,6 +164,113 @@ impl LiqPoolRegistry2{
         LiqPoolRegistry2 { liq_pools: lps }
     }
 
+    pub fn build_liqpool_registry_polkadot(asset_registry: &AssetRegistry2) -> LiqPoolRegistry2{
+        let chains = vec![ "aca", "bnc", "glmr", "hdx", "para"];
+        // let chains = vec![ "kar", "bnc", "movr", "hko", "sdn", "kucoin", "mgx", "bsx"];
+        let mut parsed_files = chains
+                .into_iter()
+                .map(|chain| {
+                    let path_string = format!("../../../polkadot_assets/lps/lp_registry/{}_lps.json", chain);
+                    let path = Path::new(&path_string);
+                    let mut buf = vec![];
+                    let mut file = File::open(path)?;
+                    file.read_to_end(&mut buf)?;
+                    let parsed = serde_json::from_str(str::from_utf8(&buf).unwrap())?;
+                    Ok(parsed)
+                })
+                .collect::<Result<Vec<Value>, io::Error>>()
+                .unwrap();
+
+        parsed_files.append(&mut parse_stable_lps_polkadot(vec!["aca"]));
+
+        let lps = parsed_files.into_iter()
+            .flat_map(|parsed| {
+                parsed.as_array().unwrap().into_iter()
+                    .filter_map(|lp| {
+                        if lp.as_object().unwrap().contains_key("exchange"){
+                            let lp_data: CexLpJson = serde_json::from_value(lp.clone()).map_err(|e| e).unwrap();
+                            let asset = asset_registry.get_asset_by_key(&(lp_data.exchange.clone() + lp_data.assetTicker.as_str())).unwrap();
+                            let usdt = asset_registry.get_asset_by_key(&(lp_data.exchange.clone() + "USDT")).unwrap();
+                            Some(LiqPool2{
+                                chain_id: 0,
+                                exchange: Some(lp_data.exchange),
+                                prices: Some((lp_data.price[0], lp_data.price[1])),
+                                price_decimals: Some((lp_data.priceDecimals[0], lp_data.priceDecimals[1])),
+                                contract_address: None,
+                                assets: vec![asset, usdt],
+                                liquidity: vec![],
+                                a: None,
+                                a_precision: None,
+                                token_precisions: None
+                            })
+                        } else if lp.as_object().unwrap().contains_key("a") {
+                            let lp_data: StableLpJson = serde_json::from_value(lp.clone()).map_err(|e| e).unwrap();
+                            let chain_id = lp_data.chainId;
+                            let contract_address = lp_data.contractAddress;
+                            let pool_assets = lp_data.poolAssets;
+                            let liquidity_stats = lp_data.liquidityStats.iter().map(
+                                |x| x.as_str().parse().map_err(|e| e).unwrap()
+                            ).collect();
+                            let assets = pool_assets.into_iter().filter_map(|asset| {
+                                let asset_id = serde_json::to_string(&asset).map_err(|e| e).unwrap();
+                                asset_registry.get_asset_by_id(chain_id, asset_id.as_str())
+                            }).collect::<Vec<_>>();
+
+                            println!("Found stable ");
+                            let pool = Some(LiqPool2 {
+                                chain_id,
+                                contract_address,
+                                assets: assets,
+                                liquidity: liquidity_stats,
+                                a: Some(lp_data.a),
+                                a_precision: Some(lp_data.aPrecision),
+                                token_precisions: Some(lp_data.tokenPrecisions),
+                                exchange: None,
+                                prices: None,
+                                price_decimals: None,
+                            });
+                            // println!("{:?}", pool.clone().unwrap().liquidity);
+                            pool
+                        } else {
+                            let lp_data: MyLpJson = serde_json::from_value(lp.clone()).map_err(|e| e).unwrap();
+                            println!("{:?}", lp_data.clone());
+                            let chain_id = lp_data.chainId;
+                            let contract_address = lp_data.contractAddress;
+                            let pool_assets = lp_data.poolAssets;
+                            let liquidity_stats = lp_data.liquidityStats.clone();
+                            
+                           
+                            let liquidity_0 = liquidity_stats[0].as_str().parse().map_err(|e| e).unwrap();
+                            println!("{}", liquidity_0);
+                            let liquidity_1 = liquidity_stats[1].as_str().parse().map_err(|e| e).unwrap();
+                            println!("{}", liquidity_1);
+                            let assets = pool_assets.into_iter().filter_map(|asset| {
+                                let asset_id = serde_json::to_string(&asset).map_err(|e| e).unwrap();
+                                asset_registry.get_asset_by_id(chain_id, asset_id.as_str())
+                            }).collect::<Vec<_>>();
+                            if assets.len() == 2 {
+                                Some(LiqPool2 {
+                                    chain_id,
+                                    contract_address,
+                                    assets: vec![assets[0].clone(), assets[1].clone()],
+                                    liquidity: vec![liquidity_0, liquidity_1],
+                                    exchange: None,
+                                    prices: None,
+                                    price_decimals: None,
+                                    a: None,
+                                    a_precision: None,
+                                    token_precisions: None,
+                                })
+                            } else {
+                                None
+                            }
+                        }
+                        
+                    }).collect::<Vec<_>>()
+            }).collect::<Vec<_>>();
+        LiqPoolRegistry2 { liq_pools: lps }
+    }
+
     pub fn display_liq_pools(&self){
         for pool in &self.liq_pools{
             pool.display_pool();
@@ -205,7 +312,22 @@ pub fn parse_stable_lps(chains: Vec<&str>) -> Vec<Value>{
         .collect::<Result<Vec<Value>, io::Error>>()
         .unwrap()
 
-    
+}
+pub fn parse_stable_lps_polkadot(chains: Vec<&str>) -> Vec<Value>{
+    chains
+        .into_iter()
+        .map(|chain| {
+            let path_string = format!("../lps/polkadot/{}_stable_lps.json", chain);
+            let path = Path::new(&path_string);
+            let mut buf = vec![];
+            let mut file = File::open(path)?;
+            file.read_to_end(&mut buf)?;
+            let parsed = serde_json::from_str(str::from_utf8(&buf).unwrap())?;
+            Ok(parsed)
+        })
+        .collect::<Result<Vec<Value>, io::Error>>()
+        .unwrap()
+
 }
 
 impl LiqPool2{

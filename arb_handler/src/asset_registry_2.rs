@@ -68,7 +68,7 @@ pub struct MyAssetRegistryObject {
 // New asset registry files for statemine, crust, kintsugi...
 impl AssetRegistry2{
     pub fn build_asset_registry() -> AssetRegistry2{
-        let chains = vec!["kar", "bnc", "movr", "hko", "sdn", "kucoin", "mgx", "bsx"];
+        let chains = vec!["kar", "bnc", "movr", "hko", "sdn", "kucoin", "mgx", "bsx", "other"];
         let parsed_files = chains
             .into_iter()
             .map(|chain| {
@@ -83,6 +83,21 @@ impl AssetRegistry2{
             .collect::<Result<Vec<Value>, io::Error>>()
             .unwrap();
 
+        
+        let path = Path::new("../assets/ignore_list.json");
+        let mut buf = vec![];
+        let mut file = File::open(path).unwrap();
+        file.read_to_end(&mut buf).unwrap();
+        let parsed_ignore_file: Value = serde_json::from_str(str::from_utf8(&buf).unwrap()).unwrap();
+        let ignore_list_assets: Vec<MyAssetRegistryObject> = serde_json::from_value(parsed_ignore_file).unwrap();
+        let ignore_list_locations: Vec<String> = ignore_list_assets.into_iter().map(|asset| {
+            let ignore_asset_location = parse_asset_location(&asset);
+            let ignore_asset = Rc::new(RefCell::new(Asset::new(asset.tokenData.clone(), ignore_asset_location)));
+            let location_string = ignore_asset.borrow().get_asset_location_string().clone();
+            location_string
+        }).collect();
+        
+
         let mut asset_map: HashMap<String, Vec<AssetPointer>> = HashMap::new();
         let mut asset_location_map: HashMap<AssetLocation, Vec<AssetPointer>> = HashMap::new();
         for parsed in parsed_files {
@@ -91,6 +106,69 @@ impl AssetRegistry2{
                 let asset_location = parse_asset_location(&asset);
                 let new_asset = Rc::new(RefCell::new(Asset::new(asset.tokenData, asset_location)));
                 let map_key = new_asset.borrow().get_map_key();
+                // if ignore_list_locations.contains(&new_asset.borrow().get_asset_location_string()){
+                //     println!("Ignoring asset: {}", map_key);
+                //     println!("asset_location: {:?}", new_asset.borrow().get_asset_location_string());
+                //     continue;
+                // }
+                asset_map.entry(map_key).or_insert(vec![]).push(new_asset.clone());
+
+                if let Some(location) = new_asset.borrow().asset_location.clone() {
+                    asset_location_map.entry(location).or_insert(vec![]).push(new_asset.clone());
+                };
+            }
+        }
+        AssetRegistry2{
+            asset_map: asset_map,
+            asset_location_map: asset_location_map
+        }
+    }
+
+    pub fn build_asset_registry_polkadot() -> AssetRegistry2{
+        let chains = vec!["aca", "bnc", "glmr", "hdx", "para"];
+        let parsed_files = chains
+            .into_iter()
+            .map(|chain| {
+                let path_string = format!("../../../polkadot_assets/assets/asset_registry/{}_assets.json", chain);
+                println!("path_string: {}", path_string);
+                let path = Path::new(&path_string);
+                let mut buf = vec![];
+                let mut file = File::open(path)?;
+                file.read_to_end(&mut buf)?;
+                let parsed = serde_json::from_str(str::from_utf8(&buf).unwrap())?;
+                Ok(parsed)
+            })
+            .collect::<Result<Vec<Value>, io::Error>>()
+            .unwrap();
+
+        
+        let path = Path::new("../assets/ignore_list.json");
+        let mut buf = vec![];
+        let mut file = File::open(path).unwrap();
+        file.read_to_end(&mut buf).unwrap();
+        let parsed_ignore_file: Value = serde_json::from_str(str::from_utf8(&buf).unwrap()).unwrap();
+        let ignore_list_assets: Vec<MyAssetRegistryObject> = serde_json::from_value(parsed_ignore_file).unwrap();
+        let ignore_list_locations: Vec<String> = ignore_list_assets.into_iter().map(|asset| {
+            let ignore_asset_location = parse_asset_location(&asset);
+            let ignore_asset = Rc::new(RefCell::new(Asset::new(asset.tokenData.clone(), ignore_asset_location)));
+            let location_string = ignore_asset.borrow().get_asset_location_string().clone();
+            location_string
+        }).collect();
+        
+
+        let mut asset_map: HashMap<String, Vec<AssetPointer>> = HashMap::new();
+        let mut asset_location_map: HashMap<AssetLocation, Vec<AssetPointer>> = HashMap::new();
+        for parsed in parsed_files {
+            let asset_array: Vec<MyAssetRegistryObject> = serde_json::from_value(parsed).unwrap();
+            for asset in asset_array{
+                let asset_location = parse_asset_location(&asset);
+                let new_asset = Rc::new(RefCell::new(Asset::new(asset.tokenData, asset_location)));
+                let map_key = new_asset.borrow().get_map_key();
+                // if ignore_list_locations.contains(&new_asset.borrow().get_asset_location_string()){
+                //     println!("Ignoring asset: {}", map_key);
+                //     println!("asset_location: {:?}", new_asset.borrow().get_asset_location_string());
+                //     continue;
+                // }
                 asset_map.entry(map_key).or_insert(vec![]).push(new_asset.clone());
 
                 if let Some(location) = new_asset.borrow().asset_location.clone() {

@@ -21,6 +21,22 @@
   {
     "tokenData": {
       "network": "kusama",
+      "chain": 2048,
+      "localId": "XRT",
+      "name": "Robonomics",
+      "symbol": "XRT",
+      "decimals": "9"
+    },
+    "hasLocation": true,
+    "tokenLocation": {
+      "X1": {
+        "Parachain": "2048"
+      }
+    }
+  },
+  {
+    "tokenData": {
+      "network": "kusama",
       "chain": 2001,
       "localId": {
         "VSBond": [
