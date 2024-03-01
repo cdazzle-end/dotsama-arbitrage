@@ -66,7 +66,8 @@ impl LiqPoolRegistry2{
         let mut parsed_files = chains
                 .into_iter()
                 .map(|chain| {
-                    let path_string = format!("../lps/{}/lps.json", chain);
+                    // let path_string = format!("../lps/{}/lps.json", chain);
+                    let path_string = format!("../../../polkadot_assets/lps/lp_registry/{}_lps.json", chain);
                     let path = Path::new(&path_string);
                     let mut buf = vec![];
                     let mut file = File::open(path)?;

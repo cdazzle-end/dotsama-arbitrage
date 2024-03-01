@@ -35,8 +35,8 @@ async fn main() {
                 let input_amount: f64 = args[4].parse().expect("Input amount must be a float");
                 fallback_search_a_to_b(key_1.to_string(), key_2.to_string(), input_amount).await;
             },
-            "test" => {
-                let asset_key = "2000{\"NativeAssetId\":{\"Token\":\"KSM\"}}".to_string();
+            "search_polkadot" => {
+                let asset_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
                 async_search_default_polkadot().await;
             },
             _ => {

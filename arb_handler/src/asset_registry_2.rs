@@ -68,11 +68,12 @@ pub struct MyAssetRegistryObject {
 // New asset registry files for statemine, crust, kintsugi...
 impl AssetRegistry2{
     pub fn build_asset_registry() -> AssetRegistry2{
-        let chains = vec!["kar", "bnc", "movr", "hko", "sdn", "kucoin", "mgx", "bsx", "other"];
+        let chains = vec!["kar", "bnc_kusama", "movr", "hko", "mgx", "bsx", "other"];
         let parsed_files = chains
             .into_iter()
             .map(|chain| {
-                let path_string = format!("../assets/{}/asset_registry.json", chain);
+                // let path_string = format!("../assets/{}/asset_registry.json", chain);
+                let path_string = format!("../../../polkadot_assets/assets/asset_registry/{}_assets.json", chain);
                 let path = Path::new(&path_string);
                 let mut buf = vec![];
                 let mut file = File::open(path)?;
@@ -125,7 +126,7 @@ impl AssetRegistry2{
     }
 
     pub fn build_asset_registry_polkadot() -> AssetRegistry2{
-        let chains = vec!["aca", "bnc", "glmr", "hdx", "para"];
+        let chains = vec!["aca", "bnc_polkadot", "glmr", "hdx", "para"];
         let parsed_files = chains
             .into_iter()
             .map(|chain| {
