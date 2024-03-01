@@ -39,7 +39,7 @@ impl TokenGraph2{
 
     //Get node from asset key
     pub fn get_node(&self, asset_key: String) -> GraphNodePointer{
-        println!("asset key: {}", asset_key);
+        // println!("asset key: {}", asset_key);
         let bucket = self.node_map.get(&asset_key).unwrap();
         for node in bucket{
             if node.borrow().asset_key == asset_key{
@@ -136,7 +136,7 @@ impl TokenGraph2{
         node_queue.push_back(Rc::clone(starting_node));
         println!("***");
         while !node_queue.is_empty(){
-            println!("queue length: {}", node_queue.len());
+            // println!("queue length: {}", node_queue.len());
             let current_node = node_queue.pop_front().unwrap();
             for adjacent_pair in &current_node.borrow().adjacent_pairs{
                 //Check if adjacent node shares same location with current node
@@ -368,7 +368,7 @@ impl TokenGraph2{
         node_queue.push_back(Rc::clone(starting_node));
 
         while !node_queue.is_empty() {
-            println!("queue length: {}", node_queue.len());
+            // println!("queue length: {}", node_queue.len());
             let current_node = node_queue.pop_front().unwrap();
             for adjacent_pair in &current_node.borrow().adjacent_pairs2{
                 // let path_value;
@@ -513,7 +513,7 @@ impl TokenGraph2{
 
         for possible_node in possible_destination_nodes{
             // println!("POSSIBLE NODE PATHS");
-            possible_node.borrow().display_path();
+            // possible_node.borrow().display_path();
 
             // println!("GETTING HIGHEST VALUE PATH");
             let best_path_value = possible_node.borrow().best_path_value;
@@ -601,7 +601,7 @@ pub fn add_adjacent_assets_2(current_node: GraphNodePointer, node_map: &HashMap<
                     for potential_adjacent_node in bucket{
                         if adjacent_asset.borrow().get_map_key() == potential_adjacent_node.borrow().asset_key{
                             adjacent_nodes.push(Rc::clone(&potential_adjacent_node));
-                            println!("Found stable pair")
+                            // println!("Found stable pair")
 
                         }
                     }
@@ -625,7 +625,7 @@ pub fn add_adjacent_assets_2(current_node: GraphNodePointer, node_map: &HashMap<
                         };
                         let adjacent_node_2 = AdjacentNodePair2::DexPair(DexPair{adjacent_node: Rc::clone(&potential_adjacent_node), liquidity: adj_group.liquidity.clone().unwrap()});
                         current_node.borrow_mut().adjacent_pairs2.push(adjacent_node_2);
-                        println!("found DEx")
+                        // println!("found DEx")
                     }
                 }
             },
@@ -946,7 +946,7 @@ pub fn calculate_stable_edge(token_graph: &TokenGraph2, primary_node: &GraphNode
 
             let input_amount = input_amount * f64::powi(10.0, base_precision as i32) as u128;
             let input_formatted = input_amount as f64 / f64::powi(10.0, total_node_decimals as i32);
-            println!("{} {} -> {}", primary_node.borrow().asset_key, input_formatted, adj_pair.adjacent_nodes[target_index].borrow().asset_key);
+            // println!("{} {} -> {}", primary_node.borrow().asset_key, input_formatted, adj_pair.adjacent_nodes[target_index].borrow().asset_key);
             // println!("Input unformatted: {}", input_amount);
             let swap_fee: BigInt;
             if a == 10000{
@@ -1036,7 +1036,7 @@ pub fn getD(balances: &Vec<BigInt>, a: u128) -> Option<u128> {
     
     let mut prev_d: BigInt;
     let mut d: BigInt = sum.clone();
-    println!("Start D: {}", d);
+    // println!("Start D: {}", d);
     for i in 0..255{
         let mut p_d = d.clone();
         for x in balances.iter(){

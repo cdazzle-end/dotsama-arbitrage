@@ -83,7 +83,7 @@ impl AdjacencyTable2{
             // This is for stable pools
             } else if let Some(x) = &lp.a {
                 for asset in &lp.assets{
-                    println!("LIQUIDITY: {:?}", lp.liquidity);
+                    // println!("LIQUIDITY: {:?}", lp.liquidity);
                     let base_asset = Rc::clone(&asset);
                     let base_asset_index = lp.assets.iter().position(|x| Rc::ptr_eq(x, &base_asset)).unwrap();
                     let base_asset_liquidity = lp.liquidity[base_asset_index];

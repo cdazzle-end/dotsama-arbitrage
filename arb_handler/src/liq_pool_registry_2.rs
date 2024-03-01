@@ -61,7 +61,7 @@ pub struct StableLpJson{
 
 impl LiqPoolRegistry2{
     pub fn build_liqpool_registry(asset_registry: &AssetRegistry2) -> LiqPoolRegistry2{
-        let chains = vec![ "kar", "bnc", "movr", "hko", "kucoin", "mgx", "bsx"];
+        let chains = vec![ "kar", "bnc", "movr", "hko", "mgx", "bsx"];
         // let chains = vec![ "kar", "bnc", "movr", "hko", "sdn", "kucoin", "mgx", "bsx"];
         let mut parsed_files = chains
                 .into_iter()
@@ -112,7 +112,7 @@ impl LiqPoolRegistry2{
                                 asset_registry.get_asset_by_id(chain_id, asset_id.as_str())
                             }).collect::<Vec<_>>();
 
-                            println!("Found stable ");
+                            // println!("Found stable ");
                             let pool = Some(LiqPool2 {
                                 chain_id,
                                 contract_address,
