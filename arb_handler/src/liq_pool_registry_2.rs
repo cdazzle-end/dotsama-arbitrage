@@ -61,7 +61,7 @@ pub struct StableLpJson{
 
 impl LiqPoolRegistry2{
     pub fn build_liqpool_registry(asset_registry: &AssetRegistry2) -> LiqPoolRegistry2{
-        let chains = vec![ "kar", "bnc", "movr", "hko", "mgx", "bsx"];
+        let chains = vec![ "kar", "bnc_kusama", "movr", "hko", "mgx", "bsx"];
         // let chains = vec![ "kar", "bnc", "movr", "hko", "sdn", "kucoin", "mgx", "bsx"];
         let mut parsed_files = chains
                 .into_iter()
@@ -166,7 +166,7 @@ impl LiqPoolRegistry2{
     }
 
     pub fn build_liqpool_registry_polkadot(asset_registry: &AssetRegistry2) -> LiqPoolRegistry2{
-        let chains = vec![ "aca", "bnc", "glmr", "hdx", "para"];
+        let chains = vec![ "aca", "bnc_polkadot", "glmr", "hdx", "para"];
         // let chains = vec![ "kar", "bnc", "movr", "hko", "sdn", "kucoin", "mgx", "bsx"];
         let mut parsed_files = chains
                 .into_iter()
