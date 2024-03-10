@@ -46,7 +46,7 @@ pub struct MyAssetJson {
     minimalBalance: Option<String>,
     isFrozen: Option<bool>,
     deposit: Option<String>,
-    contract_address: Option<String>,
+    contractAddress: Option<String>,
 }
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct CexAssetJson{
@@ -131,7 +131,7 @@ impl AssetRegistry2{
             .into_iter()
             .map(|chain| {
                 let path_string = format!("../../../polkadot_assets/assets/asset_registry/{}_assets.json", chain);
-                println!("path_string: {}", path_string);
+                // println!("path_string: {}", path_string);
                 let path = Path::new(&path_string);
                 let mut buf = vec![];
                 let mut file = File::open(path)?;
@@ -163,6 +163,7 @@ impl AssetRegistry2{
             let asset_array: Vec<MyAssetRegistryObject> = serde_json::from_value(parsed).unwrap();
             for asset in asset_array{
                 let asset_location = parse_asset_location(&asset);
+                // println!("{:?}", asset.tokenData);
                 let new_asset = Rc::new(RefCell::new(Asset::new(asset.tokenData, asset_location)));
                 let map_key = new_asset.borrow().get_map_key();
                 // if ignore_list_locations.contains(&new_asset.borrow().get_asset_location_string()){
@@ -226,7 +227,7 @@ impl AssetRegistry2{
             for asset in assets{
                 match &asset.borrow().token_data{
                     TokenData::MyAsset(data) => {
-                        println!("{} {} {}", asset.borrow().get_chain_id().unwrap(), asset.borrow().get_asset_name(), asset.borrow().get_asset_symbol());
+                        println!("{} {} {} {}", asset.borrow().get_chain_id().unwrap(), asset.borrow().get_asset_name(), asset.borrow().get_asset_symbol(), asset.borrow().get_map_key());
                     },
                     TokenData::CexAsset(data) => {
                         println!("{} {} {}", asset.borrow().get_exchange().unwrap(), asset.borrow().get_asset_name(), asset.borrow().get_asset_symbol());
@@ -247,9 +248,25 @@ impl AssetRegistry2{
             println!("{}", key);
         }
     }
+    pub fn display_all_glmr_assets(&self){
+        let mut keys = vec![];
+        for(key,value) in &self.asset_map{
+            if value[0].borrow().get_chain_id().unwrap() == 2004{
+                // println!("TEST");
+                println!("{} {} {:?}", key, value[0].borrow().get_asset_name(), value[0].borrow().get_asset_contract_address());
+            }
+            let display_string = key.clone() + " " + &value.iter().map(|x| x.borrow().get_asset_name().to_string()).collect::<Vec<String>>().join(", ");
+            keys.push(display_string);
+        }
+        keys.sort();
+        for key in keys{
+            println!("{}", key);
+        }
+    }
     pub fn get_asset_by_id(&self, chain_id: u64, local_id: &str) -> Option<Rc<RefCell<Asset>>>{
         let map_key = chain_id.to_string() + local_id;
         // self.asset_map.get(&map_key).map(|x| x[0].clone())
+        // println!("Map Key: {}", map_key);
         self.asset_map.get(&map_key).map(|x| x.iter()
             .find(|x| x.borrow().get_map_key() == map_key).unwrap().clone())
     }
@@ -320,7 +337,7 @@ impl Asset{
     }
     pub fn get_asset_contract_address(&self) -> Option<String>{
         match &self.token_data {
-            TokenData::MyAsset(data) => data.contract_address.clone(),
+            TokenData::MyAsset(data) => data.contractAddress.clone(),
             TokenData::CexAsset(data) => Some(data.contractAddress.clone())
         }
     }

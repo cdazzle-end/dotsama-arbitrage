@@ -12,6 +12,7 @@ import Keyring from '@polkadot/keyring';
 import { u8aToHex, stringToHex, numberToHex } from '@polkadot/util';
 import { mnemonicToLegacySeed, hdEthereum } from '@polkadot/util-crypto';
 import { MyLp } from '../lp_types';
+import path from 'path';
 const rpc1 = 'wss://wss.moonriver.moonbeam.network';
 const rpc2 = 'wss://moonriver.public.blastapi.io';
 const rpc3 = 'wss://moonriver.api.onfinality.io/public-ws';
@@ -60,8 +61,8 @@ const tokenContractAbi = [
 
 export async function updateLps() {
     
-    const lps = JSON.parse(fs.readFileSync('./movr/lps_base.json', 'utf8'))
-    const asseRegistry = JSON.parse(fs.readFileSync('../assets/movr/asset_registry.json', 'utf8'))
+    const lps = JSON.parse(fs.readFileSync(path.join(__dirname, './lps_base.json'), 'utf8'))
+    const asseRegistry = JSON.parse(fs.readFileSync(path.join(__dirname, '../../assets/movr/asset_registry.json'), 'utf8'))
     lps.map((lp: any) => {
         
         const token0 = asseRegistry.find((asset: any) => asset.tokenData.contractAddress.toLowerCase() == lp.poolAssets[0].toLowerCase() )
@@ -90,7 +91,7 @@ export async function updateLps() {
             return newPool;
         }
     }))).filter(pool => pool != null); // Filter out null entries
-    fs.writeFileSync('./movr/lps.json', JSON.stringify(updatedLps, null, 2))
+    fs.writeFileSync(path.join(__dirname, './lps.json'), JSON.stringify(updatedLps, null, 2))
     provider.destroy()
 
 }

@@ -23,7 +23,7 @@ assets/allAssets.json
 lps/kar/stablePools.json
 arb_handler/outputArb.txt
 lps/outputLp.txt
-
+arb_handler/src/old_classes/
 
 
 # Logs

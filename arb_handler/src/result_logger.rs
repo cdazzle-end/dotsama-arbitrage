@@ -18,7 +18,40 @@ impl ResultLogger {
         // eprintln!("[{}] Error: {}", chrono::Local::now().format("%Y-%m-%d %H:%M:%S"), info);
     }
 
-    pub fn log_results_default_polkadot(result_log: Vec<PathNode>, start_node_name: String){
+    // pub fn log_results_default_polkadot(result_log: Vec<PathNode>, start_node_name: String){
+    //     let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
+    //     // Get the current timestamp
+    //     let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
+    //     let date = chrono::Local::now().format("%Y-%m-%d").to_string();
+    //     let time = chrono::Local::now().format("%H-%M-%S").to_string();
+    
+    //     // Construct the directory path for the current date
+    //     let log_folder_path = format!("result_log_data_polkadot/{}", date);
+    
+    //     // Create a directory for the current date if it doesn't exist
+    //     match std::fs::create_dir_all(&log_folder_path) {
+    //         Ok(_) => println!("Directory created successfully"),
+    //         Err(e) => println!("Error creating directory: {:?}", e),
+    //     }
+    
+    //     // Construct the file path including the directory
+    //     let log_data_path = format!("{}/{}_{}.json", log_folder_path, start_node_name, time);
+    //     println!("Log data path: {}", log_data_path);
+    //     let mut file = File::create(log_data_path).expect("Failed to create file");
+    //     file.write_all(json.as_bytes()).expect("Failed to write data");
+    
+    //     // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
+    //     let best_path_value = result_log[result_log.len()-1].path_value;
+    //     let result_log_string = format!("{} {} - {}", timestamp, start_node_name, best_path_value);
+    //     let mut file = OpenOptions::new()
+    //         .append(true)
+    //         .create(true)
+    //         .open("result_log.txt")
+    //         .expect("Failed to open or create file");
+    //     writeln!(file, "{}", result_log_string).expect("Failed to write data");
+    // }
+    
+    pub fn log_results_default_kusama(result_log: Vec<PathNode>, start_node_name: String, input_amount: f64){
         let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
         // Get the current timestamp
         let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
@@ -26,7 +59,7 @@ impl ResultLogger {
         let time = chrono::Local::now().format("%H-%M-%S").to_string();
     
         // Construct the directory path for the current date
-        let log_folder_path = format!("result_log_data_polkadot/{}", date);
+        let log_folder_path = format!("default_log_data/kusama/{}/{}", date, input_amount);
     
         // Create a directory for the current date if it doesn't exist
         match std::fs::create_dir_all(&log_folder_path) {
@@ -37,6 +70,7 @@ impl ResultLogger {
         // Construct the file path including the directory
         let log_data_path = format!("{}/{}_{}.json", log_folder_path, start_node_name, time);
         println!("Log data path: {}", log_data_path);
+       
         let mut file = File::create(log_data_path).expect("Failed to create file");
         file.write_all(json.as_bytes()).expect("Failed to write data");
     
@@ -49,9 +83,11 @@ impl ResultLogger {
             .open("result_log.txt")
             .expect("Failed to open or create file");
         writeln!(file, "{}", result_log_string).expect("Failed to write data");
+    
+        // result_log.clone()
     }
     
-    pub fn log_results_default(result_log: Vec<PathNode>, start_node_name: String, input_amount: f64){
+    pub fn log_results_default_polkadot(result_log: Vec<PathNode>, start_node_name: String, input_amount: f64){
         let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
         // Get the current timestamp
         let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
@@ -59,7 +95,7 @@ impl ResultLogger {
         let time = chrono::Local::now().format("%H-%M-%S").to_string();
     
         // Construct the directory path for the current date
-        let log_folder_path = format!("default_log_data/{}/{}", date, input_amount);
+        let log_folder_path = format!("default_log_data/polkadot/{}/{}", date, input_amount);
     
         // Create a directory for the current date if it doesn't exist
         match std::fs::create_dir_all(&log_folder_path) {
@@ -70,9 +106,7 @@ impl ResultLogger {
         // Construct the file path including the directory
         let log_data_path = format!("{}/{}_{}.json", log_folder_path, start_node_name, time);
         println!("Log data path: {}", log_data_path);
-        // let log_data_path = format!("result_log_data/{}_{}.json", start_node.get_asset_name(), timestamp);
-        // println!("Log data path: {}", log_data_path);
-        // When creating the file, use the log_data_path which includes the directory
+       
         let mut file = File::create(log_data_path).expect("Failed to create file");
         file.write_all(json.as_bytes()).expect("Failed to write data");
     
@@ -141,7 +175,7 @@ impl ResultLogger {
         result_log.clone()
     }
     
-    pub fn log_async_search_target(path: Vec<PathNode>, asset_name: String) {
+    pub fn log_async_search_target(path: Vec<PathNode>, asset_name: String, relay: String) {
         let json = serde_json::to_string_pretty(&path.clone()).unwrap();
         // Get the current timestamp
         let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
@@ -149,7 +183,7 @@ impl ResultLogger {
         let time = chrono::Local::now().format("%H-%M-%S").to_string();
     
         // Construct the directory path for the current date
-        let log_folder_path = format!("target_log_data/{}", date);
+        let log_folder_path = format!("target_log_data/{}/{}", relay, date);
     
         // Create a directory for the current date if it doesn't exist
         match std::fs::create_dir_all(&log_folder_path) {
@@ -230,7 +264,7 @@ impl ResultLogger {
         result_log.clone()
     }
     
-    pub fn log_results_fallback(path: NodePath) -> Vec<PathNode> {
+    pub fn log_results_fallback(path: NodePath, relay: String) -> Vec<PathNode> {
         let target_node = path[path.len() - 1].borrow();
         let path_values = &target_node.path_values;
         let path_value_types = &target_node.path_value_types;
@@ -253,7 +287,7 @@ impl ResultLogger {
         let time = chrono::Local::now().format("%H-%M-%S").to_string();
     
         // Construct the directory path for the current date
-        let log_folder_path = format!("fallback_log_data/{}", date);
+        let log_folder_path = format!("fallback_log_data/{}/{}", relay.to_ascii_lowercase(), date);
     
         // Create a directory for the current date if it doesn't exist
         match std::fs::create_dir_all(&log_folder_path) {

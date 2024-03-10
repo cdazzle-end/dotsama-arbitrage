@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use crate::liq_pool_registry_2::LiqPoolRegistry2;
+use crate::liq_pool_registry_2::{LiqPoolRegistry2, TickData};
 use crate::asset_registry_2::{Asset, TokenData};
 
 //The Adjacency Table contains the connections between nodes in the token graph
@@ -12,6 +12,7 @@ type AssetPointer = Rc<RefCell<Asset>>;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Liquidity{
     Dex(DexLp),
+    DexV3(DexV3),
     Cex(CexLp),
     Stable(StableLp),
 }
@@ -20,6 +21,18 @@ pub struct DexLp{
     pub base_liquidity: u128,
     pub adjacent_liquidity: u128,
 }
+#[derive(Debug, Clone, PartialEq)]
+pub struct DexV3{
+    pub contract_address: Option<String>,
+    pub token_0: String,
+    pub token_1: String,
+    pub active_liquidity: u128,
+    pub current_tick: i64,
+    pub fee_rate: u128,
+    pub lower_ticks: Vec<TickData>,
+    pub upper_ticks: Vec<TickData>,
+}
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct CexLp{
     pub bid_price: u128,
@@ -32,6 +45,7 @@ pub struct StableLp{
     pub base_liquidity: u128,
     pub adjacent_liquidity: Vec<u128>,
     pub a: u128,
+    pub total_supply: u128,
     pub base_token_precision: u128,
     pub adjacent_token_precisions: Vec<u128>,
 }
@@ -55,10 +69,11 @@ pub enum GroupType{
     Stable,
     Cex,
     Dex,
+    DexV3,
     Xcm
 }
 impl AdjacencyTable2{
-        pub fn build_table_2(lp_registry: &LiqPoolRegistry2) -> AdjacencyTable2{
+    pub fn build_table_2(lp_registry: &LiqPoolRegistry2) -> AdjacencyTable2{
         let mut adjacency_table = AdjacencyTable2 { table_2: HashMap::new() };
         for lp in &lp_registry.liq_pools{   
             // println!("lp: {:?}", lp);
@@ -88,6 +103,7 @@ impl AdjacencyTable2{
                     let base_asset_index = lp.assets.iter().position(|x| Rc::ptr_eq(x, &base_asset)).unwrap();
                     let base_asset_liquidity = lp.liquidity[base_asset_index];
                     let token_precisions = lp.token_precisions.as_ref().unwrap().iter().map(|x| x.parse::<u128>().unwrap()).collect::<Vec<u128>>();
+                    let total_supply = lp.total_supply.unwrap(); 
                     let base_token_precision = token_precisions[base_asset_index];
                     let mut adjacent_assets = vec![];
                     let mut adjacent_liquidity = vec![];
@@ -104,9 +120,39 @@ impl AdjacencyTable2{
                             adjacent_liquidity.push(*liq);
                         }
                     }
-                    adjacency_table.add_stable_pair_to_table(base_asset, base_asset_liquidity, base_token_precision, adjacent_assets, adjacent_liquidity, lp.a.unwrap().into(), adjacent_token_precisions);
+                    adjacency_table.add_stable_pair_to_table(base_asset, base_asset_liquidity, base_token_precision, adjacent_assets, adjacent_liquidity, lp.a.unwrap().into(), total_supply, adjacent_token_precisions);
                 }
             // This is for regular dex pools, which is most of what were working with
+            } else if let Some(x) = &lp.current_tick{
+                // println!("Active Liquidity: {:?}", lp.active_liquidity);
+                let active_liquidity = &lp.active_liquidity.clone().unwrap().as_str().parse::<u128>().unwrap();
+                let contract_address = lp.contract_address.clone();
+                let token_0 = asset_0.borrow().get_asset_contract_address().unwrap();
+                let token_1 = asset_1.borrow().get_asset_contract_address().unwrap();
+                adjacency_table.add_dex_3_to_table(
+                    Rc::clone(&asset_0),
+                    Rc::clone(&asset_1),
+                    contract_address.clone(),
+                    token_0.clone(),
+                    token_1.clone(),
+                    *active_liquidity,
+                    lp.fee_rate.clone().unwrap().parse::<u128>().unwrap(),
+                    lp.current_tick.clone().unwrap().into(),
+                    lp.lower_ticks.clone().unwrap(),
+                    lp.upper_ticks.clone().unwrap()
+                );
+                adjacency_table.add_dex_3_to_table(
+                    Rc::clone(&asset_1),
+                    Rc::clone(&asset_0),
+                    contract_address,
+                    token_0,
+                    token_1,
+                    *active_liquidity,
+                    lp.fee_rate.clone().unwrap().parse::<u128>().unwrap(),
+                    lp.current_tick.clone().unwrap().into(),
+                    lp.lower_ticks.clone().unwrap(),
+                    lp.upper_ticks.clone().unwrap()
+                );
             } else {
                 let (liquidity_0, liquidity_1) = (lp.liquidity[0], lp.liquidity[1]);
                 adjacency_table.add_dex_pair_to_table(
@@ -119,6 +165,50 @@ impl AdjacencyTable2{
             }
         }
         adjacency_table
+    }
+
+    fn add_dex_3_to_table(
+        &mut self,
+        base_asset: AssetPointer,
+        adjacent_asset: AssetPointer,
+        contract_address: Option<String>,
+        token_0: String,
+        token_1: String,
+        active_liquidity: u128,
+        fee_rate: u128,
+        current_tick: i64,
+        lower_ticks: Vec<TickData>,
+        upper_ticks: Vec<TickData>,
+    ){
+        let base_asset_key = base_asset.borrow().get_map_key();
+
+        let table_bucket = self
+            .table_2
+            .entry(base_asset_key.clone())
+            .or_insert(vec![AdjacencyList::new(&base_asset)]);
+
+        //Find base_asset adjacency list and add new asset
+        let mut inserted = false;
+
+        //Loop through lists, find one that corresponds to base asset
+        for adjacency_list in table_bucket{
+
+            //The first asset in an adjacency list is the primary asset (the rest are adjacent to the primary)
+            let adjacency_list_key = adjacency_list.primary_asset.borrow().get_map_key();
+            if base_asset_key == adjacency_list_key{
+                adjacency_list.add_dex_3_pair(adjacent_asset, contract_address, token_0, token_1, active_liquidity, fee_rate, current_tick, lower_ticks, upper_ticks);
+                inserted = true;
+                break;
+            }
+        }
+
+        //If base_asset has no corresponding adjacency list in the table, that means there is a list at that index which isn't the one we're looking for
+        //This should only happen if there is a hashmap collision, i.e. 2 different asset keys hash to the same value.
+        if !inserted{
+            let new_adjacency_list = AdjacencyList::new(&base_asset);
+            self.table_2.entry(base_asset_key.clone()).and_modify(|e| e.push(new_adjacency_list));
+        }
+
     }
 
     fn add_dex_pair_to_table(
@@ -206,6 +296,7 @@ impl AdjacencyTable2{
         adjacent_assets: Vec<AssetPointer>,
         adjacent_liquidity: Vec<u128>,
         a: u128,
+        total_supply: u128,
         adjacent_token_precisions: Vec<u128>,
     ){
         // println!("BASE LIQ {:?}", base_liquidity);
@@ -228,7 +319,7 @@ impl AdjacencyTable2{
         for adjacency_list in table_bucket{
             let adjacency_list_key = adjacency_list.primary_asset.borrow().get_map_key();
             if base_asset_key == adjacency_list_key{
-                adjacency_list.add_stable_pair(adjacent_assets, base_liquidity, base_token_precision, adjacent_liquidity, a, adjacent_token_precisions);
+                adjacency_list.add_stable_pair(adjacent_assets, base_liquidity, base_token_precision, adjacent_liquidity, a, total_supply, adjacent_token_precisions);
                 inserted = true;
                 break;
             }
@@ -304,13 +395,18 @@ impl AdjacencyList{
         self.list.push(pair);
     }
 
+    pub fn add_dex_3_pair(&mut self, adjacent_assets: AssetPointer, contract_address: Option<String>, token_0: String, token_1: String, active_liquidity: u128, fee_rate: u128, current_tick: i64, lower_ticks: Vec<TickData>, upper_ticks: Vec<TickData>){
+        let pair = AdjacencyGroup::new_dex_3_pair(Rc::clone(&adjacent_assets), contract_address, token_0, token_1, active_liquidity, fee_rate, current_tick, lower_ticks, upper_ticks);
+        self.list.push(pair);
+    }
+
     pub fn add_cex_pair(&mut self, adjacent_asset: AssetPointer, bid_price: u128, bid_decimals: u128, ask_price: u128, ask_decimals: u128){
         let pair = AdjacencyGroup::new_cex_pair(Rc::clone(&adjacent_asset), bid_price, bid_decimals, ask_price, ask_decimals);
         self.list.push(pair);
     }
 
-    pub fn  add_stable_pair(&mut self, adjacent_assets: Vec<AssetPointer>, base_liquidity: u128, base_token_precision: u128, adjacent_liquidity: Vec<u128>, a: u128, adjacent_token_precisions: Vec<u128>){
-        let pair = AdjacencyGroup::new_stable_pair(adjacent_assets, base_liquidity, base_token_precision, adjacent_liquidity, a, adjacent_token_precisions);
+    pub fn  add_stable_pair(&mut self, adjacent_assets: Vec<AssetPointer>, base_liquidity: u128, base_token_precision: u128, adjacent_liquidity: Vec<u128>, a: u128, total_supply: u128, adjacent_token_precisions: Vec<u128>){
+        let pair = AdjacencyGroup::new_stable_pair(adjacent_assets, base_liquidity, base_token_precision, adjacent_liquidity, a, total_supply, adjacent_token_precisions);
         self.list.push(pair);
     }
 
@@ -339,6 +435,23 @@ impl AdjacencyGroup{
         }
     }
 
+    pub fn new_dex_3_pair(adjacent_asset: AssetPointer, contract_address: Option<String>, token_0: String, token_1: String, active_liquidity: u128, fee_rate: u128, current_tick: i64, lower_ticks: Vec<TickData>, upper_ticks: Vec<TickData>) -> AdjacencyGroup{
+        AdjacencyGroup{
+            group_type: GroupType::DexV3,
+            adjacent_asset: vec![Rc::clone(&adjacent_asset)],
+            liquidity: Some(Liquidity::DexV3(DexV3{
+                contract_address: contract_address,
+                token_0: token_0,
+                token_1: token_1,
+                current_tick: current_tick,
+                active_liquidity: active_liquidity,
+                fee_rate: fee_rate,
+                lower_ticks: lower_ticks,
+                upper_ticks: upper_ticks
+            }))
+        }
+    }
+
     pub fn new_cex_pair(adjacent_asset: AssetPointer, bid_price: u128, bid_decimals: u128, ask_price: u128, ask_decimals: u128) -> AdjacencyGroup{
         AdjacencyGroup{
             group_type: GroupType::Cex,
@@ -350,7 +463,7 @@ impl AdjacencyGroup{
         }
     }
 
-    pub fn new_stable_pair(adjacent_assets: Vec<AssetPointer>, base_liquidity: u128, base_token_precision: u128, adjacent_liquidity: Vec<u128>, a: u128, adjacent_token_precisions: Vec<u128>) -> AdjacencyGroup{
+    pub fn new_stable_pair(adjacent_assets: Vec<AssetPointer>, base_liquidity: u128, base_token_precision: u128, adjacent_liquidity: Vec<u128>, a: u128, total_supply: u128, adjacent_token_precisions: Vec<u128>) -> AdjacencyGroup{
         AdjacencyGroup{
             group_type: GroupType::Stable,
             adjacent_asset: adjacent_assets,
@@ -360,6 +473,7 @@ impl AdjacencyGroup{
                     base_token_precision: base_token_precision,
                     adjacent_liquidity: adjacent_liquidity,
                     a: a,
+                    total_supply: total_supply,
                     adjacent_token_precisions: adjacent_token_precisions
                 }
             ))
