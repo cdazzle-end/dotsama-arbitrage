@@ -20,6 +20,7 @@ pub struct LiqPool2{
     pub assets: Vec<AssetPointer>,
     pub liquidity: Vec<u128>,
     pub contract_address: Option<String>,
+    pub lp_id: Option<String>, 
     pub exchange: Option<String>,
     pub prices: Option<(u64, u64)>,
     pub price_decimals: Option<(u64,u64)>,
@@ -32,6 +33,7 @@ pub struct LiqPool2{
     pub fee_rate: Option<String>,
     pub current_tick: Option<i64>,
     pub active_liquidity: Option<String>,
+    pub initialized_ticks: Option<Vec<i128>>,
     pub lower_ticks: Option<Vec<TickData>>,
     pub upper_ticks: Option<Vec<TickData>>,
     // pub is_evm: bool
@@ -47,13 +49,14 @@ pub struct MyLpJson{
     feeRate: Option<String>,
     currentTick: Option<String>,
     activeLiquidity: Option<String>,
+    initializedTicks: Option<Vec<i128>>,
     lowerTicks: Option<Vec<TickDataJson>>,
     upperTicks: Option<Vec<TickDataJson>>,
 
 }
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct TickDataJson {
-    tick: String,
+    tick: i64,
     liquidityDelta: String,
     initialized: Option<bool>,
     liquidityTotal: String,
@@ -123,6 +126,7 @@ impl LiqPoolRegistry2{
                                 prices: Some((lp_data.price[0], lp_data.price[1])),
                                 price_decimals: Some((lp_data.priceDecimals[0], lp_data.priceDecimals[1])),
                                 contract_address: None,
+                                lp_id: None,
                                 assets: vec![asset, usdt],
                                 liquidity: vec![],
                                 a: None,
@@ -134,6 +138,7 @@ impl LiqPoolRegistry2{
                                 fee_rate: None,
                                 current_tick: None,
                                 active_liquidity: None,
+                                initialized_ticks: None,
                                 lower_ticks: None,
                                 upper_ticks: None
 
@@ -142,6 +147,7 @@ impl LiqPoolRegistry2{
                             let lp_data: StableLpJson = serde_json::from_value(lp.clone()).map_err(|e| e).unwrap();
                             let chain_id = lp_data.chainId;
                             let contract_address = lp_data.contractAddress;
+                            // let lp_id = chain_id.clone().to_string() + &contract_address.clone();
                             let pool_assets = lp_data.poolAssets;
                             // let total_supply = lp_data.totalSupply;
                             let liquidity_stats = lp_data.liquidityStats.iter().map(
@@ -155,7 +161,8 @@ impl LiqPoolRegistry2{
                             // println!("Found stable ");
                             let pool = Some(LiqPool2 {
                                 chain_id,
-                                contract_address,
+                                contract_address: contract_address.clone(),
+                                lp_id: contract_address.clone(),
                                 assets: assets,
                                 liquidity: liquidity_stats,
                                 a: Some(lp_data.a),
@@ -170,6 +177,7 @@ impl LiqPoolRegistry2{
                                 fee_rate: None,
                                 current_tick: None,
                                 active_liquidity: None,
+                                initialized_ticks: None,
                                 lower_ticks: None,
                                 upper_ticks: None
                             });
@@ -189,8 +197,8 @@ impl LiqPoolRegistry2{
                             let active_liquidity = lp_data.activeLiquidity;
                             let lower_tick_data = lp_data.lowerTicks;
                             let upper_tick_data = lp_data.upperTicks;
-                            let lower_ticks = lower_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.parse().unwrap(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
-                            let upper_ticks = upper_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.parse().unwrap(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
+                            let lower_ticks = lower_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.clone(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
+                            let upper_ticks = upper_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.clone(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
                             
                             let liquidity_0 = liquidity_stats[0].as_str().parse().map_err(|e| e).unwrap();
                             let liquidity_1 = liquidity_stats[1].as_str().parse().map_err(|e| e).unwrap();
@@ -201,7 +209,8 @@ impl LiqPoolRegistry2{
                             if assets.len() == 2 {
                                 Some(LiqPool2 {
                                     chain_id,
-                                    contract_address,
+                                    contract_address: contract_address.clone(),
+                                    lp_id: contract_address.clone(),
                                     assets: vec![assets[0].clone(), assets[1].clone()],
                                     liquidity: vec![liquidity_0, liquidity_1],
                                     exchange: None,
@@ -215,6 +224,7 @@ impl LiqPoolRegistry2{
                                     dex_type: Some(dex_type),
                                     fee_rate: fee_rate,
                                     current_tick: Some(current_tick.unwrap().parse().map_err(|e| e).unwrap()),
+                                    initialized_ticks: lp_data.initializedTicks,
                                     active_liquidity: active_liquidity,
                                     lower_ticks: lower_ticks,
                                     upper_ticks: upper_ticks
@@ -240,7 +250,8 @@ impl LiqPoolRegistry2{
                             if assets.len() == 2 {
                                 Some(LiqPool2 {
                                     chain_id,
-                                    contract_address,
+                                    contract_address: contract_address.clone(),
+                                    lp_id: contract_address.clone(),
                                     assets: vec![assets[0].clone(), assets[1].clone()],
                                     liquidity: vec![liquidity_0, liquidity_1],
                                     exchange: None,
@@ -255,6 +266,7 @@ impl LiqPoolRegistry2{
                                     fee_rate: None,
                                     current_tick: None,
                                     active_liquidity: None,
+                                    initialized_ticks: None,
                                     lower_ticks: None,
                                     upper_ticks: None
                                 })
@@ -301,6 +313,7 @@ impl LiqPoolRegistry2{
                                 prices: Some((lp_data.price[0], lp_data.price[1])),
                                 price_decimals: Some((lp_data.priceDecimals[0], lp_data.priceDecimals[1])),
                                 contract_address: None,
+                                lp_id: None,
                                 assets: vec![asset, usdt],
                                 liquidity: vec![],
                                 a: None,
@@ -312,6 +325,7 @@ impl LiqPoolRegistry2{
                                 fee_rate: None,
                                 current_tick: None,
                                 active_liquidity: None,
+                                initialized_ticks: None,
                                 lower_ticks: None,
                                 upper_ticks: None
                             })
@@ -332,7 +346,8 @@ impl LiqPoolRegistry2{
                             // println!("Found stable ");
                             let pool = Some(LiqPool2 {
                                 chain_id,
-                                contract_address,
+                                contract_address: contract_address.clone(),
+                                lp_id: contract_address.clone(),
                                 assets: assets,
                                 liquidity: liquidity_stats,
                                 a: Some(lp_data.a),
@@ -347,6 +362,7 @@ impl LiqPoolRegistry2{
                                 fee_rate: None,
                                 current_tick: None,
                                 active_liquidity: None,
+                                initialized_ticks: None,
                                 lower_ticks: None,
                                 upper_ticks: None
 
@@ -372,8 +388,9 @@ impl LiqPoolRegistry2{
                             let upper_tick_data = lp_data.upperTicks;
                             // println!("Lower tick data: {:?}", lower_tick_data);
                             // println!("Upper tick data: {:?}", upper_tick_data);
-                            let lower_ticks = lower_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.as_str().parse().map_err(|e| e).unwrap(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
-                            let upper_ticks = upper_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.as_str().parse().map_err(|e| e).unwrap(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
+
+                            let lower_ticks = lower_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.clone(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
+                            let upper_ticks = upper_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.clone(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
                             
                             // let liquidity_0 = liquidity_stats[0].as_str().parse().map_err(|e| e).unwrap();
                             // let liquidity_1 = liquidity_stats[1].as_str().parse().map_err(|e| e).unwrap();
@@ -384,7 +401,8 @@ impl LiqPoolRegistry2{
                             if assets.len() == 2 {
                                 Some(LiqPool2 {
                                     chain_id,
-                                    contract_address,
+                                    contract_address: contract_address.clone(),
+                                    lp_id: contract_address.clone(),
                                     assets: vec![assets[0].clone(), assets[1].clone()],
                                     liquidity: vec![0],
                                     exchange: None,
@@ -399,6 +417,7 @@ impl LiqPoolRegistry2{
                                     fee_rate: fee_rate,
                                     current_tick: Some(current_tick.unwrap().parse().map_err(|e| e).unwrap()),
                                     active_liquidity: active_liquidity,
+                                    initialized_ticks: lp_data.initializedTicks,
                                     lower_ticks: lower_ticks,
                                     upper_ticks: upper_ticks
                                 })
@@ -432,7 +451,8 @@ impl LiqPoolRegistry2{
                             if assets.len() == 2 {
                                 Some(LiqPool2 {
                                     chain_id,
-                                    contract_address,
+                                    contract_address: contract_address.clone(),
+                                    lp_id: contract_address.clone(),
                                     assets: vec![assets[0].clone(), assets[1].clone()],
                                     liquidity: vec![liquidity_0, liquidity_1],
                                     exchange: None,
@@ -447,6 +467,7 @@ impl LiqPoolRegistry2{
                                     fee_rate: None,
                                     current_tick: None,
                                     active_liquidity: None,
+                                    initialized_ticks: None,
                                     lower_ticks: None,
                                     upper_ticks: None
 

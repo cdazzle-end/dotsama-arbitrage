@@ -127,6 +127,7 @@ impl ResultLogger {
         let start_node = path[0].borrow();
         let path_values = &start_node.path_values;
         let path_value_types = &start_node.path_value_types;
+        let path_datas = &start_node.path_datas;
         let mut result_log: Vec<PathNode> = Vec::new();
         for(i, node) in path.iter().enumerate(){
             let path_node = PathNode{
@@ -134,6 +135,7 @@ impl ResultLogger {
                 asset_name: node.borrow().get_asset_name(),
                 path_value: path_values[i].clone(),
                 path_identifier: path_value_types[i].clone(),
+                path_data: path_datas[i].clone(),
             };
             result_log.push(path_node);
         }
@@ -215,6 +217,7 @@ impl ResultLogger {
         let target_node = path[path.len() - 1].borrow();
         let path_values = &target_node.path_values;
         let path_value_types = &target_node.path_value_types;
+        let path_datas = &target_node.path_datas;
         let mut result_log: Vec<PathNode> = Vec::new();
         for(i, node) in path.iter().enumerate(){
             let path_node = PathNode{
@@ -222,6 +225,7 @@ impl ResultLogger {
                 asset_name: node.borrow().get_asset_name(),
                 path_value: path_values[i].clone(),
                 path_identifier: path_value_types[i].clone(),
+                path_data: path_datas[i].clone(),
             };
             println!("{} : {}", node.borrow().get_asset_name(), path_values[i] );
             result_log.push(path_node);
@@ -268,6 +272,7 @@ impl ResultLogger {
         let target_node = path[path.len() - 1].borrow();
         let path_values = &target_node.path_values;
         let path_value_types = &target_node.path_value_types;
+        let path_datas = &target_node.path_datas;
         let mut result_log: Vec<PathNode> = Vec::new();
         for(i, node) in path.iter().enumerate(){
             let path_node = PathNode{
@@ -275,6 +280,7 @@ impl ResultLogger {
                 asset_name: node.borrow().get_asset_name(),
                 path_value: path_values[i].clone(),
                 path_identifier: path_value_types[i].clone(),
+                path_data: path_datas[i].clone(),
             };
             println!("{} : {}", node.borrow().get_asset_name(), path_values[i] );
             result_log.push(path_node);
@@ -321,6 +327,7 @@ impl ResultLogger {
         let start_node = path[0].borrow();
         let path_values = &start_node.path_values;
         let path_value_types = &start_node.path_value_types;
+        let path_datas = &start_node.path_datas;
         let mut result_log: Vec<PathNode> = Vec::new();
         for(i, node) in path.iter().enumerate(){
             let path_node = PathNode{
@@ -328,6 +335,8 @@ impl ResultLogger {
                 asset_name: node.borrow().get_asset_name(),
                 path_value: path_values[i].clone(),
                 path_identifier: path_value_types[i].clone(),
+                path_data: path_datas[i].clone(),
+
             };
             result_log.push(path_node);
         }

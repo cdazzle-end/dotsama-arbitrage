@@ -22,6 +22,7 @@ use asset_registry_2::AssetRegistry2;
 use liq_pool_registry_2::LiqPoolRegistry2;
 use num::BigInt;
 use token_graph_2::get_sqrt_ratio_at_tick;
+use token_graph_2::PathData;
 use token_graph_2::TokenGraph2;
 use token_graph_2::GraphNode;
 use result_logger::ResultLogger;
@@ -48,6 +49,7 @@ pub struct PathNode{
     pub asset_name: String,
     pub path_value: f64,
     pub path_identifier: u64, // 0 - 3 for transfer code
+    pub path_data: PathData,
     // pub path_id: String, // Any extra info like pool ID
 }
 
@@ -526,17 +528,17 @@ pub async fn async_search_default_polkadot(){
 
     println!("Highest input value: {}", highest_big_value);
     for node in highest_big_value_path.clone(){
-        println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+        println!("{}: {} {} || {:?}", node.node_key, node.asset_name, node.path_value, node.path_data);
     }
     println!("*****************************************");
     println!("Highest small value: {}", highest_small_value);
     for node in highest_small_value_path.clone(){
-        println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+        println!("{}: {} {} || {:?}", node.node_key, node.asset_name, node.path_value, node.path_data);
     }
     println!("*****************************************");
     println!("Highest medium value: {}", highest_medium_value);
     for node in highest_medium_value_path.clone(){
-        println!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+        println!("{}: {} {} || {:?}", node.node_key, node.asset_name, node.path_value, node.path_data);
     }
     println!("*****************************************");
     ResultLogger::log_results_default_polkadot(highest_big_value_path, start_node_asset_name.clone(), big_input);
@@ -581,6 +583,7 @@ pub fn return_path_nodes(path: NodePath) -> Vec<PathNode> {
     let target_node = path[path.len() - 1].borrow();
     let path_values = &target_node.path_values;
     let path_value_types = &target_node.path_value_types;
+    let path_datas = &target_node.path_datas;
     let mut result_log: Vec<PathNode> = Vec::new();
     for(i, node) in path.iter().enumerate(){
         let path_node = PathNode{
@@ -588,6 +591,7 @@ pub fn return_path_nodes(path: NodePath) -> Vec<PathNode> {
             asset_name: node.borrow().get_asset_name(),
             path_value: path_values[i].clone(),
             path_identifier: path_value_types[i].clone(),
+            path_data: path_datas[i].clone(),
         };
         result_log.push(path_node);
     }
@@ -630,11 +634,12 @@ pub async fn test_v3_swap(){
     let start_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
     let destination_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
     let glmr_dot_v3_pool = "0xB13B281503F6eC8A837Ae1a21e86a9caE368fCc5".to_string();
+    let glmr_aca_v3_pool = "0x7c0b3bf935b457738d87926110300b3c5d76c77b".to_string();
     let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
     let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
     let list = AdjacencyTable2::build_table_2(&lp_registry);
     let graph = TokenGraph2::build_graph_2(asset_registry, list);
-    graph.calculate_v3_swap("asset_key_1".to_string(), "`asset_key_2`".to_string(), glmr_dot_v3_pool, 10.0)
+    graph.calculate_v3_swap("asset_key_1".to_string(), "`asset_key_2`".to_string(), glmr_aca_v3_pool, 80.0)
     // let asset_node = graph.get_asset_by_chain_and_symbol(2004, "XCDOT".to_string()).unwrap();
     // let asset_key = asset_node.borrow().get_asset_key();
     // println!("Asset key: {}", asset_key);
