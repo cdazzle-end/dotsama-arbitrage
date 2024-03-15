@@ -429,7 +429,7 @@ impl LiqPoolRegistry2{
                             // println!("{:?}", lp_data.clone());
                             let chain_id = lp_data.chainId;
                             if chain_id == 2034{
-                                println!("{:?}", lp_data.clone());
+                                // println!("{:?}", lp_data.clone());
                             }
                             // println!("Adding {} LP", chain_id.clone());
                             let dex_type = lp_data.dexType;
@@ -483,7 +483,7 @@ impl LiqPoolRegistry2{
 
             for pool in &lps{
                 if pool.chain_id == 2034{
-                    pool.display_pool();
+                    // pool.display_pool();
                 }
             }
 

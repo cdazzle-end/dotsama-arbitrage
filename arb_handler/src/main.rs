@@ -58,6 +58,15 @@ async fn main() {
                 let asset_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
                 async_search_default_polkadot().await;
             },
+            "search_polkadot_sync" => {
+                println!("Running polkadot search SYNC. One by one");
+                let asset_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+                sync_search_default_polkadot();
+            },
+            "p_1" => {
+                let asset_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+                search_best_path_a_to_b_async_polkadot(asset_key.clone(), asset_key, 1 as f64).await;
+            },
             "test" => {
                 let asset_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
                 test_v3_swap().await;

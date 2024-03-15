@@ -390,6 +390,45 @@ pub async fn async_search_best_path_a_to_b_polkadot(start_key: String, destinati
 
 }
 
+pub fn sync_search_default_polkadot(){
+    let start_key = "2030{\"Token2\":\"0\"}".to_string();
+    let destination_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+    let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+
+    let start_node = &graph.get_node(start_key.clone()).clone();
+    
+    let start_node_asset_name = start_node.borrow().get_asset_name();
+
+    let start_asset_location = start_node.borrow().get_asset_location().unwrap();
+    let all_start_assets = &graph.asset_registry.get_assets_at_location(start_asset_location);
+
+    // search_best_path_a_to_b_sync_polkadot(start_key.clone(), start_key, 1 as f64);
+
+    //***************************************** */
+    let mut start_nodes = vec![];
+    // let mut inputAmounts = vec![];
+    for start_asset in all_start_assets{
+        if !start_asset.borrow().is_cex_token() {
+            let new_start_node = &graph.get_node(start_asset.borrow().get_map_key()).clone();
+            start_nodes.push(Rc::clone(&new_start_node));
+        }
+    }
+
+    let input_amount = 1 as f64;
+
+    for node in start_nodes.clone(){
+        let key = node.borrow().get_asset_key();
+        println!("Searching for {}", key);
+        let dest_key = destination_key.clone();
+        let (value, display, path) = search_best_path_a_to_b_sync_polkadot(key, dest_key, input_amount);
+    }
+    // *********************************************
+
+
+}
 
 pub async fn async_search_default_polkadot(){
     let start_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
@@ -564,7 +603,24 @@ pub async fn search_best_path_a_to_b_async(start_key: String, destination_key: S
     (input_amount, display_string, return_path)
 }
 
+// All searches at once
 pub async fn search_best_path_a_to_b_async_polkadot(start_key: String, destination_key: String, input_amount: f64) -> (f64, String, Vec<PathNode>){
+    let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+    // let key_1 = start_key;
+    let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount);
+
+    println!("Display string: {}", display_string);
+
+    let return_path = return_path_nodes(path);
+
+    (input_amount, display_string, return_path)
+}
+
+// Search one by one
+pub fn search_best_path_a_to_b_sync_polkadot(start_key: String, destination_key: String, input_amount: f64) -> (f64, String, Vec<PathNode>){
     let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
     let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
     let list = AdjacencyTable2::build_table_2(&lp_registry);
