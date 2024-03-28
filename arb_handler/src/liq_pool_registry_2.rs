@@ -20,7 +20,7 @@ pub struct LiqPool2{
     pub assets: Vec<AssetPointer>,
     pub liquidity: Vec<u128>,
     pub contract_address: Option<String>,
-    pub lp_id: Option<String>, 
+    pub pool_id: Option<String>, 
     pub exchange: Option<String>,
     pub prices: Option<(u64, u64)>,
     pub price_decimals: Option<(u64,u64)>,
@@ -36,6 +36,10 @@ pub struct LiqPool2{
     pub initialized_ticks: Option<Vec<i128>>,
     pub lower_ticks: Option<Vec<TickData>>,
     pub upper_ticks: Option<Vec<TickData>>,
+    // pub pool_id: Option<String>,
+    pub share_issuance: Option<String>,
+    pub swap_fee: Option<String>,
+    pub pool_share_asset: Option<AssetPointer>,
     // pub is_evm: bool
 }
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
@@ -82,13 +86,15 @@ pub struct StableLpJson{
     liquidityStats: Vec<String>,
     tokenPrecisions: Vec<String>,
     swapFee: String,
-    a: u64,
+    a: String,
     aPrecision: u64,
     aBlock: String,
     futureA: String,
     futureABlock: String,
     totalSupply: String,
     poolPrecision: String,
+    poolId: Option<String>,
+    shareIssuance: Option<String>
 }
 
 impl LiqPoolRegistry2{
@@ -126,7 +132,7 @@ impl LiqPoolRegistry2{
                                 prices: Some((lp_data.price[0], lp_data.price[1])),
                                 price_decimals: Some((lp_data.priceDecimals[0], lp_data.priceDecimals[1])),
                                 contract_address: None,
-                                lp_id: None,
+                                pool_id: None,
                                 assets: vec![asset, usdt],
                                 liquidity: vec![],
                                 a: None,
@@ -140,7 +146,11 @@ impl LiqPoolRegistry2{
                                 active_liquidity: None,
                                 initialized_ticks: None,
                                 lower_ticks: None,
-                                upper_ticks: None
+                                upper_ticks: None,
+                                // pool_id: None,
+                                share_issuance: None,
+                                swap_fee: None,
+                                pool_share_asset: None
 
                             })
                         } else if lp.as_object().unwrap().contains_key("a") {
@@ -158,14 +168,26 @@ impl LiqPoolRegistry2{
                                 asset_registry.get_asset_by_id(chain_id, asset_id.as_str())
                             }).collect::<Vec<_>>();
 
+                            let pool_id = lp_data.poolId;
+                            let pool_share_asset = if chain_id == 2034{
+                                // println!("Chain id: {} | Pool ID: {}", chain_id.clone(), pool_id.clone().unwrap());
+                                let asset = asset_registry.get_asset_by_id(chain_id, &serde_json::to_string(&pool_id.clone().unwrap()).unwrap()).unwrap();
+                                Some(asset)
+                            } else {
+                                None
+                            
+                            };
+                            let share_issuance = lp_data.shareIssuance;
+                            let swap_fee = lp_data.swapFee;
+
                             // println!("Found stable ");
                             let pool = Some(LiqPool2 {
                                 chain_id,
                                 contract_address: contract_address.clone(),
-                                lp_id: contract_address.clone(),
+                                pool_id: pool_id.clone(),
                                 assets: assets,
                                 liquidity: liquidity_stats,
-                                a: Some(lp_data.a),
+                                a: Some(lp_data.futureA.parse().unwrap()),
                                 a_precision: Some(lp_data.aPrecision),
                                 token_precisions: Some(lp_data.tokenPrecisions),
                                 exchange: None,
@@ -179,7 +201,11 @@ impl LiqPoolRegistry2{
                                 active_liquidity: None,
                                 initialized_ticks: None,
                                 lower_ticks: None,
-                                upper_ticks: None
+                                upper_ticks: None,
+                                // pool_id: pool_id,
+                                share_issuance: share_issuance,
+                                swap_fee: Some(swap_fee),
+                                pool_share_asset: pool_share_asset
                             });
                             // println!("{:?}", pool.clone().unwrap().liquidity);
                             pool
@@ -210,7 +236,7 @@ impl LiqPoolRegistry2{
                                 Some(LiqPool2 {
                                     chain_id,
                                     contract_address: contract_address.clone(),
-                                    lp_id: contract_address.clone(),
+                                    pool_id: contract_address.clone(),
                                     assets: vec![assets[0].clone(), assets[1].clone()],
                                     liquidity: vec![liquidity_0, liquidity_1],
                                     exchange: None,
@@ -227,7 +253,11 @@ impl LiqPoolRegistry2{
                                     initialized_ticks: lp_data.initializedTicks,
                                     active_liquidity: active_liquidity,
                                     lower_ticks: lower_ticks,
-                                    upper_ticks: upper_ticks
+                                    upper_ticks: upper_ticks,
+                                    // pool_id: None,
+                                    share_issuance: None,
+                                    swap_fee: None,
+                                    pool_share_asset: None
                                 })
                             } else {
                                 None
@@ -251,7 +281,7 @@ impl LiqPoolRegistry2{
                                 Some(LiqPool2 {
                                     chain_id,
                                     contract_address: contract_address.clone(),
-                                    lp_id: contract_address.clone(),
+                                    pool_id: contract_address.clone(),
                                     assets: vec![assets[0].clone(), assets[1].clone()],
                                     liquidity: vec![liquidity_0, liquidity_1],
                                     exchange: None,
@@ -268,7 +298,11 @@ impl LiqPoolRegistry2{
                                     active_liquidity: None,
                                     initialized_ticks: None,
                                     lower_ticks: None,
-                                    upper_ticks: None
+                                    upper_ticks: None,
+                                    // pool_id: None,
+                                    share_issuance: None,
+                                    swap_fee: None,
+                                    pool_share_asset: None
                                 })
                             } else {
                                 None
@@ -297,7 +331,7 @@ impl LiqPoolRegistry2{
                 .collect::<Result<Vec<Value>, io::Error>>()
                 .unwrap();
 
-        parsed_files.append(&mut parse_stable_lps_polkadot(vec!["aca"]));
+        parsed_files.append(&mut parse_stable_lps_polkadot(vec!["aca", "hdx"]));
 
         let lps = parsed_files.into_iter()
             .flat_map(|parsed| {
@@ -313,7 +347,7 @@ impl LiqPoolRegistry2{
                                 prices: Some((lp_data.price[0], lp_data.price[1])),
                                 price_decimals: Some((lp_data.priceDecimals[0], lp_data.priceDecimals[1])),
                                 contract_address: None,
-                                lp_id: None,
+                                pool_id: None,
                                 assets: vec![asset, usdt],
                                 liquidity: vec![],
                                 a: None,
@@ -327,7 +361,11 @@ impl LiqPoolRegistry2{
                                 active_liquidity: None,
                                 initialized_ticks: None,
                                 lower_ticks: None,
-                                upper_ticks: None
+                                upper_ticks: None,
+                                // pool_id: None,
+                                share_issuance: None,
+                                swap_fee: None,
+                                pool_share_asset: None
                             })
                         } else if lp.as_object().unwrap().contains_key("a") {
                             let lp_data: StableLpJson = serde_json::from_value(lp.clone()).map_err(|e| e).unwrap();
@@ -343,14 +381,25 @@ impl LiqPoolRegistry2{
                                 asset_registry.get_asset_by_id(chain_id, asset_id.as_str())
                             }).collect::<Vec<_>>();
 
+                            let pool_id = lp_data.poolId;
+                            let pool_share_asset = if chain_id == 2034{
+                                // println!("Chain id: {} | Pool ID: {}", chain_id.clone(), pool_id.clone().unwrap());
+                                let asset = asset_registry.get_asset_by_id(chain_id, &serde_json::to_string(&pool_id.clone().unwrap()).unwrap()).unwrap();
+                                Some(asset)
+                            } else {
+                                None
+                            
+                            };
+                            let share_issuance = lp_data.shareIssuance;
+                            let swap_fee = lp_data.swapFee;
                             // println!("Found stable ");
                             let pool = Some(LiqPool2 {
                                 chain_id,
                                 contract_address: contract_address.clone(),
-                                lp_id: contract_address.clone(),
+                                pool_id: pool_id.clone(),
                                 assets: assets,
                                 liquidity: liquidity_stats,
-                                a: Some(lp_data.a),
+                                a: Some(lp_data.futureA.parse().unwrap()),
                                 a_precision: Some(lp_data.aPrecision),
                                 token_precisions: Some(lp_data.tokenPrecisions),
                                 exchange: None,
@@ -364,7 +413,11 @@ impl LiqPoolRegistry2{
                                 active_liquidity: None,
                                 initialized_ticks: None,
                                 lower_ticks: None,
-                                upper_ticks: None
+                                upper_ticks: None,
+                                // pool_id: pool_id,
+                                share_issuance: share_issuance,
+                                swap_fee: Some(swap_fee),
+                                pool_share_asset
 
                             });
                             // println!("{:?}", pool.clone().unwrap().liquidity);
@@ -402,7 +455,7 @@ impl LiqPoolRegistry2{
                                 Some(LiqPool2 {
                                     chain_id,
                                     contract_address: contract_address.clone(),
-                                    lp_id: contract_address.clone(),
+                                    pool_id: contract_address.clone(),
                                     assets: vec![assets[0].clone(), assets[1].clone()],
                                     liquidity: vec![0],
                                     exchange: None,
@@ -419,7 +472,11 @@ impl LiqPoolRegistry2{
                                     active_liquidity: active_liquidity,
                                     initialized_ticks: lp_data.initializedTicks,
                                     lower_ticks: lower_ticks,
-                                    upper_ticks: upper_ticks
+                                    upper_ticks: upper_ticks,
+                                    // pool_id: None,
+                                    share_issuance: None,
+                                    swap_fee: None,
+                                    pool_share_asset: None
                                 })
                             } else {
                                 None
@@ -452,7 +509,7 @@ impl LiqPoolRegistry2{
                                 Some(LiqPool2 {
                                     chain_id,
                                     contract_address: contract_address.clone(),
-                                    lp_id: contract_address.clone(),
+                                    pool_id: contract_address.clone(),
                                     assets: vec![assets[0].clone(), assets[1].clone()],
                                     liquidity: vec![liquidity_0, liquidity_1],
                                     exchange: None,
@@ -469,7 +526,11 @@ impl LiqPoolRegistry2{
                                     active_liquidity: None,
                                     initialized_ticks: None,
                                     lower_ticks: None,
-                                    upper_ticks: None
+                                    upper_ticks: None,
+                                    // pool_id: None,
+                                    share_issuance: None,
+                                    swap_fee: None,
+                                    pool_share_asset: None
 
                                 })
                             } else {
@@ -536,7 +597,7 @@ pub fn parse_stable_lps_polkadot(chains: Vec<&str>) -> Vec<Value>{
     chains
         .into_iter()
         .map(|chain| {
-            let path_string = format!("../lps/polkadot/{}_stable_lps.json", chain);
+            let path_string = format!("../../../polkadot_assets/lps/lp_registry/{}_stable_lps.json", chain);
             let path = Path::new(&path_string);
             let mut buf = vec![];
             let mut file = File::open(path)?;

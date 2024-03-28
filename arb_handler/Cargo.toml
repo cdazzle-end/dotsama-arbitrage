@@ -12,6 +12,8 @@ num = "0.4"
 tokio = { version = "1", features = ["full"] }
 chrono = "0.4"
 futures = "0.3"
+bigdecimal = "0.3"
 
 [profile.dev]
-opt-level = 0
+# opt-level = 0
+incremental = true

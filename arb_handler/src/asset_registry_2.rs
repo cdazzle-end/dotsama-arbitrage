@@ -268,7 +268,10 @@ impl AssetRegistry2{
         // self.asset_map.get(&map_key).map(|x| x[0].clone())
         // println!("Map Key: {}", map_key);
         self.asset_map.get(&map_key).map(|x| x.iter()
-            .find(|x| x.borrow().get_map_key() == map_key).unwrap().clone())
+            .find(|x| {
+                // println!("Asset Map Key: {}", x.borrow().get_map_key());
+                x.borrow().get_map_key() == map_key
+            }).unwrap().clone())
     }
     pub fn get_asset_by_key(&self, map_key: &str) -> Option<Rc<RefCell<Asset>>>{
         self.asset_map.get(map_key).map(|x| x[0].clone())
@@ -303,6 +306,8 @@ impl Asset{
             TokenData::CexAsset(data) => &data.assetTicker,
         }
     }
+
+    
 
     pub fn get_ticker_symbol(&self) -> &str {
         match &self.token_data {

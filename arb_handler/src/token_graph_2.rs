@@ -6,6 +6,7 @@ use num::{BigInt, BigUint, CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, FromP
 use num::bigint::{ToBigInt, ToBigUint};
 use num::BigRational;
 use num;
+use bigdecimal::{BigDecimal};
 // use std::borrow::{Borrow, BorrowMut};
 // use num::BigRational::
 use std::cell::RefCell;
@@ -19,7 +20,7 @@ use crate::liq_pool_registry_2::TickData;
 // use crate::{asset_registry::{AssetRegistry, Asset}};
 use crate::AssetRegistry2;
 use crate::asset_registry_2::{Asset, AssetLocation, TokenData};
-use crate::adjacency_table_2::{AdjacencyGroup, AdjacencyTable2, CexLp, DexLp, DexV3, GroupType, Liquidity, StableLp};
+use crate::adjacency_table_2::{AdjacencyGroup, AdjacencyTable2, CexLp, DexLp, DexV3, GroupType, Liquidity, StableLp, StableShareLp};
 type AssetPointer = Rc<RefCell<Asset>>;
 type GraphNodePointer = Rc<RefCell<GraphNode>>;
 
@@ -27,6 +28,11 @@ const MIN_TICK: i64 = -887272;
 const MAX_TICK: i64 = 887272;
 const MIN_TICK_DATA: TickData = TickData{tick: MIN_TICK, liquidity_delta: 0};
 const MAX_TICK_DATA: TickData = TickData{tick: MAX_TICK, liquidity_delta: 0};
+const SHARE_PRECISION: u64 = 18;
+const MAX_Y_ITERATIONS_HDX: u64 = 128;
+const MAX_Y_ITERATIONS_ACA: u64 = 255;
+const MAX_D_ITERATIONS_HDX: u64 = 64;
+const MAX_D_ITERATIONS_ACA: u64 = 255;
 
 pub struct TokenGraph2{
     pub node_map: HashMap<String, Vec<GraphNodePointer>>,
@@ -117,6 +123,67 @@ impl TokenGraph2{
             println!("------------------------------------")
         }
     }
+
+    pub fn display_stable_share_pairs(&self){
+        for (key, buckets) in &self.node_map{
+            for current_node in buckets{
+                
+                for adjacent_node_pair in &current_node.borrow().adjacent_pairs2{
+                    match adjacent_node_pair {
+                        AdjacentNodePair2::StableSharePair(pair) => {
+                            print!("Node: {} -> ", current_node.borrow().asset_key);
+                            print!("(Stable Share) ");
+                            
+                            for node in &pair.adjacent_nodes{
+                                node.borrow().asset.borrow().display_asset();
+                                print!(" | ");
+                            }
+                            println!("");
+                            println!("------------------------------------");
+                            
+                            // print!(") ");
+                            // print!(" | ");
+                        },
+                        // AdjacentNodePair2::StablePair(adj_node) => {
+                        //     print!("(S)");
+                        //     print!("Node: {} -> ", node.borrow().asset_key);
+                        //     for node in &adj_node.adjacent_nodes{
+                        //         node.borrow().asset.borrow().display_asset();
+                        //         print!(" | ");
+                        //     }
+                        //     // print!(") ");
+                        //     // print!(" | ");
+                        // },
+                        // AdjacentNodePair2::CexPair(adj_node) => {
+                        //     print!("(C)");
+                        //     adj_node.adjacent_node.borrow().asset.borrow().display_asset();
+                        //     // print!(") ");
+                        //     print!(" | ");
+                        // },
+                        // AdjacentNodePair2::DexPair(adj_node) => {
+                        //     print!("(D)");
+                        //     adj_node.adjacent_node.borrow().asset.borrow().display_asset();
+                        //     // print!(") ");
+                        //     print!(" | ");
+                        // },
+                        // AdjacentNodePair2::XcmPair(adj_node) => {
+                        //     print!("(X)");
+                        //     adj_node.adjacent_node.borrow().asset.borrow().display_asset();
+                        //     // print!(") ");
+                        //     print!(" | ");
+                        // },
+                        _ => {}
+                    }
+                    // adj_node_2.adjacent_nodes.borrow().asset.borrow().display_asset();
+                    // print!(" | ");
+                }
+                println!("");
+            }
+
+            // println!("------------------------------------")
+        }
+    }
+
     // Cannot travel to node if it already exists in current path
 
 
@@ -145,6 +212,45 @@ impl TokenGraph2{
             println!("No pair found");
         }
 
+    }
+
+    pub fn calculate_stable_swap(&self, asset_key_1: String, asset_key_2: String, chain_id: u64, pool_id: String, input_amount: f64){
+
+        // let asset_key_1_string = serde_json::to_string(&asset_key_1).unwrap();
+        // let asset_key_2_string = serde_json::to_string(&asset_key_2).unwrap();
+        let asset_key_1_string = asset_key_1;
+        let asset_key_2_string = asset_key_2;
+
+        // let base_node: &GraphNodePointer = &self.get_asset_by_chain_and_id(chain_id, asset_key_1_string).unwrap();
+        // let adjacent_node: &GraphNodePointer = &self.get_asset_by_chain_and_id(chain_id, asset_key_2_string).unwrap();
+
+        let base_node: &GraphNodePointer = &self.get_asset_by_chain_and_symbol(chain_id, asset_key_1_string).unwrap();
+        let adjacent_node: &GraphNodePointer = &self.get_asset_by_chain_and_symbol(chain_id, asset_key_2_string).unwrap();
+        let base_node_decimals = base_node.borrow().get_asset_decimals();
+        let adjacent_node_decimals = adjacent_node.borrow().get_asset_decimals();
+
+        let formatted_input = &input_amount * f64::powi(10.0, base_node_decimals as i32);
+        let input_amount_big = formatted_input.to_bigint().unwrap();
+
+        let adjacent_key = adjacent_node.borrow().get_asset_key();
+
+        // let lp_stats = base_node.borrow().get_stable_share_lp_stats_from_pair(adjacent_key.clone(), pool_id.clone());
+        let adjacent_pair = base_node.borrow().get_stable_adjacent_node_pair(adjacent_key.clone(), pool_id);
+        
+        // let adjacent_pair = base_node.borrow().get_stable_share_adjacent_node_pair(adjacent_key.clone(), pool_id);
+        let (adjecent_node_pool, index) = adjacent_pair.unwrap();
+
+        // if let Some(pair, index) = adjacent_pair.unwrap(){
+        let output_amount = calculate_stable_edge(base_node, &adjecent_node_pool, input_amount_big, index).unwrap();
+        let output_bigint = BigRational::new(output_amount, BigInt::one());
+        let output_formatted = output_bigint / (BigInt::from(10).pow(adjacent_node_decimals as u32));
+        let output_formatted = output_formatted.to_f64().unwrap();
+
+        println!("Input amount: {} | Output amount: {}", input_amount, output_formatted);
+        //     println!("Output amount: {}", output_formatted);
+        // } else {
+        //     println!("No pair found");
+        // } 
     }
 
     pub fn find_best_route(&self, asset_key_1: String, asset_key_2: String, input_amount: f64) -> (String, Vec<Rc<RefCell<GraphNode>>>) {
@@ -336,7 +442,7 @@ impl TokenGraph2{
                         //     let path_value = calculate_stable_edge( &self, &current_node, &adjacent_pair, current_node.borrow().best_path_value, i);
                         // }
                         for i in 0..stable_pair.adjacent_nodes.len(){
-                            let path_value = calculate_stable_edge( &self, &current_node, &adjacent_pair, current_node.borrow().best_path_value.clone(), i);
+                            let path_value = calculate_stable_edge(&current_node, &adjacent_pair, current_node.borrow().best_path_value.clone(), i).unwrap();
                             if path_value > stable_pair.adjacent_nodes[i].borrow().best_path_value{
                                 let mut test= false;
                                 for path_node in &current_node.borrow().best_path{
@@ -359,7 +465,50 @@ impl TokenGraph2{
                                 stable_pair.adjacent_nodes[i].borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
                                 stable_pair.adjacent_nodes[i].borrow_mut().path_value_types.push(2);
 
-                                let lp_id = stable_pair.get_lp_id(i);
+                                let lp_id = stable_pair.get_lp_id();
+                                let new_path_data: PathData = PathData{
+                                    path_type: "Stable".to_string(),
+                                    lp_id: lp_id.clone(),
+                                };
+    
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_datas = current_node.borrow().path_datas.clone();
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_datas.push(new_path_data);
+                                if !test && !is_destination_node{
+                                    node_queue.push_back(Rc::clone(&stable_pair.adjacent_nodes[i]));
+                                }
+                                
+                            }
+                        }
+                    },
+                    AdjacentNodePair2::StableSharePair(stable_pair) => {
+                        // for (i, adj_node) in stable_pair.adjacent_nodes.iter().enumerate(){
+                        //     let path_value = calculate_stable_edge( &self, &current_node, &adjacent_pair, current_node.borrow().best_path_value, i);
+                        // }
+                        for i in 0..stable_pair.adjacent_nodes.len(){
+                            let path_value = calculate_stable_edge( &current_node, &adjacent_pair, current_node.borrow().best_path_value.clone(), i).unwrap();
+                            if path_value > stable_pair.adjacent_nodes[i].borrow().best_path_value{
+                                let mut test= false;
+                                for path_node in &current_node.borrow().best_path{
+                                    if path_node.borrow().get_asset_key() == stable_pair.adjacent_nodes[i].borrow().get_asset_key(){
+                                        test = true;
+                                    }
+                                }
+                                let mut is_destination_node = false;
+                                for dest_node in &destination_nodes{
+                                    if dest_node.borrow().get_asset_key() == stable_pair.adjacent_nodes[i].borrow().get_asset_key(){
+                                        is_destination_node = true;
+                                    }
+                                }
+                                stable_pair.adjacent_nodes[i].borrow_mut().best_path_value = path_value;
+                                stable_pair.adjacent_nodes[i].borrow_mut().best_path = current_node.borrow().best_path.clone();
+                                stable_pair.adjacent_nodes[i].borrow_mut().best_path.push(Rc::clone(&stable_pair.adjacent_nodes[i]));
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_values = current_node.borrow().path_values.clone();
+                                let formatted_path_value = stable_pair.adjacent_nodes[i].borrow().best_path_value_display(&self).clone();
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_values.push(formatted_path_value);
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
+                                stable_pair.adjacent_nodes[i].borrow_mut().path_value_types.push(2);
+
+                                let lp_id = stable_pair.get_lp_id();
                                 let new_path_data: PathData = PathData{
                                     path_type: "Stable".to_string(),
                                     lp_id: lp_id.clone(),
@@ -428,12 +577,39 @@ impl TokenGraph2{
     }
 
     pub fn get_asset_by_chain_and_symbol(&self, chain_id: u64, asset_symbol: String) -> Option<GraphNodePointer>{
-        let asset_symbol = asset_symbol.to_uppercase();
+        // let asset_symbol = &asset_symbol;
+        println!("Chaind id: {} | Asset symbol: {}", chain_id, asset_symbol);
         for node_bucket in self.node_map.values(){
             for node in node_bucket{
-                if node.borrow().get_chain_id() == chain_id && node.borrow().get_asset_symbol().to_uppercase() == asset_symbol{
+                let current_chain_id = node.borrow().get_chain_id();
+                let current_asset_symbol = node.clone().borrow().get_asset_symbol().clone();
+                // let string = "ASEED";
+                // println!("{}", string);
+
+                if current_chain_id == chain_id{
+                    println!("Current chain id: {} | Current asset symbol: {} --- {}", current_chain_id, current_asset_symbol.clone().as_str(), asset_symbol);
+                    if asset_symbol.eq_ignore_ascii_case(&current_asset_symbol.as_str()){
+                        return Some(Rc::clone(node));
+                    }
+                }
+            }
+        }
+        None
+    }
+
+    pub fn get_asset_by_chain_and_id(&self, chain_id: u64, asset_id: String) -> Option<GraphNodePointer>{
+        let asset_id = asset_id.to_uppercase();
+        for node_bucket in self.node_map.values(){
+            for node in node_bucket{
+                let current_chain_id = node.borrow().get_chain_id();
+                let current_asset_id = node.borrow().get_local_id();
+
+                if current_chain_id == chain_id && current_asset_id.eq(&asset_id){
                     return Some(Rc::clone(node));
                 }
+                // if node.borrow().get_chain_id() == chain_id && node.borrow().get_local_id().eq_ignore_ascii_case(&asset_id){
+                //     return Some(Rc::clone(node));
+                // }
             }
         }
         None
@@ -501,10 +677,45 @@ pub fn add_adjacent_assets_2(current_node: GraphNodePointer, node_map: &HashMap<
                 
                 current_node.borrow_mut().adjacent_pairs2.push(adjacent_node_2);
             },
+            GroupType::StableShare => {
+                    let mut adjacent_nodes = vec![];
+                    let lp_data: StableShareLp = match &adj_group.liquidity.clone().unwrap() {
+                        Liquidity::StableShare(stableLp) => stableLp.clone(),
+                        _ => panic!("Tried to get dex liquidity from non-dex liquidity"),
+                    };
+                    let token_to_share = lp_data.token_to_share.unwrap();
+                    let share_asset_key = &lp_data.share_asset.borrow().get_map_key();
+                    let share_asset_node_bucket = node_map.get(&lp_data.share_asset.borrow().get_map_key()).unwrap();
+                    let mut share_asset_node_option: Option<GraphNodePointer> = None;
+                    for potential_share_node in share_asset_node_bucket{
+                        if share_asset_key.eq(potential_share_node.borrow().asset_key.as_str()){
+                            share_asset_node_option = Some(Rc::clone(&potential_share_node));
+                        }
+                    }
+
+                    if share_asset_node_option == None{
+                        panic!("Could not find share asset node")
+                    }
+                    let share_asset_node = share_asset_node_option.unwrap();
+
+                    for adjacent_asset in adj_group.adjacent_asset{
+                        let bucket = node_map.get(&adjacent_asset.borrow().get_map_key()).unwrap();
+                        for potential_adjacent_node in bucket{
+                            if adjacent_asset.borrow().get_map_key() == potential_adjacent_node.borrow().asset_key{
+                                adjacent_nodes.push(Rc::clone(&potential_adjacent_node));
+                                // println!("Found stable pair")
+    
+                            }
+                        }
+                    }
+                    let adjacent_node_2 = AdjacentNodePair2::StableSharePair(StableSharePair{share_asset_node: share_asset_node, token_to_share, adjacent_nodes: adjacent_nodes, liquidity: adj_group.liquidity.clone().unwrap()});
+                    
+                    current_node.borrow_mut().adjacent_pairs2.push(adjacent_node_2);
+            },
             GroupType::Dex =>{
                 //Find node that corresponds to adjacent asset. Add it to current node's adjacency list
                 let bucket = node_map.get(&adj_group.adjacent_asset[0].borrow().get_map_key()).unwrap();
-                for potential_adjacent_node in bucket{
+                for potential_adjacent_node in bucket {
                     if adj_group.adjacent_asset[0].borrow().get_map_key() == potential_adjacent_node.borrow().asset_key{
                         let dex_lp: DexLp = if let Liquidity::Dex(x) = adj_group.liquidity.clone().unwrap(){
                             x
@@ -607,6 +818,7 @@ pub enum AdjacentNodePair2{
     DexV3Pair(DexV3Pair),
     CexPair(CexPair),
     StablePair(StablePair),
+    StableSharePair(StableSharePair),
     XcmPair(XcmPair),
 }
 #[derive(Debug, Clone, PartialEq)]
@@ -630,6 +842,14 @@ pub struct StablePair{
     pub adjacent_nodes: Vec<GraphNodePointer>,
     pub liquidity: Liquidity,
 }
+#[derive(Debug, Clone, PartialEq)]
+pub struct StableSharePair{
+    pub share_asset_node: GraphNodePointer,
+    pub token_to_share: bool,
+    pub adjacent_nodes: Vec<GraphNodePointer>,
+    pub liquidity: Liquidity,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct XcmPair{
     pub adjacent_node: GraphNodePointer,
@@ -655,10 +875,33 @@ impl DexV3Pair {
 }
 
 impl StablePair{
-    pub fn get_lp_id(&self, index: usize) -> Option<String>{
+    pub fn get_lp_id(&self) -> Option<String>{
         match &self.liquidity{
-            Liquidity::Stable(stable_lp) => stable_lp.lp_id.clone(),
+            Liquidity::Stable(stable_lp) => stable_lp.pool_id.clone(),
             _ => panic!("Tried to get stable contract address from non-stable liquidity"),
+        }
+    }
+    pub fn get_swap_fee(&self) -> u128{
+        match &self.liquidity{
+            Liquidity::Stable(stable_lp) => stable_lp.swap_fee,
+            _ => panic!("Tried to get stable contract address from non-stable liquidity"),
+        }
+    }
+}
+
+impl StableSharePair{
+    pub fn get_lp_id(&self) -> Option<String>{
+        match &self.liquidity{
+            Liquidity::Stable(stable_lp) => stable_lp.pool_id.clone(),
+            Liquidity::StableShare(stable_lp) => stable_lp.pool_id.clone(),
+            _ => panic!("Tried to get stable lp id"),
+        }
+    }
+    pub fn get_swap_fee(&self) -> u128{
+        match &self.liquidity{
+            Liquidity::Stable(stable_lp) => stable_lp.swap_fee,
+            Liquidity::StableShare(stable_lp) => stable_lp.swap_fee,
+            _ => panic!("Tried to get stable swap fee"),
         }
     }
 }
@@ -690,12 +933,7 @@ impl AdjacentNodePair{
         }
     }
 }
-#[derive(PartialEq, Debug)]
-pub enum Color{
-    White,
-    Gray,
-    Black
-}
+
 impl GraphNode{
     // Get pool from key of adjacent node
     pub fn get_v3_lp_stats_from_pair(&self, adjacent_asset_key: String, contract_address: String) -> Option<DexV3> {
@@ -725,6 +963,54 @@ impl GraphNode{
         None
     }
 
+    pub fn get_stable_lp_stats_from_pair(&self, adjacent_asset_key: String, pool_id: String) -> Option<StableLp> {
+        for pair in &self.adjacent_pairs2{
+            match pair{
+                AdjacentNodePair2::StablePair(stable_pair) => {
+                    let adjacent_nodes = stable_pair.adjacent_nodes.clone();
+                    for (index, stable_pool_node) in adjacent_nodes.iter().enumerate(){
+                        // println!("Stable pool key: {}", stable_pool_node.borrow().get_asset_key());
+                        // println!("Adjacent asset key: {}", adjacent_asset_key);
+                        if stable_pool_node.borrow().get_asset_key().eq(&adjacent_asset_key){
+                            if let Liquidity::Stable(stable_lp) = &stable_pair.liquidity{
+                                println!("Stable pool id {:?}", stable_lp);
+
+                                if pool_id.eq_ignore_ascii_case(&stable_lp.pool_id.clone().unwrap()){
+                                    return Some(stable_lp.clone())
+                                }
+                            }
+                        }
+                    }
+                },
+                _ => {}
+            }
+
+        }
+        None
+    }
+
+    pub fn get_stable_share_lp_stats_from_pair(&self, adjacent_asset_key: String, pool_id: String) -> Option<StableLp> {
+        for pair in &self.adjacent_pairs2{
+            match pair{
+                AdjacentNodePair2::StableSharePair(stable_pair) => {
+                    let adjacent_nodes = stable_pair.adjacent_nodes.clone();
+                    for (index, stable_pool_node) in adjacent_nodes.iter().enumerate(){
+                        if stable_pool_node.borrow().asset_key == adjacent_asset_key{
+                            if let Liquidity::Stable(stable_lp) = &stable_pair.liquidity{
+                                if pool_id.eq_ignore_ascii_case(&stable_lp.pool_id.clone().unwrap()){
+                                    return Some(stable_lp.clone())
+                                }
+                            }
+                        }
+                    }
+                },
+                _ => {}
+            }
+
+        }
+        None
+    }
+
     pub fn get_v3_adjacent_node_pair(&self, adjacent_asset_key: String, contract_address: String) -> Option<AdjacentNodePair2>{
         for pair in &self.adjacent_pairs2{
             match pair{
@@ -738,20 +1024,72 @@ impl GraphNode{
                         }
                     }
                 },
-                AdjacentNodePair2::DexPair(dex_pair) => {
-                    if dex_pair.adjacent_node.borrow().asset_key == adjacent_asset_key{
-                        if let Liquidity::Dex(dex_lp) = &dex_pair.liquidity{
-
-                        }
-                    }
-                },
                 _ => {}
             }
 
         }
         None
     }
+
+    pub fn get_stable_adjacent_node_pair(&self, adjacent_asset_key: String, pool_id: String) -> Option<(AdjacentNodePair2, usize)>{
+        for pair in &self.adjacent_pairs2{
+            match pair{
+                AdjacentNodePair2::StablePair(stable_pair) => {
+                    let adjacent_nodes = stable_pair.adjacent_nodes.clone();
+                    for (index, stable_pool_node) in adjacent_nodes.iter().enumerate(){
+                        if stable_pool_node.borrow().asset_key == adjacent_asset_key{
+                            if let Liquidity::Stable(stable_lp) = &stable_pair.liquidity{
+                                if pool_id.eq_ignore_ascii_case(&stable_lp.pool_id.clone().unwrap()){
+                                    return Some((pair.clone(), index))
+                                }
+                            }
+                        }
+                    }
+                },
+                AdjacentNodePair2::StableSharePair(stable_pair) => {
+                    let adjacent_nodes = stable_pair.adjacent_nodes.clone();
+                    for (index, stable_pool_node) in adjacent_nodes.iter().enumerate(){
+                        if stable_pool_node.borrow().asset_key == adjacent_asset_key{
+                            if let Liquidity::Stable(stable_lp) = &stable_pair.liquidity{
+                                if pool_id.eq_ignore_ascii_case(&stable_lp.pool_id.clone().unwrap()){
+                                    return Some((pair.clone(), index))
+                                }
+                            }
+                        }
+                    }
+                },
+                _ => {}
+            }
+        }
+        None
+    }
     
+    
+    pub fn get_stable_share_adjacent_node_pair(&self, adjacent_asset_key: String, pool_id: String) -> Option<(AdjacentNodePair2, usize)>{
+        println!("Getting stable share adjacent node pair: {}", &self.asset_key);
+        println!("Adjacent asset key: {}", adjacent_asset_key);
+        for pair in &self.adjacent_pairs2{
+            match pair{
+                AdjacentNodePair2::StableSharePair(stable_pair) => {
+                    let adjacent_nodes = stable_pair.adjacent_nodes.clone();
+                    // let base_node = stable_pair.
+                    for (index, stable_pool_node) in adjacent_nodes.iter().enumerate(){
+                        println!("Stable pool key: {}", stable_pool_node.borrow().get_asset_key());
+                        if stable_pool_node.borrow().asset_key == adjacent_asset_key{
+                            if let Liquidity::StableShare(stable_lp) = &stable_pair.liquidity{
+                                if pool_id.eq_ignore_ascii_case(&stable_lp.pool_id.clone().unwrap()){
+                                    return Some((pair.clone(), index))
+                                }
+                            }
+                        }
+                    }
+                },
+                _ => {}
+            }
+        }
+        None
+    }
+
     pub fn get_asset_name(&self) -> String{
         self.asset.borrow().get_asset_name().to_string()
     }
@@ -771,6 +1109,11 @@ impl GraphNode{
     pub fn get_asset_symbol(&self) -> String{
         self.asset.borrow().get_asset_symbol().to_string()
     }
+
+    pub fn get_local_id(&self) -> String{
+        self.asset.borrow().get_local_id().unwrap().to_string()
+    }
+
     pub fn get_dex_contract_address(){
 
     }
@@ -1169,160 +1512,417 @@ pub fn calculate_cex_edge(token_graph: &TokenGraph2, primary_node: &GraphNodePoi
     }
 }
 
-pub fn calculate_stable_edge(token_graph: &TokenGraph2, primary_node: &GraphNodePointer, adjacent_pair: &AdjacentNodePair2, input_amount: BigInt, target_index: usize) -> BigInt{
+pub fn calculate_stable_edge(primary_node: &GraphNodePointer, adjacent_pair: &AdjacentNodePair2, input_amount: BigInt, target_index: usize) -> Option<BigInt>{
 
     match adjacent_pair{
         AdjacentNodePair2::StablePair(adj_pair) => {
-            // println!(" BALANCES 3{:?}", adj_pair.liquidity);
-            let (base_liquidity, base_token_precision, adjacent_liquidity, a, total_supply, adjacent_token_precisions) = match &adj_pair.liquidity {
-                Liquidity::Stable(stableLp) => (stableLp.base_liquidity, stableLp.base_token_precision, stableLp.adjacent_liquidity.clone(), stableLp.a, stableLp.total_supply, stableLp.adjacent_token_precisions.clone()),
+            let lp_data: StableLp = match &adj_pair.liquidity {
+                Liquidity::Stable(stableLp) => stableLp.clone(),
                 _ => panic!("Tried to get dex liquidity from non-dex liquidity"),
             };
-            // println!("------------------");
-            // println!("STABLE SWAP");
+            let base_liquidity = lp_data.base_liquidity.to_bigint().unwrap();
+            let base_token_precision = lp_data.base_token_precision;
+            let adjacent_liquidity: Vec<BigInt> = lp_data.adjacent_liquidity.clone().into_iter().map(|x| x.to_bigint().unwrap()).collect();
+            let a = lp_data.a;
+            let pool_id: usize = lp_data.pool_id.clone().unwrap().parse().unwrap();
+            let total_supply = lp_data.total_supply.to_bigint().unwrap();
+            let adjacent_token_precisions = lp_data.adjacent_token_precisions.clone();
+            let chain_id = lp_data.chain_id.clone();
+            let input_asset_symbol = primary_node.borrow().get_asset_symbol();
+            let output_asset_symbol = adj_pair.adjacent_nodes[target_index].borrow().get_asset_symbol();
+            // println!("{} {} -> {}", chain_id, input_asset_symbol, output_asset_symbol);
+            let a_precision = match lp_data.chain_id {
+                2023 => 1,
+                2000 => 100,
+                _ => 1
+            };
             let mut balances: Vec<BigInt> = adjacent_liquidity.clone().into_iter().map(|x| x.to_bigint().unwrap()).collect();
             let mut token_precisions = adjacent_token_precisions.clone();
             balances.push(base_liquidity.clone().to_bigint().unwrap());
             token_precisions.push(base_token_precision.clone());
 
+
+            // KARURA is fucked up. The token precision has already been added to the number that is shown as the balance in the pool. So don't multiply them for pool 1 in karura
+            if chain_id != 2000 && pool_id != 1 {
+                // println!("Skipping TOKEN PRECISION for karura pool 1");
+                balances = balances.iter().enumerate().map(|(index, balance)| {
+                    let precision;
+                    if index >= token_precisions.len(){
+                        precision = 1;
+                    } else {
+                        precision = token_precisions[index];
+                    }
+                    let updated_balance = balance * precision;
+                    // println!("Balance: {}", updated_balance);
+                    updated_balance
+                }).collect::<Vec<BigInt>>();
+
+            }
+
+
             let base_precision = base_token_precision.to_string().len() - 1;
-            let primary_node_decimals = primary_node.borrow().get_asset_decimals();
             let primary_node_symbol = primary_node.borrow().get_asset_symbol();
-            let total_node_decimals = base_precision as u128 + primary_node_decimals as u128;
 
             let input_amount = input_amount * f64::powi(10.0, base_precision as i32) as u128;
-            // println!("Input amount: {}", input_amount);
-            let input_formatted = input_amount.to_f64().unwrap() / f64::powi(10.0, total_node_decimals as i32);
-            // println!("{} {} -> {}", primary_node.borrow().asset_key, input_formatted, adj_pair.adjacent_nodes[target_index].borrow().asset_key);
-            // println!("Input unformatted: {}", input_amount);
-            let swap_fee: BigInt;
-            if a == 10000{
-                swap_fee = BigInt::from(5000000)
-            } else {
-                swap_fee = BigInt::from(25000000)
-            }
+
+            let swap_fee = BigInt::from(lp_data.swap_fee);
             let fee_precision =  "10000000000".parse::<BigInt>().unwrap();
             let fee_ration = BigRational::from(swap_fee.clone()) / BigRational::from(fee_precision.clone());
 
-            // let old_d = getD(&balances, a).unwrap();
-            let d = total_supply.clone();
-            // println!("D: {}", d);
+            // println!("Balances: {:?}", balances);
+            let d = get_d(&balances, a, chain_id.clone(), a_precision).unwrap();
+
 
             let token_in_index = balances.len() - 1;
-            balances[token_in_index] = balances[token_in_index].clone() + input_amount;
-            let y = getY(&balances, target_index as u128, d, a, primary_node_symbol.clone()).unwrap();
 
-            // println!("OLD Y: {}", old_y.to_f64().unwrap());
+            // Convert input amount to shares on certain pools
+            let converted_a = BigInt::from(a).checked_div(&BigInt::from(a_precision)).unwrap();
+            if converted_a == BigInt::from(30) {
 
-            // let y = get_y(&balances, target_index as u128, d, a).unwrap();
+                // Convert input to shares then add input to share reserves and calculate output
+                if input_asset_symbol.eq_ignore_ascii_case("LDOT") || input_asset_symbol.eq_ignore_ascii_case("LKSM"){
+                    let input_asset_reserves = balances[2].clone();
+                    let input_asset_shares = balances[3].clone();
+                    let input_percent = BigRational::from(input_amount.clone()).checked_div(&BigRational::from(input_asset_reserves.clone())).unwrap();
+                    let input_amount_converted_to_shares = input_percent.checked_mul(&BigRational::from(input_asset_shares.clone())).unwrap();
+                    
+                    // actual_input_amount = input_amount_converted_to_shares.to_integer();
+                    balances[token_in_index] = balances[token_in_index].clone() + input_amount_converted_to_shares.to_integer();
+                } else {
+                    // Add input to share reserves, calculate output and then later convert output to reserves
+                    balances[token_in_index] = balances[token_in_index].clone() + input_amount.clone();
+                }
+            } else {
+                // Pool just uses reserve balances
+                balances[token_in_index] = balances[token_in_index].clone() + input_amount.clone();
+            }
 
-            // println!("NEW Y: {}", y.to_f64().unwrap());
+            let y = get_y(&balances, target_index as u128, d.clone(), a, a_precision, lp_data.chain_id.clone()).unwrap();
 
-            let mut dy = BigRational::from(balances[target_index].clone() - y);
-            let fee_amount = (BigRational::from(dy.clone()) * fee_ration.clone());
 
-            dy = dy - fee_amount;
+            let dy = BigRational::from(balances[target_index].clone() - y.clone());
+
 
             let mut total_output = BigInt::from(0);
-            if a != 10000{
-                if primary_node_symbol != "LKSM"{
-                    let lksm_ratio = BigRational::from(balances[2].clone()).checked_div(&BigRational::from(balances[0].clone())).unwrap();
-                    let real_output = lksm_ratio.checked_mul(&BigRational::from(dy.clone())).unwrap().round().numer().clone();
-                    total_output = real_output;
+            if a == 3000{
+                // println!("DOT/LDOT");
+                // Output is already actual amount
+                if primary_node_symbol == "LKSM" || primary_node_symbol == "LDOT"{
+                    total_output = dy.round().numer().to_bigint().unwrap();
                 } else {
-                    let lksm_ratio = BigRational::from(balances[2].clone()).checked_div(&BigRational::from(balances[3].clone())).unwrap();
-                    let real_output = BigRational::from(dy.clone()).checked_div(&lksm_ratio).unwrap().round().numer().clone();
-                    total_output = real_output;
+                // Output is in shares, and need to convert to reserve amount
+                    let output_asset_reserves = balances[2].clone();
+                    let output_asset_shares = balances[0].clone();
+                    let output_amount_shares_ratio = BigRational::from(dy.clone()).checked_div(&BigRational::from(output_asset_shares.clone())).unwrap();
+                    let output_amount_converted_to_reserves = output_amount_shares_ratio.checked_mul(&BigRational::from(output_asset_reserves.clone())).unwrap();
+                    total_output = output_amount_converted_to_reserves.to_integer();
                 }
             } else{
                 total_output = total_output.to_bigint().unwrap() + dy.round().numer();
             }
-            let target_node = &adj_pair.adjacent_nodes[target_index];
-            let target_decimals = target_node.borrow().get_asset_decimals();
+
+            let fee_amount = BigRational::from(total_output.clone()) * fee_ration.clone();
+            // println!("FEE AMOUNT: {}", fee_amount.round().numer().to_bigint().unwrap());
+            total_output = total_output - fee_amount.round().numer();
+            // println!("TOTAL OUTPUT: {}", total_output);
+
             let target_precision = token_precisions[target_index];
-            let target_precision_number = target_precision.to_string().len() - 1;
-            let total_target_decimals = target_decimals as u128 + target_precision_number as u128;
-            let total_output_formatted = total_output.to_f64().unwrap() / f64::powi(10.0, total_target_decimals as i32);
-            // println!("Total output: {}", total_output_formatted);
+            // let target_precision_number = target_precision.to_string().len() - 1;
+
+            // println!("TARGET PRECISION: {}", target_precision.to_f64().unwrap());
+            // println!("D: {}", d);
+            // println!("Y: {}", y); 
+            // println!("DY: {}", dy.to_integer());
+
+            let total_output_minus_precision = total_output.checked_div(&BigInt::from(target_precision)).unwrap();
+            // println!("TOTAL OUTPUT MINUS PRECISION: {}", total_output_minus_precision);
+            total_output_minus_precision.to_bigint()
+            
+        },
+        AdjacentNodePair2::StableSharePair(adj_pair) => {
+            // println!(" BALANCES 3{:?}", adj_pair.liquidity);
+            // let (base_liquidity, base_token_precision, adjacent_liquidity, a, total_supply, adjacent_token_precisions) = match &adj_pair.liquidity {
+            //     Liquidity::Stable(stableLp) => (stableLp.base_liquidity, stableLp.base_token_precision, stableLp.adjacent_liquidity.clone(), stableLp.a, stableLp.total_supply, stableLp.adjacent_token_precisions.clone()),
+            //     _ => panic!("Tried to get dex liquidity from non-dex liquidity"),
+            // };
+            let lp_data: StableShareLp = match &adj_pair.liquidity {
+                Liquidity::StableShare(stableLp) => stableLp.clone(),
+                _ => panic!("Tried to get dex liquidity from non-dex liquidity"),
+            };
+
             // println!("------------------");
 
-            let total_output_minus_precision = total_output.to_f64().unwrap() / f64::powi(10.0, target_precision_number as i32);
-            total_output_minus_precision.to_bigint().unwrap()
+            let a_precision = match lp_data.chain_id {
+                2023 => 1,
+                2000 => 100,
+                _ => 1
+            };
+            
+            // println!("------------------");
+            // println!("STABLE SWAP");
+            // let token_to_share = lp_data.token_to_share.unwrap();
+
+
+
+            // let mut balances: Vec<BigInt> = lp_data.pool_assets_liquidity.clone().into_iter().map(|x| x.to_bigint().unwrap()).collect();
+            
+            // balances.push(lp_data.base_liquidity.clone().to_bigint().unwrap());
+            // token_precisions.push(lp_data.base_token_precision.clone());
+            let all_pool_balances: Vec<BigInt> = lp_data.pool_assets_liquidity.clone().into_iter().map(|x| x.to_bigint().unwrap()).collect();
+            let share_issuance = BigInt::from(lp_data.share_issuance.unwrap());
+            let token_precisions = lp_data.token_precisions.clone();
+
+            let primary_node_decimals = primary_node.borrow().get_asset_decimals();
+            let primary_node_symbol = primary_node.borrow().get_asset_symbol();
+            
+            // let fee_precision = BigInt::from(10000000000.to_u128().unwrap());
+            let fee = adj_pair.get_swap_fee();
+            let fee_precision =  "10000000000".parse::<BigInt>().unwrap();
+
+            // println!("all_pool_balances: {:?}", all_pool_balances);
+
+            let reserves_normalized = all_pool_balances
+                .iter()
+                .enumerate()
+                .map(|(index, &ref x)|{
+                    let precision = token_precisions[index];
+                    let normalized = x.mul(precision.clone().to_bigint().unwrap());
+                    normalized
+                }).collect::<Vec<BigInt>>();
+            
+            // println!("RESERVES NORMALIZED: {:?}", reserves_normalized);
+            
+            // let fee_formatted = fee * fee_precision.to_f64().unwrap();
+            // let fee_ration = BigRational::from(BigInt::from(fee_formatted.round().to_u128().unwrap())) / BigRational::from(fee_precision.clone());
+            let fee_ration = BigRational::from_u128(fee).unwrap() / BigRational::from(BigInt::from(fee_precision.clone()));
+
+            if lp_data.token_to_share.unwrap(){
+                // Base asset -> Share asset
+                let base_asset_index = lp_data.base_asset_index.unwrap();
+                let base_precision = token_precisions[base_asset_index];
+                let share_asset = lp_data.share_asset.clone();
+
+                // println!("Base precision: {}", base_precision);
+                // println!("Primary node decimals: {}", primary_node_decimals);
+                // println!("Input Amount: {}", input_amount);
+                // println!("Total node decimals: {}", primary_node_decimals as u128);
+                let total_node_decimals = base_precision as u128 + primary_node_decimals as u128;
+                let input_asset_index = lp_data.base_asset_index.unwrap();
+                // let input_amount = input_amount * f64::powi(10.0, base_precision as i32) as u128;
+                // let input_amount = input_amount * base_precision;
+                // let input_formatted = input_amount.checked_mul(&BigInt::from(10).pow(primary_node_decimals as u32)).unwrap();
+                // let input_formatted = input_amount.to_f64().unwrap() / f64::powi(10.0, total_node_decimals as i32);
+                let mut updated_reserves = all_pool_balances.clone();
+
+                // updated_reserves[input_asset_index] = ;
+                // println!("Input Amount: {}", input_amount);
+                // println!("Input Formatted: {}", input_formatted);
+                // println!("Reserves: {:?}", reserves_normalized);
+                // println!("Updated Reserves: {:?}", updated_reserves);
+                updated_reserves[input_asset_index] = updated_reserves[input_asset_index].clone() + input_amount;
+                
+                // println!("Updated Reserves: {:?}", updated_reserves);
+                let updated_reserves_normalized = updated_reserves
+                    .iter()
+                    .enumerate()
+                    .map(|(index, &ref x)|{
+                        let precision = token_precisions[index];
+                        let normalized = x.mul(precision.clone().to_bigint().unwrap());
+                        normalized
+                    }).collect::<Vec<BigInt>>();
+
+
+                
+
+                let d_0 = get_d(&reserves_normalized, lp_data.a, lp_data.chain_id, a_precision).unwrap();
+                let d_1 = get_d(&updated_reserves_normalized, lp_data.a, lp_data.chain_id, a_precision).unwrap();
+
+
+
+
+                let initial_input_reserve = reserves_normalized[input_asset_index].clone();
+                let updated_input_reserve = updated_reserves_normalized[input_asset_index].clone();
+                let mut adjusted_reserves = reserves_normalized.clone() ;
+
+                let ideal_balance = d_1.checked_mul(&initial_input_reserve)?.checked_div(&d_0)?;
+                let diff = updated_input_reserve.checked_sub(&ideal_balance)?.abs();
+                let fee_amount = fee_ration.checked_mul(&BigRational::new(diff, BigInt::one()))?;
+                let fee_amount_int = fee_amount.round().numer().to_bigint().unwrap();
+                let adjusted_input_reserve = updated_input_reserve.checked_sub(&fee_amount_int)?.to_bigint().unwrap();
+                adjusted_reserves[input_asset_index] = adjusted_input_reserve.clone();
+
+                updated_reserves[input_asset_index] = adjusted_input_reserve.clone();
+
+                let adjusted_d = get_d(&adjusted_reserves, lp_data.a, lp_data.chain_id, a_precision).unwrap();
+
+                // println
+
+                // println!("D0: {}", d_0);
+                // println!("D1: {}", d_1);
+                // println!("Adjusted D: {}", adjusted_d);
+                // println!("Fee Amount: {}", fee_amount_int);
+
+
+                let d_diff = adjusted_d.checked_sub(&d_0)?;
+
+                // println!("D Diff: {}", d_diff);
+
+                let share_amount = d_diff.checked_mul(&share_issuance)?.checked_div(&d_0)?;
+                let share_amount_formatted = share_amount.checked_div(&BigInt::from(SHARE_PRECISION));
+
+                // println!("Share Amount: {:?}", share_amount_formatted);
+                // println!("Share Amount: {}", share_amount);
+
+                return Some(share_amount)
+            } else {
+                // let input_shares_amount = input_amount
+                // Target asset is base asset
+                let initial_d = get_d(&reserves_normalized, lp_data.a, lp_data.chain_id, a_precision).unwrap();
+                let d_1 = initial_d.clone().add(input_amount.mul(&initial_d).checked_div(&share_issuance)?);
+                let y = get_y(&reserves_normalized, target_index as u128, d_1.clone(), lp_data.a, a_precision, lp_data.chain_id).unwrap();
+
+                // println!("Initial D: {} | D1: {} | Y: {}", initial_d, d_1, y);
+
+                let mut reserves_reduced: Vec<BigInt> = vec![];
+                for (index, &ref x) in reserves_normalized.iter().enumerate() {
+                    let dx_expected = if index == target_index {
+                        x.checked_mul(&d_1)?.checked_div(&initial_d)?.checked_sub(&y)?
+                    } else {
+                        x.checked_sub(&x.checked_mul(&d_1)?.checked_div(&initial_d)?)?
+                    };
+                    let fee_amount = fee_ration
+                        .checked_mul(&BigRational::new(dx_expected.clone(), BigInt::one()))?
+                        .round()
+                        .numer()
+                        .to_bigint()
+                        .unwrap();
+
+                    let reduced = x.checked_sub(&fee_amount)?;
+                    reserves_reduced.push(reduced);
+                }
+
+                let y_1 = get_y(&reserves_reduced, target_index as u128, d_1.clone(), lp_data.a, a_precision, lp_data.chain_id).unwrap();
+                let dy = reserves_reduced[target_index].checked_sub(&y_1)?;
+                let dy_0 = reserves_normalized[target_index].checked_sub(&y)?;
+
+                // println!("dy: {}", dy);
+                // println!("dy_0: {}", dy_0);
+
+                let calculated_fee = dy_0.checked_sub(&dy)?;
+                let dy_minus_fee = dy.checked_sub(&calculated_fee)?;
+                // println!("Calculated Fee: {}", calculated_fee);
+
+                let base_precision = token_precisions[target_index];
+                let calculated_amount_out = dy_minus_fee.checked_div(&BigInt::from(base_precision))?;
+                // println!("Calculated Amount Out: {}", calculated_amount_out);
+
+                // let amount_minus_fee = calculated_amount_out.checked_sub(&calculated_fee)?;
+
+                // println!("base precision: {}", base_precision);
+                // println!("Amount Minus Fee: {}", amount_minus_fee);
+
+                return Some(calculated_amount_out.abs())
+            }
             
         },
         _ => panic!("Tried to get stable liquidity from non-stable liquidity")
     }
 }
 
-pub fn getD(balances: &Vec<BigInt>, a: u128) -> Option<u128> {
+// pub fn normalize_liquidity_reserves(balances: Vec<BigInt>, assets: Vec<>) -> Vec<BigInt> {
+//     let mut balances = balances.clone();
+    
+// }
+
+pub fn get_d(balances: &Vec<BigInt>, a: u128, chain_id: u128, a_precision: u128) -> Option<BigInt> {
     let zero = BigInt::from(0u128);
     let one = BigInt::from(1u128);
     let two = BigInt::from(2u128);
     let mut sum = BigInt::from(0u128);
     let mut ann = BigInt::from(a);
     let mut balance_size = BigInt::from(balances.len());
-    let mut a_precision = BigInt::from(100 as usize);
+    let mut a_precision = BigInt::from(a_precision);
     let mut ann_formatted: BigRational;
     let mut balances = balances.clone();
+    
+    let max_iterations = match chain_id {
+        2034 => MAX_D_ITERATIONS_HDX,
+        _ => MAX_D_ITERATIONS_ACA,
+    };
+    ann = ann.checked_div(&a_precision).unwrap();
 
-    if ann == BigInt::from(10000u128){
-        // ann = BigUint::from(100u128);
-        a_precision = one.clone();
-        ann_formatted = BigRational::new(BigInt::from(100), BigInt::from(1u128));
-        // balance_size = BigInt::from(balances.len());
-    } else {
-        ann = BigInt::from(30u128);
-        a_precision = one.clone();
-        ann_formatted = BigRational::new(BigInt::from(30), BigInt::from(1u128));
-        // balances = balances.split_at(2).0.to_vec();
+    // For KAR stables. ann = futureA / a_precision
+    // Like the second stable pool, futureA is 10000, precision is 100. so the amplification is 100
+    // Also I dont fully understand the mechanics of the kar pool. The first pool has 4 liquidity stats for 2 assets,
+    // KSM and LKSM balance is 2 and 3
+    // 0 and 1 are balances of KSM and LKSM, The LKSM balance is different than the actual LKSM in the pool account.
+    // Total supply is 0 + 1. So i think thats what we use to calculate D. and that will corrspond to 0 and 3 after we take primary node balance out and add it to the end
+    // For HDX stables, a precision is 1
+
+
+    // Kar the amplification is logged as a * a_precision, to avoid a decimal number.So to get a just divide by a_precision
+
+
+    // println!("ANN: {}", ann);
+    if ann == BigInt::from(30u128){
         balances = vec![balances[0].clone(), balances[3].clone()];
-        balance_size = BigInt::from(balances.len());
-        
     }
 
-    for x in balances.iter(){
-        let balance: u128 = (*x).to_biguint().unwrap().to_u128().unwrap();
-        sum = sum.checked_add(&balance.to_bigint()?)?;
-        ann_formatted = ann_formatted.checked_mul(&BigRational::from(balance_size.clone()))?;
+    let n_coins = BigInt::from(balances.len());
+
+    // println!("Balances: {:?}", balances);
+
+    for reserve in balances.iter(){
+        sum = sum.checked_add(&reserve)?;
+        ann = ann.checked_mul(&n_coins)?;
+        // ann_formatted = ann_formatted.checked_mul(&n_coins)?;
     }
 
     if sum == zero {
-        return zero.to_u128();
+        return Some(zero);
     }
     
-    let mut prev_d: BigInt;
+    // let mut prev_d: BigInt;
     let mut d: BigInt = sum.clone();
-    // println!("Start D: {}", d);
-    for i in 0..255{
-        let mut p_d = d.clone();
-        for x in balances.iter(){
-            let balance: u128 = (*x).to_u128()?;
-            let div_op = BigInt::from(balance).checked_mul(&balance_size).unwrap();
-            p_d = p_d.checked_mul(&d).unwrap().checked_div(&div_op).unwrap();
+    for i in 0..max_iterations{
+        let mut p_d: BigInt = d.clone();
+        for balance in balances.iter(){
+            let div_op = balance.checked_mul(&n_coins)?;
+            p_d = p_d.checked_mul(&d)?.checked_div(&div_op)?;
         }
-        prev_d = d.clone();
-        // D = (Ann * sum + pD * balance.length) * D / ((Ann - 1) * D + (balance.length + 1) * pD)
-        let t_1 = ann_formatted.clone() * &sum + &p_d * &balance_size;
-        
-        let t_1_i: BigInt = t_1.round().numer().clone();
-        
-        let t_2 = ann_formatted.checked_sub(&one.clone().into())?.checked_mul(&d.clone().into())?;
-        let t_2_i: BigInt = t_2.round().numer().clone();
+        let prev_d = d.clone();
 
-        let t_3 = &balance_size.checked_add(&one.clone())?.checked_mul(&p_d.clone())?;
+        // println!("ANN: {} | SUM: {} | P_D: {} | N_COINS: {}", ann, sum, p_d, n_coins);
+// 
+        let t_1 = ann.checked_mul(&sum).unwrap().checked_add(&p_d.checked_mul(&n_coins).unwrap())?;
+        let t_2 = ann.checked_sub(&one)?.checked_mul(&d)?;
+        let t_3 = n_coins.checked_add(&one)?.checked_mul(&p_d)?;
+        let t_4 = t_2.checked_add(&t_3)?;
 
-        let t_4 = t_2.checked_add(&t_3.clone().into())?;
+        // println!("T1: {}", t_1);
+        // println!("T2: {}", t_2);
+        // println!("T3: {}", t_3);
+        // println!("T4: {}", t_4);
 
-        d = t_1.checked_mul(&d.clone().into())?.checked_div(&t_4)?.round().numer().clone();
-        if &d > &prev_d {
-            if &d - &prev_d <= one {
-                break;
-            }
-        } else if &prev_d - &d <= one {
+
+        d = t_1.checked_mul(&d)?.checked_div(&t_4)?.clone();
+
+        if has_converged(&prev_d, &d){
+            // println!("Number of convergences: {}", i);
             break;
         }
     }
-    return d.to_u128();
+    return Some(d);
+}
+
+pub fn has_converged(v_0: &BigInt, v_1: &BigInt) -> bool{
+    let diff = v_0.checked_sub(&v_1).unwrap().abs();
+    if v_1.gt(&v_0) && diff.le(&BigInt::from(1)){
+        return true;
+    } else if v_1.le(&v_0) && diff.le(&BigInt::from(1)){
+        return true;
+    }
+    return false;
 }
 
 pub fn get_stable_swap_amount(swapFee: BigInt, totalSupply: BigInt, a: BigInt, precisions: Vec<BigInt>, balances: Vec<BigInt>){
@@ -1332,49 +1932,73 @@ pub fn get_stable_swap_amount(swapFee: BigInt, totalSupply: BigInt, a: BigInt, p
     let swap_balances = balances.clone();
 }
 
-pub fn get_y(balances: &Vec<BigInt>, token_index: u128, target_d: u128, amplitude: u128) -> Option<u128> {
+pub fn get_y(balances: &Vec<BigInt>, target_index: u128, target_d: BigInt, amplitude: u128, a_precision: u128, chain_id: u128) -> Option<BigInt> {
     let one = BigInt::from(1);
     let two = BigInt::from(2);
-    let mut c = BigInt::from(target_d);
+    let mut c = BigRational::from(target_d.clone());
     let mut sum = BigInt::from(0);
     let ann_initial = BigInt::from(amplitude);
-    let balance_size = BigInt::from(balances.len());
+    
     let mut ann = ann_initial.clone();
-    let target_d_bigint = BigInt::from(target_d);
-    let token_index_usize = token_index as usize;
-    let a_precision = BigInt::from(100);
-    let NUMBER_OF_ITERATIONS_TO_CONVERGE = 255;
+    let target_d_bigint = BigInt::from(target_d.clone());
+    let token_index_usize = target_index as usize;
+    // let a_precision = BigInt::from(100);
+    let a_precision = BigInt::from(a_precision);
+    let mut balances = balances.clone();
+
+
+    let max_iterations = match chain_id {
+        2034 => MAX_Y_ITERATIONS_HDX,
+        _ => MAX_Y_ITERATIONS_ACA,
+    };
+
+    ann = ann.checked_div(&a_precision).unwrap();
+    if ann == BigInt::from(30u128){
+        balances = vec![balances[0].clone(), balances[3].clone()];
+    }
+
+    let n_coins = BigInt::from(balances.len());
 
     for (i, balance_ref) in balances.iter().enumerate() {
-        ann = &ann * &balance_size;
+        ann = &ann * &n_coins;
         if i == token_index_usize {
             continue;
         }
         sum = sum.add(balance_ref);
-        let div_op = balance_ref.checked_mul(&balance_size).unwrap();
-        c = c.checked_mul(&target_d_bigint).unwrap().checked_div(&div_op).unwrap();
+        let div_op = balance_ref.checked_mul(&n_coins).unwrap();
+        c = c.checked_mul(&BigRational::from(target_d_bigint.clone())).unwrap().checked_div(&BigRational::from(div_op.clone())).unwrap();
+        // println!("{} --- Sum: {} | C: {} | Current Balance: {} | Div Op: {}", i, sum, c, balance_ref, div_op);
     }
-    c = c.checked_mul(&target_d_bigint).unwrap().checked_mul(&a_precision).unwrap().checked_div(&ann.checked_mul(&balance_size).unwrap()).unwrap();
-    // println!("C: {}", c);
-    let b = sum.add(target_d_bigint.clone().mul(&a_precision).checked_div(&ann).unwrap());
+    // println!("SUM: {} | C: {} | Target D {} | A Precision {} | N Coins: {} | Ann {}", sum, c.to_f64().unwrap(), target_d_bigint,  a_precision, n_coins, ann);
+    c = c.checked_mul(&BigRational::from(target_d_bigint.clone())).unwrap().checked_mul(&BigRational::from(BigInt::one())).unwrap().checked_div(&BigRational::from(ann.checked_mul(&n_coins).unwrap())).unwrap();
+    // c = c.checked_mul(&BigRational::from(target_d_bigint.clone())).unwrap().checked_mul(&BigRational::from(a_precision.clone())).unwrap().checked_div(&BigRational::from(ann.checked_mul(&n_coins).unwrap())).unwrap();
+    
+    let c_numer: BigDecimal = BigDecimal::from_str(&c.numer().to_string()).unwrap();
+    let c_denom: BigDecimal = BigDecimal::from_str(&c.denom().to_string()).unwrap();
+    let c_decimal: BigDecimal = c_numer / c_denom;
+
+    // let b = sum.add(target_d_bigint.clone().mul(&a_precision).checked_div(&ann).unwrap());
+    let b = sum.add(target_d_bigint.clone().mul(BigInt::one()).checked_div(&ann).unwrap());
+    // println!("B: {}", b);   
     // let prev_y = BigInt::from(0);
     let mut y = target_d_bigint.clone();
 
     // println!("B: {}", b);
     // println!("Y Start: {}", y);
 
-    for i in 0..NUMBER_OF_ITERATIONS_TO_CONVERGE {
+    for i in 0..max_iterations {
         let prev_y = y.clone();
-        y = y.clone().mul(&y).add(&c).checked_div(&y.mul(&two).add(&b).checked_sub(&target_d_bigint).unwrap()).unwrap();
+        y = y.clone().mul(&y).add(&c.round().numer().to_bigint().unwrap()).checked_div(&y.mul(&two).add(&b).checked_sub(&target_d_bigint).unwrap()).unwrap();
 
         // let end = y.checked_sub(&prev_y).unwrap().abs().le(&one);
 
         if y.checked_sub(&prev_y).unwrap().abs().le(&one) {
+            // println!("Number of iterations: {}", i);
             break;
         }
     }
-    // println!("Y: {}", y);
-    return y.to_u128()
+    // println!("Y End: {}", y);
+    return Some(y);
 }
 
 pub fn getY(balances: &Vec<BigInt>, target_index: u128, D: u128, a: u128, primary_node: String) -> Option<u128>{

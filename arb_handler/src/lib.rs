@@ -693,9 +693,11 @@ pub async fn test_v3_swap(){
     let glmr_aca_v3_pool = "0x7c0b3bf935b457738d87926110300b3c5d76c77b".to_string();
     let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
     let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
-    let list = AdjacencyTable2::build_table_2(&lp_registry);
-    let graph = TokenGraph2::build_graph_2(asset_registry, list);
-    graph.calculate_v3_swap("asset_key_1".to_string(), "`asset_key_2`".to_string(), glmr_aca_v3_pool, 80.0)
+
+    lp_registry.display_stable_pools();
+    // let list = AdjacencyTable2::build_table_2(&lp_registry);
+    // let graph = TokenGraph2::build_graph_2(asset_registry, list);
+    // graph.calculate_v3_swap("asset_key_1".to_string(), "`asset_key_2`".to_string(), glmr_aca_v3_pool, 80.0)
     // let asset_node = graph.get_asset_by_chain_and_symbol(2004, "XCDOT".to_string()).unwrap();
     // let asset_key = asset_node.borrow().get_asset_key();
     // println!("Asset key: {}", asset_key);
@@ -706,6 +708,41 @@ pub async fn test_v3_swap(){
     // let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount);
 
     // println!("Display string: {}", display_string);
+
+}
+
+pub async fn test_stable_swap(){
+    // let start_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+    // let destination_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+    let chain_id = 2034;
+    let stable_4_pool_id = "100".to_string();
+    let dot_usdt = "10";
+    let glmr_dai = "18";
+    let glmr_usdc = "21";
+    let dot_usdc = "22";
+    let glmr_usdt = "23";
+
+    let stable_2_pool_id = "102".to_string(); // dot usdt and dot usdc
+    let kar_usd_stable_pool_id = "1".to_string();
+    let ausd = "ASEED".to_string();
+    let usdc = "USDCet".to_string();
+    // let glmr_aca_v3_pool = "0x7c0b3bf935b457738d87926110300b3c5d76c77b".to_string();
+    // let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
+    // let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
+
+    let mut asset_registry = AssetRegistry2::build_asset_registry();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
+
+    let input_amount = 1 as f64;
+    // lp_registry.display_stable_pools();
+
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+    graph.calculate_stable_swap(ausd, usdc.clone(), 2000, kar_usd_stable_pool_id, input_amount);
+    // graph.calculate_stable_swap(stable_2_pool_id, chain_id, stable_4_pool_id, input_amount);
+    // graph.display_stable_share_pairs();
+
+
 
 }
 

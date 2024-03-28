@@ -69,7 +69,7 @@ async fn main() {
             },
             "test" => {
                 let asset_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
-                test_v3_swap().await;
+                test_stable_swap().await;
             },
             _ => {
                 eprintln!("Error: search_best_path_a_to_b incorrect parameters"); // Write an error message to stderr
