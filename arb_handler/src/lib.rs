@@ -1,4 +1,5 @@
 
+use bigdecimal::BigDecimal;
 // mod asset_registry;
 // mod liq_pool_registry;
 // mod adjacency_table;
@@ -21,6 +22,7 @@ use adjacency_table_2::{AdjacencyTable2};
 use asset_registry_2::AssetRegistry2;
 use liq_pool_registry_2::LiqPoolRegistry2;
 use num::BigInt;
+use num::FromPrimitive;
 use token_graph_2::get_sqrt_ratio_at_tick;
 use token_graph_2::PathData;
 use token_graph_2::TokenGraph2;
@@ -29,6 +31,7 @@ use result_logger::ResultLogger;
 
 use std::fs::File;
 use std::io::prelude::*;
+use std::str::FromStr;
 use serde_json::{Value};
 use serde::{Deserialize, Serialize};
 use std::str;
@@ -47,7 +50,7 @@ type NodePath = Vec<Rc<RefCell<GraphNode>>>;
 pub struct PathNode{
     pub node_key: String,
     pub asset_name: String,
-    pub path_value: f64,
+    pub path_value: String,
     pub path_identifier: u64, // 0 - 3 for transfer code
     pub path_data: PathData,
     // pub path_id: String, // Any extra info like pool ID
@@ -71,7 +74,7 @@ pub struct PathNode{
 pub async fn async_search_default_kusama(){
     let start_key = "2000{\"NativeAssetId\":{\"Token\":\"KSM\"}}".to_string();
     let destination_key = "2000{\"NativeAssetId\":{\"Token\":\"KSM\"}}".to_string();
-    let big_amount = 1 as f64;
+    let big_amount = BigDecimal::from(1);
     let mut asset_registry = AssetRegistry2::build_asset_registry();
     let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
     lp_registry.display_stable_pools();
@@ -93,19 +96,19 @@ pub async fn async_search_default_kusama(){
     }
 
     let mut big_handles = Vec::new();
-    let small_input = 0.1 as f64;
+    let small_input = BigDecimal::from_f64(0.1).unwrap();
     let mut small_handles = Vec::new();
-    let medium_input = 0.5 as f64;
+    let medium_input = BigDecimal::from_f64(0.5).unwrap();
     let mut medium_handles = Vec::new();
 
     for node in start_nodes.clone(){
         let key = node.borrow().get_asset_key();
         println!("Searching for {}", key);
         let dest_key = destination_key.clone();
-
+        let big_amount_clone = big_amount.clone();
         // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
         let handle = task::spawn(async move {
-            search_best_path_a_to_b_async(key, dest_key, big_amount).await
+            search_best_path_a_to_b_async("kusama".to_string(), key, dest_key, big_amount_clone).await
         });
         big_handles.push(handle);
     }
@@ -114,10 +117,10 @@ pub async fn async_search_default_kusama(){
         let key = node.borrow().get_asset_key();
         println!("Searching for {}", key);
         let dest_key = destination_key.clone();
-
+        let small_amount_clone = small_input.clone();
         // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
         let handle = task::spawn(async move {
-            search_best_path_a_to_b_async(key, dest_key, small_input).await
+            search_best_path_a_to_b_async("kusama".to_string(), key, dest_key, small_amount_clone).await
         });
         small_handles.push(handle);
     }
@@ -127,9 +130,10 @@ pub async fn async_search_default_kusama(){
         println!("Searching for {}", key);
         let dest_key = destination_key.clone();
 
+        let medium_amount = medium_input.clone();
         // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
         let handle = task::spawn(async move {
-            search_best_path_a_to_b_async(key, dest_key, medium_input).await
+            search_best_path_a_to_b_async("kusama".to_string(), key, dest_key, medium_amount).await
         });
         medium_handles.push(handle);
     }
@@ -168,39 +172,39 @@ pub async fn async_search_default_kusama(){
         }
     }
 
-    let mut highest_big_value: f64 = 0.0;
+    let mut highest_big_value: BigDecimal = BigDecimal::from_f64(0.0).unwrap();
     let mut highest_big_value_path: Vec<PathNode> = vec![];
 
-    let mut highest_small_value: f64 = 0.0;
+    let mut highest_small_value: BigDecimal = BigDecimal::from_f64(0.0).unwrap();
     let mut highest_small_value_path: Vec<PathNode> = vec![];
 
-    let mut highest_medium_value: f64 = 0.0;
+    let mut highest_medium_value: BigDecimal = BigDecimal::from_f64(0.0).unwrap();
     let mut highest_medium_value_path: Vec<PathNode> = vec![];
 
     for (display, path) in big_amount_path_nodes.iter(){
         // println!("*****************************************");
-        let path_value = path[path.len()-1].path_value;
-        if path_value > highest_big_value{
+        let path_value = &path[path.len()-1].path_value;
+        if BigDecimal::from_str(&path_value).unwrap().gt(&highest_big_value){
             highest_big_value_path = path.clone();
-            highest_big_value = path_value;
+            highest_big_value = BigDecimal::from_str(&path_value).unwrap();
         }
     }
 
     for (display, path) in small_amount_path_nodes.iter(){
         // println!("*****************************************");
-        let path_value = path[path.len()-1].path_value;
-        if path_value > highest_small_value{
+        let path_value = &path[path.len()-1].path_value;
+        if BigDecimal::from_str(&path_value).unwrap().gt(&highest_small_value){
             highest_small_value_path = path.clone();
-            highest_small_value = path_value;
+            highest_small_value = BigDecimal::from_str(&path_value).unwrap();
         }
     }
 
     for (display, path) in medium_amount_path_nodes.iter(){
         // println!("*****************************************");
-        let path_value = path[path.len()-1].path_value;
-        if path_value > highest_medium_value{
+        let path_value = &path[path.len()-1].path_value;
+        if BigDecimal::from_str(&path_value).unwrap().gt(&highest_medium_value){
             highest_medium_value_path = path.clone();
-            highest_medium_value = path_value;
+            highest_medium_value = BigDecimal::from_str(&path_value).unwrap();
         }
         println!("Final path value: {}", path_value);
     }
@@ -226,49 +230,58 @@ pub async fn async_search_default_kusama(){
     ResultLogger::log_results_default_kusama(highest_medium_value_path, start_node_asset_name, medium_input);
 }
 
-pub async fn async_search_best_path_a_to_b(start_key: String, destination_key: String, input_amount: f64, relay: String){
+// ****** PROBLEM FUNCTION ***********
+pub async fn async_search_best_path_a_to_b(start_key: String, destination_key: String, input_amount: BigDecimal, relay: String){
     let mut asset_registry: AssetRegistry2;
     let lp_registry: LiqPoolRegistry2;
 
-    if relay == "kusama".to_string(){
+    if relay.clone() == "kusama".to_string(){
         println!("RUNNING KUSAMA SEARCH");
         asset_registry = AssetRegistry2::build_asset_registry();
         lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
 
-    } else if relay == "polkadot".to_string() {
+    } else if relay.clone() == "polkadot".to_string() {
+        println!("Building polkadot registry");
         asset_registry = AssetRegistry2::build_asset_registry_polkadot();
-        lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry); 
+        // asset_registry.display_all_assets();
+        lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
     } else{
         panic!("Unknown relay: {}", relay);
     }
     // lp_registry.display_stable_pools();
     let list = AdjacencyTable2::build_table_2(&lp_registry);
     let graph = TokenGraph2::build_graph_2(asset_registry, list);
-
+    // graph.display_graph_3();
     let start_node = &graph.get_node(start_key).clone();
-    
+    let start_asset_key = start_node.borrow().asset_key.clone();
+    // println!("Start asset key: {}", start_asset_key);
     let start_node_asset_name = start_node.borrow().get_asset_name();
 
     let start_asset_location = start_node.borrow().get_asset_location().unwrap();
     let all_start_assets = &graph.asset_registry.get_assets_at_location(start_asset_location);
-    let mut start_nodes = vec![];
-    for start_asset in all_start_assets{
-        if(!start_asset.borrow().is_cex_token()){
-            let new_start_node = &graph.get_node(start_asset.borrow().get_map_key()).clone();
-            start_nodes.push(Rc::clone(&new_start_node));
-        }
-    }
+    let mut start_nodes: Vec<Rc<RefCell<GraphNode>>> = vec![];
 
+    // For testing, only one node ***
+    // for start_asset in all_start_assets{
+    //     if(!start_asset.borrow().is_cex_token()){
+    //         let new_start_node = &graph.get_node(start_asset.borrow().get_map_key()).clone();
+    //         start_nodes.push(Rc::clone(&new_start_node));
+    //     }
+    // }
+    start_nodes.push(Rc::clone(&start_node));
+    // *****************************************
     let mut handles = Vec::new();
 
     for node in start_nodes{
+        let relay_parameter = relay.clone();
         let key = node.borrow().get_asset_key();
-        println!("Searching for {}", key);
+        // println!("Searching for {}", key);
         let dest_key = destination_key.clone();
+        let amount = input_amount.clone();
 
         // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
         let handle = task::spawn(async move {
-            search_best_path_a_to_b_async(key, dest_key, input_amount).await
+            search_best_path_a_to_b_async(relay_parameter, key, dest_key, amount).await
         });
         handles.push(handle);
     }
@@ -287,15 +300,15 @@ pub async fn async_search_best_path_a_to_b(start_key: String, destination_key: S
         }
     }
 
-    let mut highest_value: f64 = 0.0;
+    let mut highest_value: BigDecimal = BigDecimal::from_f64(0.0).unwrap();
     let mut highest_value_path: Vec<PathNode> = vec![];
 
     for (display, path) in path_nodes.iter(){
         println!("*****************************************");
-        let path_value = path[path.len()-1].path_value;
-        if path_value > highest_value{
+        let path_value = &path[path.len()-1].path_value;
+        if BigDecimal::from_str(&path_value).unwrap().gt(&highest_value){
             highest_value_path = path.clone();
-            highest_value = path_value;
+            highest_value = BigDecimal::from_str(&path_value).unwrap();
         }
         println!("Final path value: {}", path_value);
         println!("Display: {}", display);
@@ -314,7 +327,168 @@ pub async fn async_search_best_path_a_to_b(start_key: String, destination_key: S
 
 }
 
-pub async fn async_search_best_path_a_to_b_polkadot(start_key: String, destination_key: String, input_amount: f64){
+
+pub async fn async_search_default_polkadot(){
+    let start_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+    let destination_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+    // let input_amount = 1 as f64;
+    let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+
+    let start_node = &graph.get_node(start_key).clone();
+    
+    let start_node_asset_name = start_node.borrow().get_asset_name();
+
+    let start_asset_location = start_node.borrow().get_asset_location().unwrap();
+    let all_start_assets = &graph.asset_registry.get_assets_at_location(start_asset_location);
+    let mut start_nodes = vec![];
+    for start_asset in all_start_assets{
+        if !start_asset.borrow().is_cex_token() {
+            let new_start_node = &graph.get_node(start_asset.borrow().get_map_key()).clone();
+            start_nodes.push(Rc::clone(&new_start_node));
+        }
+    }
+
+    
+    let small_input = BigDecimal::from_f64(0.5 as f64).unwrap();
+    let mut small_handles = Vec::new();
+    let medium_input = BigDecimal::from_f64(2 as f64).unwrap();
+    let mut medium_handles = Vec::new();
+    let big_input = BigDecimal::from_f64(5 as f64).unwrap();
+    let mut big_handles = Vec::new();
+
+    for node in start_nodes.clone(){
+        let key = node.borrow().get_asset_key();
+        // println!("Searching for {}", key);
+        let dest_key = destination_key.clone();
+        let amount = big_input.clone();
+        // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
+        let handle = task::spawn(async move {
+            search_best_path_a_to_b_async_polkadot(key, dest_key, amount).await
+        });
+        big_handles.push(handle);
+    }
+
+    for node in start_nodes.clone(){
+        let key = node.borrow().get_asset_key();
+        // println!("Searching for {}", key);
+        let dest_key = destination_key.clone();
+
+        let amount = medium_input.clone();
+        // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
+        let handle = task::spawn(async move {
+            search_best_path_a_to_b_async_polkadot(key, dest_key, amount).await
+        });
+        medium_handles.push(handle);
+    }
+
+    for node in start_nodes.clone(){
+        let key = node.borrow().get_asset_key();
+        // println!("Searching for {}", key);
+        let dest_key = destination_key.clone();
+
+        let amount = small_input.clone();
+        // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
+        let handle = task::spawn(async move {
+            search_best_path_a_to_b_async_polkadot(key, dest_key, amount).await
+        });
+        small_handles.push(handle);
+    }
+
+    let mut merged_handles = Vec::new();
+    merged_handles.extend(big_handles);
+    merged_handles.extend(small_handles);
+    merged_handles.extend(medium_handles);
+
+    // Now, use join_all to await all the tasks at once
+    let results = join_all(merged_handles).await;
+
+    let mut small_amount_path_nodes: Vec<(String, Vec<PathNode>)> = vec![];
+    let mut medium_amount_path_nodes: Vec<(String, Vec<PathNode>)> = vec![];
+    let mut big_amount_path_nodes: Vec<(String, Vec<PathNode>)> = vec![];
+
+    for result in results {
+        match result {
+            Ok(ok) => {
+                let (path_amount, display_string, path) = ok;
+                if path_amount == big_input {
+                    big_amount_path_nodes.push((display_string, path));
+                } else if path_amount == small_input {
+                    small_amount_path_nodes.push((display_string, path));
+                } else if path_amount == medium_input {
+                    medium_amount_path_nodes.push((display_string, path));
+                } else {
+                    println!("Unknown path amount: {}", path_amount);
+                }
+            },
+            Err(e) => println!("Task failed with error: {:?}", e),
+        }
+    }
+
+    let mut highest_big_value: BigDecimal = BigDecimal::from(0);
+    let mut highest_big_value_path: Vec<PathNode> = vec![];
+
+    let mut highest_small_value:BigDecimal = BigDecimal::from(0);
+    let mut highest_small_value_path: Vec<PathNode> = vec![];
+
+    let mut highest_medium_value: BigDecimal = BigDecimal::from(0);
+    let mut highest_medium_value_path: Vec<PathNode> = vec![];
+
+
+    for (display, path) in big_amount_path_nodes.iter(){
+        // println!("*****************************************");
+        let path_value = &path[path.len()-1].path_value;
+        if BigDecimal::from_str(&path_value).unwrap().gt(&highest_big_value){
+            highest_big_value_path = path.clone();
+            highest_big_value = BigDecimal::from_str(&path_value).unwrap();
+        }
+    }
+
+    for (display, path) in small_amount_path_nodes.iter(){
+        // println!("*****************************************");
+        let path_value = &path[path.len()-1].path_value;
+        if BigDecimal::from_str(&path_value).unwrap().gt(&highest_small_value){
+            highest_small_value_path = path.clone();
+            highest_small_value = BigDecimal::from_str(&path_value).unwrap();
+        }
+    }
+
+    for (display, path) in medium_amount_path_nodes.iter(){
+        // println!("*****************************************");
+        let path_value = &path[path.len()-1].path_value;
+        if BigDecimal::from_str(&path_value).unwrap().gt(&highest_medium_value){
+            highest_medium_value_path = path.clone();
+            highest_medium_value = BigDecimal::from_str(&path_value).unwrap();
+        }
+        println!("Final path value: {}", path_value);
+    }
+
+    println!("Highest input value: {}", highest_big_value);
+    for node in highest_big_value_path.clone(){
+        println!("{}: {} {} || {:?}", node.node_key, node.asset_name, node.path_value, node.path_data);
+    }
+    println!("*****************************************");
+    println!("Highest small value: {}", highest_small_value);
+    for node in highest_small_value_path.clone(){
+        println!("{}: {} {} || {:?}", node.node_key, node.asset_name, node.path_value, node.path_data);
+    }
+    println!("*****************************************");
+    println!("Highest medium value: {}", highest_medium_value);
+    for node in highest_medium_value_path.clone(){
+        println!("{}: {} {} || {:?}", node.node_key, node.asset_name, node.path_value, node.path_data);
+    }
+    println!("*****************************************");
+    ResultLogger::log_results_default_polkadot(highest_big_value_path, start_node_asset_name.clone(), big_input);
+    ResultLogger::log_results_default_polkadot(highest_small_value_path, start_node_asset_name.clone(), small_input);
+    ResultLogger::log_results_default_polkadot(highest_medium_value_path, start_node_asset_name, medium_input);
+
+
+
+
+}
+pub async fn async_search_best_path_a_to_b_polkadot(start_key: String, destination_key: String, input_amount: BigDecimal){
     let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
     let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
     lp_registry.display_stable_pools();
@@ -341,10 +515,10 @@ pub async fn async_search_best_path_a_to_b_polkadot(start_key: String, destinati
         let key = node.borrow().get_asset_key();
         println!("Searching for {}", key);
         let dest_key = destination_key.clone();
-
+        let amount = input_amount.clone();
         // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
         let handle = task::spawn(async move {
-            search_best_path_a_to_b_async(key, dest_key, input_amount).await
+            search_best_path_a_to_b_async("polkadot".to_string(), key, dest_key, amount).await
         });
         handles.push(handle);
     }
@@ -363,15 +537,15 @@ pub async fn async_search_best_path_a_to_b_polkadot(start_key: String, destinati
         }
     }
 
-    let mut highest_value: f64 = 0.0;
+    let mut highest_value: BigDecimal = BigDecimal::from_f64(0.0).unwrap();
     let mut highest_value_path: Vec<PathNode> = vec![];
 
     for (display, path) in path_nodes.iter(){
         println!("*****************************************");
-        let path_value = path[path.len()-1].path_value;
-        if path_value > highest_value{
+        let path_value = &path[path.len()-1].path_value;
+        if BigDecimal::from_str(&path_value).unwrap() > highest_value{
             highest_value_path = path.clone();
-            highest_value = path_value;
+            highest_value = BigDecimal::from_str(&path_value).unwrap();
         }
         println!("Final path value: {}", path_value);
         println!("Display: {}", display);
@@ -417,200 +591,52 @@ pub fn sync_search_default_polkadot(){
         }
     }
 
-    let input_amount = 1 as f64;
+    let input_amount = BigDecimal::from(1);
 
     for node in start_nodes.clone(){
         let key = node.borrow().get_asset_key();
         println!("Searching for {}", key);
         let dest_key = destination_key.clone();
-        let (value, display, path) = search_best_path_a_to_b_sync_polkadot(key, dest_key, input_amount);
+        let amount = input_amount.clone();
+        let (value, display, path) = search_best_path_a_to_b_sync_polkadot(key, dest_key, amount);
     }
     // *********************************************
 
 
 }
 
-pub async fn async_search_default_polkadot(){
-    let start_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
-    let destination_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
-    // let input_amount = 1 as f64;
-    let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
-    let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
-    let list = AdjacencyTable2::build_table_2(&lp_registry);
-    let graph = TokenGraph2::build_graph_2(asset_registry, list);
-
-    let start_node = &graph.get_node(start_key).clone();
-    
-    let start_node_asset_name = start_node.borrow().get_asset_name();
-
-    let start_asset_location = start_node.borrow().get_asset_location().unwrap();
-    let all_start_assets = &graph.asset_registry.get_assets_at_location(start_asset_location);
-    let mut start_nodes = vec![];
-    for start_asset in all_start_assets{
-        if !start_asset.borrow().is_cex_token() {
-            let new_start_node = &graph.get_node(start_asset.borrow().get_map_key()).clone();
-            start_nodes.push(Rc::clone(&new_start_node));
-        }
+// ******************* PROBLEM FUNCTION CALLS THIS FUNCTION *************
+pub async fn search_best_path_a_to_b_async(relay: String, start_key: String, destination_key: String, input_amount: BigDecimal) -> (BigDecimal, String, Vec<PathNode>){
+    let mut asset_registry;
+    let lp_registry;
+    if relay == "kusama".to_string(){
+        asset_registry = AssetRegistry2::build_asset_registry();
+        lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
+    } else if relay == "polkadot".to_string() {
+        asset_registry = AssetRegistry2::build_asset_registry_polkadot();
+        lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
+    } else{
+        panic!("Unknown relay: {}", relay);
     }
 
-    
-    let small_input = 0.5 as f64;
-    let mut small_handles = Vec::new();
-    let medium_input = 2 as f64;
-    let mut medium_handles = Vec::new();
-    let big_input = 5 as f64;
-    let mut big_handles = Vec::new();
-
-    for node in start_nodes.clone(){
-        let key = node.borrow().get_asset_key();
-        println!("Searching for {}", key);
-        let dest_key = destination_key.clone();
-
-        // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
-        let handle = task::spawn(async move {
-            search_best_path_a_to_b_async_polkadot(key, dest_key, big_input).await
-        });
-        big_handles.push(handle);
-    }
-
-    for node in start_nodes.clone(){
-        let key = node.borrow().get_asset_key();
-        println!("Searching for {}", key);
-        let dest_key = destination_key.clone();
-
-        // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
-        let handle = task::spawn(async move {
-            search_best_path_a_to_b_async_polkadot(key, dest_key, medium_input).await
-        });
-        medium_handles.push(handle);
-    }
-
-    for node in start_nodes.clone(){
-        let key = node.borrow().get_asset_key();
-        println!("Searching for {}", key);
-        let dest_key = destination_key.clone();
-
-        // let future = task::spawn(search_best_path_a_to_b_async(key, destination_key.clone(), input_amount));
-        let handle = task::spawn(async move {
-            search_best_path_a_to_b_async_polkadot(key, dest_key, small_input).await
-        });
-        small_handles.push(handle);
-    }
-
-    let mut merged_handles = Vec::new();
-    merged_handles.extend(big_handles);
-    merged_handles.extend(small_handles);
-    merged_handles.extend(medium_handles);
-
-    // Now, use join_all to await all the tasks at once
-    let results = join_all(merged_handles).await;
-
-    let mut small_amount_path_nodes: Vec<(String, Vec<PathNode>)> = vec![];
-    let mut medium_amount_path_nodes: Vec<(String, Vec<PathNode>)> = vec![];
-    let mut big_amount_path_nodes: Vec<(String, Vec<PathNode>)> = vec![];
-
-    for result in results {
-        match result {
-            Ok(ok) => {
-                let (path_amount, display_string, path) = ok;
-                if path_amount == big_input {
-                    big_amount_path_nodes.push((display_string, path));
-                } else if path_amount == small_input {
-                    small_amount_path_nodes.push((display_string, path));
-                } else if path_amount == medium_input {
-                    medium_amount_path_nodes.push((display_string, path));
-                } else {
-                    println!("Unknown path amount: {}", path_amount);
-                }
-            },
-            Err(e) => println!("Task failed with error: {:?}", e),
-        }
-    }
-
-    let mut highest_big_value: f64 = 0.0;
-    let mut highest_big_value_path: Vec<PathNode> = vec![];
-
-    let mut highest_small_value: f64 = 0.0;
-    let mut highest_small_value_path: Vec<PathNode> = vec![];
-
-    let mut highest_medium_value: f64 = 0.0;
-    let mut highest_medium_value_path: Vec<PathNode> = vec![];
-
-
-    for (display, path) in big_amount_path_nodes.iter(){
-        // println!("*****************************************");
-        let path_value = path[path.len()-1].path_value;
-        if path_value > highest_big_value{
-            highest_big_value_path = path.clone();
-            highest_big_value = path_value;
-        }
-    }
-
-    for (display, path) in small_amount_path_nodes.iter(){
-        // println!("*****************************************");
-        let path_value = path[path.len()-1].path_value;
-        if path_value > highest_small_value{
-            highest_small_value_path = path.clone();
-            highest_small_value = path_value;
-        }
-    }
-
-    for (display, path) in medium_amount_path_nodes.iter(){
-        // println!("*****************************************");
-        let path_value = path[path.len()-1].path_value;
-        if path_value > highest_medium_value{
-            highest_medium_value_path = path.clone();
-            highest_medium_value = path_value;
-        }
-        println!("Final path value: {}", path_value);
-    }
-
-    println!("Highest input value: {}", highest_big_value);
-    for node in highest_big_value_path.clone(){
-        println!("{}: {} {} || {:?}", node.node_key, node.asset_name, node.path_value, node.path_data);
-    }
-    println!("*****************************************");
-    println!("Highest small value: {}", highest_small_value);
-    for node in highest_small_value_path.clone(){
-        println!("{}: {} {} || {:?}", node.node_key, node.asset_name, node.path_value, node.path_data);
-    }
-    println!("*****************************************");
-    println!("Highest medium value: {}", highest_medium_value);
-    for node in highest_medium_value_path.clone(){
-        println!("{}: {} {} || {:?}", node.node_key, node.asset_name, node.path_value, node.path_data);
-    }
-    println!("*****************************************");
-    ResultLogger::log_results_default_polkadot(highest_big_value_path, start_node_asset_name.clone(), big_input);
-    ResultLogger::log_results_default_polkadot(highest_small_value_path, start_node_asset_name.clone(), small_input);
-    ResultLogger::log_results_default_polkadot(highest_medium_value_path, start_node_asset_name, medium_input);
-
-
-
-
-}
-
-pub async fn search_best_path_a_to_b_async(start_key: String, destination_key: String, input_amount: f64) -> (f64, String, Vec<PathNode>){
-    let mut asset_registry = AssetRegistry2::build_asset_registry();
-    let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
-    // lp_registry.display_stable_pools();
     let list = AdjacencyTable2::build_table_2(&lp_registry);
     let graph = TokenGraph2::build_graph_2(asset_registry, list);
     // let key_1 = start_key;
-    let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount);
+    let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount.clone());
 
     let return_path = return_path_nodes(path);
 
     (input_amount, display_string, return_path)
 }
 
-// All searches at once
-pub async fn search_best_path_a_to_b_async_polkadot(start_key: String, destination_key: String, input_amount: f64) -> (f64, String, Vec<PathNode>){
+// All searches at once. MAIN default search calls this one
+pub async fn search_best_path_a_to_b_async_polkadot(start_key: String, destination_key: String, input_amount: BigDecimal) -> (BigDecimal, String, Vec<PathNode>){
     let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
     let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
     let list = AdjacencyTable2::build_table_2(&lp_registry);
     let graph = TokenGraph2::build_graph_2(asset_registry, list);
     // let key_1 = start_key;
-    let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount);
+    let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount.clone());
 
     println!("Display string: {}", display_string);
 
@@ -620,13 +646,13 @@ pub async fn search_best_path_a_to_b_async_polkadot(start_key: String, destinati
 }
 
 // Search one by one
-pub fn search_best_path_a_to_b_sync_polkadot(start_key: String, destination_key: String, input_amount: f64) -> (f64, String, Vec<PathNode>){
+pub fn search_best_path_a_to_b_sync_polkadot(start_key: String, destination_key: String, input_amount: BigDecimal) -> (BigDecimal, String, Vec<PathNode>){
     let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
     let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
     let list = AdjacencyTable2::build_table_2(&lp_registry);
     let graph = TokenGraph2::build_graph_2(asset_registry, list);
     // let key_1 = start_key;
-    let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount);
+    let (display_string, path) = graph.find_best_route(start_key, destination_key, input_amount.clone());
 
     println!("Display string: {}", display_string);
 
@@ -645,7 +671,7 @@ pub fn return_path_nodes(path: NodePath) -> Vec<PathNode> {
         let path_node = PathNode{
             node_key: node.borrow().get_asset_key(),
             asset_name: node.borrow().get_asset_name(),
-            path_value: path_values[i].clone(),
+            path_value: path_values[i].to_string(),
             path_identifier: path_value_types[i].clone(),
             path_data: path_datas[i].clone(),
         };
@@ -683,7 +709,7 @@ pub async fn test_polkadot_lps(){
     // // lp_registry.display_liq_pools()
     // let list = AdjacencyTable2::build_table_2(&lp_registry);
     // let graph = TokenGraph2::build_graph_2(asset_registry, list);
-    search_best_path_a_to_b_async_polkadot(start_key, destination_key, 1.0).await;
+    search_best_path_a_to_b_async_polkadot(start_key, destination_key, BigDecimal::from_f64(1.0).unwrap()).await;
 }
 
 pub async fn test_v3_swap(){
@@ -753,7 +779,7 @@ pub async fn test_ticks(){
     println!("Sqrt price: {}", sqrt_price);
 }
 
-pub async fn search_best_path_a_to_b(start_key: String, destination_key: String, input_amount: f64){
+pub async fn search_best_path_a_to_b(start_key: String, destination_key: String, input_amount: BigDecimal){
     let mut asset_registry = AssetRegistry2::build_asset_registry();
     let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
     lp_registry.display_stable_pools();
@@ -778,7 +804,7 @@ pub async fn search_best_path_a_to_b(start_key: String, destination_key: String,
 
 
 
-pub async fn fallback_search_a_to_b(start_key: String, destination_key: String, input_amount: f64, relay: String){
+pub async fn fallback_search_a_to_b(start_key: String, destination_key: String, input_amount: BigDecimal, relay: String){
 
     let mut asset_registry: AssetRegistry2;
     let lp_registry: LiqPoolRegistry2;

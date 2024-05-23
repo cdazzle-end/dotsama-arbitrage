@@ -21,12 +21,14 @@ pub enum Liquidity{
 }
 #[derive(Debug, Clone, PartialEq)]
 pub struct DexLp{
+    pub dex_type: Option<String>,
     pub lp_id: Option<String>,
     pub base_liquidity: u128,
     pub adjacent_liquidity: u128,
 }
 #[derive(Debug, Clone, PartialEq)]
 pub struct DexV3{
+    pub dex_type: Option<String>,
     pub lp_id: Option<String>,
     pub token_0: String,
     pub token_1: String,
@@ -104,6 +106,7 @@ impl AdjacencyTable2{
         let mut adjacency_table = AdjacencyTable2 { table_2: HashMap::new() };
         for lp in &lp_registry.liq_pools{   
             // println!("lp: {:?}", lp);
+            let dex_type = lp.dex_type.clone();
             let lp_id = lp.pool_id.clone();
             let (asset_0, asset_1) = (Rc::clone(&lp.assets[0]), Rc::clone(&lp.assets[1]));
             // This is for cex pools (NOT IN OPERATION ATM)
@@ -261,6 +264,7 @@ impl AdjacencyTable2{
                 let token_0 = asset_0.borrow().get_asset_contract_address().unwrap();
                 let token_1 = asset_1.borrow().get_asset_contract_address().unwrap();
                 adjacency_table.add_dex_3_to_table(
+                    dex_type.clone(),
                     lp_id.clone(),
                     Rc::clone(&asset_0),
                     Rc::clone(&asset_1),
@@ -273,6 +277,7 @@ impl AdjacencyTable2{
                     lp.upper_ticks.clone().unwrap()
                 );
                 adjacency_table.add_dex_3_to_table(
+                    dex_type.clone(),
                     lp_id.clone(),
                     Rc::clone(&asset_1),
                     Rc::clone(&asset_0),
@@ -287,13 +292,14 @@ impl AdjacencyTable2{
             } else {
                 let (liquidity_0, liquidity_1) = (lp.liquidity[0], lp.liquidity[1]);
                 adjacency_table.add_dex_pair_to_table(
+                    dex_type.clone(),
                     lp_id.clone(),
                     Rc::clone(&asset_0),
                     liquidity_0,
                     Rc::clone(&asset_1),
                     liquidity_1,
                 );
-                adjacency_table.add_dex_pair_to_table(lp_id, asset_1, liquidity_1, asset_0, liquidity_0);
+                adjacency_table.add_dex_pair_to_table(dex_type, lp_id, asset_1, liquidity_1, asset_0, liquidity_0);
             }
         }
         adjacency_table
@@ -301,6 +307,7 @@ impl AdjacencyTable2{
 
     fn add_dex_3_to_table(
         &mut self,
+        dex_type: Option<String>,
         lp_id: Option<String>,
         base_asset: AssetPointer,
         adjacent_asset: AssetPointer,
@@ -328,7 +335,7 @@ impl AdjacencyTable2{
             //The first asset in an adjacency list is the primary asset (the rest are adjacent to the primary)
             let adjacency_list_key = adjacency_list.primary_asset.borrow().get_map_key();
             if base_asset_key == adjacency_list_key{
-                adjacency_list.add_dex_3_pair(adjacent_asset, lp_id, token_0, token_1, active_liquidity, fee_rate, current_tick, lower_ticks, upper_ticks);
+                adjacency_list.add_dex_3_pair(adjacent_asset, dex_type, lp_id, token_0, token_1, active_liquidity, fee_rate, current_tick, lower_ticks, upper_ticks);
                 inserted = true;
                 break;
             }
@@ -345,6 +352,7 @@ impl AdjacencyTable2{
 
     fn add_dex_pair_to_table(
         &mut self,
+        dex_type: Option<String>,
         lp_id: Option<String>,
         base_asset: AssetPointer,
         base_liquidity: u128,
@@ -367,7 +375,7 @@ impl AdjacencyTable2{
             //The first asset in an adjacency list is the primary asset (the rest are adjacent to the primary)
             let adjacency_list_key = adjacency_list.primary_asset.borrow().get_map_key();
             if base_asset_key == adjacency_list_key{
-                adjacency_list.add_dex_pair(adjacent_asset, lp_id, base_liquidity, adjacent_liquidity);
+                adjacency_list.add_dex_pair(adjacent_asset, dex_type, lp_id, base_liquidity, adjacent_liquidity);
                 inserted = true;
                 break;
             }
@@ -693,13 +701,13 @@ impl AdjacencyList{
         }
     }
 
-    pub fn add_dex_pair(&mut self, adjacent_assets: AssetPointer, lp_id: Option<String>, base_liquidity: u128, adjacent_liquidity: u128){
-        let pair = AdjacencyGroup::new_dex_pair(Rc::clone(&adjacent_assets), lp_id, base_liquidity, adjacent_liquidity);
+    pub fn add_dex_pair(&mut self, adjacent_assets: AssetPointer, dex_type: Option<String>, lp_id: Option<String>, base_liquidity: u128, adjacent_liquidity: u128){
+        let pair = AdjacencyGroup::new_dex_pair(Rc::clone(&adjacent_assets),dex_type, lp_id, base_liquidity, adjacent_liquidity);
         self.list.push(pair);
     }
 
-    pub fn add_dex_3_pair(&mut self, adjacent_assets: AssetPointer, lp_id: Option<String>, token_0: String, token_1: String, active_liquidity: u128, fee_rate: u128, current_tick: i64, lower_ticks: Vec<TickData>, upper_ticks: Vec<TickData>){
-        let pair = AdjacencyGroup::new_dex_3_pair(Rc::clone(&adjacent_assets), lp_id, token_0, token_1, active_liquidity, fee_rate, current_tick, lower_ticks, upper_ticks);
+    pub fn add_dex_3_pair(&mut self, adjacent_assets: AssetPointer, dex_type: Option<String>, lp_id: Option<String>, token_0: String, token_1: String, active_liquidity: u128, fee_rate: u128, current_tick: i64, lower_ticks: Vec<TickData>, upper_ticks: Vec<TickData>){
+        let pair = AdjacencyGroup::new_dex_3_pair(Rc::clone(&adjacent_assets), dex_type, lp_id, token_0, token_1, active_liquidity, fee_rate, current_tick, lower_ticks, upper_ticks);
         self.list.push(pair);
     }
 
@@ -751,11 +759,12 @@ impl AdjacencyList{
 }
 
 impl AdjacencyGroup{
-    pub fn new_dex_pair(adjacent_asset: AssetPointer, lp_id: Option<String>, base_liquidity: u128, adjacent_liquidity: u128) -> AdjacencyGroup{
+    pub fn new_dex_pair(adjacent_asset: AssetPointer, dex_type: Option<String>, lp_id: Option<String>, base_liquidity: u128, adjacent_liquidity: u128) -> AdjacencyGroup{
         AdjacencyGroup{
             group_type: GroupType::Dex,
             adjacent_asset: vec![Rc::clone(&adjacent_asset)],
             liquidity: Some(Liquidity::Dex(DexLp{
+                dex_type,
                 lp_id: lp_id,
                 base_liquidity: base_liquidity,
                 adjacent_liquidity: adjacent_liquidity
@@ -763,11 +772,12 @@ impl AdjacencyGroup{
         }
     }
 
-    pub fn new_dex_3_pair(adjacent_asset: AssetPointer, lp_id: Option<String>, token_0: String, token_1: String, active_liquidity: u128, fee_rate: u128, current_tick: i64, lower_ticks: Vec<TickData>, upper_ticks: Vec<TickData>) -> AdjacencyGroup{
+    pub fn new_dex_3_pair(adjacent_asset: AssetPointer, dex_type: Option<String>, lp_id: Option<String>, token_0: String, token_1: String, active_liquidity: u128, fee_rate: u128, current_tick: i64, lower_ticks: Vec<TickData>, upper_ticks: Vec<TickData>) -> AdjacencyGroup{
         AdjacencyGroup{
             group_type: GroupType::DexV3,
             adjacent_asset: vec![Rc::clone(&adjacent_asset)],
             liquidity: Some(Liquidity::DexV3(DexV3{
+                dex_type: dex_type,
                 lp_id,
                 token_0: token_0,
                 token_1: token_1,

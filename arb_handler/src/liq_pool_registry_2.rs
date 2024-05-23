@@ -281,7 +281,7 @@ impl LiqPoolRegistry2{
                                 Some(LiqPool2 {
                                     chain_id,
                                     contract_address: contract_address.clone(),
-                                    pool_id: contract_address.clone(),
+                                    pool_id: Some(dex_type.clone()),
                                     assets: vec![assets[0].clone(), assets[1].clone()],
                                     liquidity: vec![liquidity_0, liquidity_1],
                                     exchange: None,

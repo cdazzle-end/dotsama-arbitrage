@@ -55,8 +55,8 @@ impl TokenGraph2{
 
     //Get node from asset key
     pub fn get_node(&self, asset_key: String) -> GraphNodePointer{
-        // println!("asset key: {}", asset_key);
-        let bucket = self.node_map.get(&asset_key).unwrap();
+        let bucket = self.node_map.get(&asset_key)
+            .expect(&format!("Failed to find bucket for asset_key: {:?}", asset_key));
         for node in bucket{
             if node.borrow().asset_key == asset_key{
                 return Rc::clone(node);
@@ -253,11 +253,15 @@ impl TokenGraph2{
         // } 
     }
 
-    pub fn find_best_route(&self, asset_key_1: String, asset_key_2: String, input_amount: f64) -> (String, Vec<Rc<RefCell<GraphNode>>>) {
-
+    pub fn find_best_route(&self, asset_key_1: String, asset_key_2: String, input_amount: BigDecimal) -> (String, Vec<Rc<RefCell<GraphNode>>>) {
+        // println!("STARTING INPUT AMOUNT: {}", input_amount);
         let starting_node = &self.get_node(asset_key_1).clone();
-        let formatted_input = &input_amount * f64::powi(10.0, starting_node.borrow().get_asset_decimals() as i32);
+        // let formatted_input = &input_amount * f64::powi(10.0, starting_node.borrow().get_asset_decimals() as i32);
+        // let decimal_place_multiplier = 
+        let formatted_input = &input_amount * BigDecimal::from_f64(f64::powi(10.0, starting_node.borrow().get_asset_decimals() as i32)).unwrap();
+        // println!("Formatted input: {}", formatted_input);
         starting_node.borrow_mut().best_path_value = formatted_input.to_bigint().unwrap();
+        // println!("Starting node best path value: {}", starting_node.borrow().best_path_value);
         starting_node.borrow_mut().path_values.push(input_amount);
 
         let path_data: PathData = PathData{
@@ -324,10 +328,6 @@ impl TokenGraph2{
                     },
                     AdjacentNodePair2::DexPair(dex_pair) =>  {
                         let current_chain = current_node.borrow().get_chain_id();
-                        
-                        if current_chain == 2004{
-                        
-                        }
 
                         let path_value = calculate_dex_edge( adjacent_pair, current_node.borrow().best_path_value.clone());
                         if path_value > dex_pair.adjacent_node.borrow().best_path_value{
@@ -337,7 +337,7 @@ impl TokenGraph2{
                                     test = true;
                                 }
                             }
-                            let lp_id = dex_pair.get_lp_id();
+
                             let mut is_destination_node = false;
                             for dest_node in &destination_nodes{
                                 if dest_node.borrow().get_asset_key() == dex_pair.adjacent_node.borrow().get_asset_key(){
@@ -351,11 +351,34 @@ impl TokenGraph2{
                             let formatted_path_value = dex_pair.adjacent_node.borrow().best_path_value_display(&self).clone();
                             dex_pair.adjacent_node.borrow_mut().path_values.push(formatted_path_value);
                             dex_pair.adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
-                            dex_pair.adjacent_node.borrow_mut().path_value_types.push(1);
                             
+                            
+                            let dex_type = dex_pair.get_dex_type();
+                            let lp_id = dex_pair.get_lp_id();
+                            let dex_type = match dex_type{
+                                Some(dex_id) => {
+                                    if dex_id.contains("solar"){ // All normal dexes are set to solar
+                                        "Dex".to_string()
+                                    } else if dex_id.contains("omnipool"){ // Need this for hydraDx
+                                        "Omnipool".to_string()
+                                    } else {
+                                        dex_id.to_string()
+                                    }
+                                },
+                                None => "Dex".to_string()
+                            };
+                            
+                            let path_value_type = match dex_type.as_str(){
+                                "Dex" => 1,
+                                "Omnipool" => 4,
+                                _ => 1
+                            };
+
+                            dex_pair.adjacent_node.borrow_mut().path_value_types.push(path_value_type);
+
                             let new_path_data: PathData = PathData{
-                                path_type: "Dex".to_string(),
-                                lp_id: lp_id.clone(),
+                                path_type: dex_type,
+                                lp_id: lp_id.clone(), // Just for contract address on evm
                             };
 
                             dex_pair.adjacent_node.borrow_mut().path_datas = current_node.borrow().path_datas.clone();
@@ -390,11 +413,12 @@ impl TokenGraph2{
                             let formatted_path_value = dex_pair.adjacent_node.borrow().best_path_value_display(&self).clone();
                             dex_pair.adjacent_node.borrow_mut().path_values.push(formatted_path_value);
                             dex_pair.adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
-                            dex_pair.adjacent_node.borrow_mut().path_value_types.push(1);
+                            dex_pair.adjacent_node.borrow_mut().path_value_types.push(3);
 
+                            let dex_type = dex_pair.get_dex_type().unwrap();
                             let lp_id = dex_pair.get_lp_id();
                             let new_path_data: PathData = PathData{
-                                path_type: "DexV3".to_string(),
+                                path_type: dex_type,
                                 lp_id: lp_id.clone(),
                             };
                             dex_pair.adjacent_node.borrow_mut().path_datas = current_node.borrow().path_datas.clone();
@@ -429,7 +453,7 @@ impl TokenGraph2{
                             let formatted_path_value = cex_pair.adjacent_node.borrow().best_path_value_display(&self).clone();
                             cex_pair.adjacent_node.borrow_mut().path_values.push(formatted_path_value);
                             cex_pair.adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
-                            cex_pair.adjacent_node.borrow_mut().path_value_types.push(3);
+                            cex_pair.adjacent_node.borrow_mut().path_value_types.push(100);
                             
                             if !test && !is_destination_node{
                                 node_queue.push_back(Rc::clone(&cex_pair.adjacent_node));
@@ -510,7 +534,7 @@ impl TokenGraph2{
 
                                 let lp_id = stable_pair.get_lp_id();
                                 let new_path_data: PathData = PathData{
-                                    path_type: "Stable".to_string(),
+                                    path_type: "StableShare".to_string(),
                                     lp_id: lp_id.clone(),
                                 };
     
@@ -796,7 +820,7 @@ pub struct GraphNode{
     pub best_path_value_display: f64,
     pub path_edges: Vec<((String,u128),(String, u128))>,
     pub best_path: Vec<GraphNodePointer>,
-    pub path_values: Vec<f64>,
+    pub path_values: Vec<BigDecimal>,
     pub path_value_types: Vec<u64>,
     pub path_datas: Vec<PathData>,
 
@@ -863,11 +887,23 @@ impl DexPair{
             _ => panic!("Tried to get dex contract address from non-dex liquidity"),
         }
     }
+    pub fn get_dex_type(&self) -> Option<String>{
+        match &self.liquidity{
+            Liquidity::Dex(dexLp) => dexLp.dex_type.clone(),
+            _ => panic!("Tried to get dex contract address from non-dex liquidity"),
+        }
+    }
 }
 impl DexV3Pair {
     pub fn get_lp_id(&self) -> Option<String>{
         match &self.liquidity{
             Liquidity::DexV3(dexLp) => dexLp.lp_id.clone(),
+            _ => panic!("Tried to get dex contract address from non-dex liquidity"),
+        }
+    }
+    pub fn get_dex_type(&self) -> Option<String>{
+        match &self.liquidity{
+            Liquidity::DexV3(dexLp) => dexLp.dex_type.clone(),
             _ => panic!("Tried to get dex contract address from non-dex liquidity"),
         }
     }
@@ -1126,21 +1162,24 @@ impl GraphNode{
     pub fn is_cex_token(&self) -> bool {
         self.asset.borrow().is_cex_token()
     }
-    pub fn best_path_value_display(&self, token_graph: &TokenGraph2) -> f64 {
+    pub fn best_path_value_display(&self, token_graph: &TokenGraph2) -> BigDecimal {
         match self.asset.borrow().token_data{
             TokenData::CexAsset { .. } => {
                 if self.get_asset_symbol() == "USDT"{
                     let usdt_asset_decimals = 4;
-                    self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, usdt_asset_decimals as i32)
+                    BigDecimal::from(self.best_path_value.clone()) / BigDecimal::from(BigInt::from(10).pow(usdt_asset_decimals as u32))
+                    // self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, usdt_asset_decimals as i32)
                 } 
                 else {
                     let kucoin_asset_decimals = token_graph.asset_registry.get_kucoin_asset_decimals(self.get_asset_location().unwrap());
-                    self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, kucoin_asset_decimals as i32)
+                    // self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, kucoin_asset_decimals as i32)
+                    BigDecimal::from(self.best_path_value.clone()) / BigDecimal::from(BigInt::from(10).pow(kucoin_asset_decimals as u32))
                 }
                 
             },
             _ => {
-                self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, self.get_asset_decimals() as i32)
+                // self.best_path_value.to_f64().unwrap().clone() / f64::powi(10.0, self.get_asset_decimals() as i32)
+                BigDecimal::from(self.best_path_value.clone()) / BigDecimal::from(BigInt::from(10).pow(self.get_asset_decimals() as u32))
             }
         }
     }
@@ -1182,36 +1221,56 @@ impl GraphNode{
 //     }
 // }
 
+pub fn calculate_v2_dex_swap_formula(adj_pair: &DexPair, input_amount: BigInt) -> BigInt {
+    let (base_liquidity, adjacent_liquidity) = match adj_pair.liquidity.clone() {
+        Liquidity::Dex(dexLp) => (dexLp.base_liquidity, dexLp.adjacent_liquidity),
+        _ => panic!("Tried to get dex liquidity from non-dex liquidity"),
+    };
+
+    let input_reserve = BigInt::from(base_liquidity);
+    let output_reserve = BigInt::from(adjacent_liquidity);
+
+    let slip_multiplier = BigInt::from(10000) - BigInt::from(100); // 1%
+
+    let amount_in_with_slippage = input_amount.clone() * slip_multiplier.clone();
+    let slip_numerator = amount_in_with_slippage.clone() * output_reserve.clone();
+    let slip_denominator = (input_reserve.clone() * BigInt::from(10000)) + amount_in_with_slippage.clone();
+    let total_amount_out = slip_numerator.clone() / slip_denominator.clone();
+    total_amount_out
+}
+
 pub fn calculate_dex_edge(adjacent_node: &AdjacentNodePair2, input_amount: BigInt) -> BigInt{
+    // println!("DEX input amount: {}", input_amount);
     match adjacent_node{
         AdjacentNodePair2::DexPair(adj_pair) => {
-            let (base_liquidity, adjacent_liquidity) = match adj_pair.liquidity.clone() {
-                Liquidity::Dex(dexLp) => (dexLp.base_liquidity, dexLp.adjacent_liquidity),
-                _ => panic!("Tried to get dex liquidity from non-dex liquidity"),
-            };
-            let base_liquidity = base_liquidity.to_bigint().unwrap();
-            let adjacent_liquidity = adjacent_liquidity.to_bigint().unwrap();
-            let increments = 5000;
-            let token_1_increment = input_amount / BigInt::from(increments);
-            let swap_fee = (token_1_increment.to_f64().unwrap().mul(0.003)) as u128;
-            let token_1_increment_minus_swap = token_1_increment - swap_fee;
+            calculate_v2_dex_swap_formula(&adj_pair, input_amount)
+            // let (base_liquidity, adjacent_liquidity) = match adj_pair.liquidity.clone() {
+            //     Liquidity::Dex(dexLp) => (dexLp.base_liquidity, dexLp.adjacent_liquidity),
+            //     _ => panic!("Tried to get dex liquidity from non-dex liquidity"),
+            // };
+            // let base_liquidity = base_liquidity.to_bigint().unwrap();
+            // let adjacent_liquidity = adjacent_liquidity.to_bigint().unwrap();
+            // let increments = 5000;
+            // let token_1_increment = BigDecimal::from(input_amount) / BigDecimal::from(increments);
+            // let swap_fee = token_1_increment.clone().mul(BigDecimal::from_f64(0.003).unwrap());
+            // let token_1_increment_minus_swap = (token_1_increment - swap_fee).round(0).to_bigint().unwrap();
             
-            let mut token_1_changing_liquidity = base_liquidity.clone();
-            let mut token_2_changing_liquidity = adjacent_liquidity.clone();
-            let mut total_slippage = BigInt::default();
-            let mut total_token_2_output = BigInt::default();
+            // let mut token_1_changing_liquidity = base_liquidity.clone();
+            // let mut token_2_changing_liquidity = adjacent_liquidity.clone();
+            // let mut total_slippage = BigInt::default();
+            // let mut total_token_2_output = BigInt::default();
 
-            for _ in 0..increments {
-                let token_2_out = (&token_2_changing_liquidity * token_1_increment_minus_swap.clone())
-                    / (&token_1_changing_liquidity + token_1_increment_minus_swap.clone());
-                let slip = (&token_2_out / &token_2_changing_liquidity) * &token_2_out;
-                total_token_2_output += &token_2_out - &slip;
-                token_2_changing_liquidity -= &token_2_out - &slip;
-                token_1_changing_liquidity += token_1_increment_minus_swap.clone();
-                total_slippage += &slip;
-            }
+            // for _ in 0..increments {
+            //     let token_2_out = (&token_2_changing_liquidity * token_1_increment_minus_swap.clone())
+            //         / (&token_1_changing_liquidity + token_1_increment_minus_swap.clone());
+            //     let slip = (&token_2_out / &token_2_changing_liquidity) * &token_2_out;
+            //     total_token_2_output += &token_2_out - &slip;
+            //     token_2_changing_liquidity -= &token_2_out - &slip;
+            //     token_1_changing_liquidity += token_1_increment_minus_swap.clone();
+            //     total_slippage += &slip;
+            // }
 
-            total_token_2_output
+            // total_token_2_output
         },
         AdjacentNodePair2::DexV3Pair(adj_pair) => {
             let (contract_address, token_0, token_1, active_liquidity, current_tick, fee_rate, upper_ticks, lower_ticks) = match &adj_pair.liquidity {

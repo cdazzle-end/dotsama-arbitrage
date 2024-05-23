@@ -1,6 +1,7 @@
 use crate::{NodePath, PathNode};
 use std::fs::File;
 use std::io::prelude::*;
+use bigdecimal::BigDecimal;
 use serde_json::{Value};
 use serde::{Deserialize, Serialize};
 use std::str;
@@ -51,7 +52,7 @@ impl ResultLogger {
     //     writeln!(file, "{}", result_log_string).expect("Failed to write data");
     // }
     
-    pub fn log_results_default_kusama(result_log: Vec<PathNode>, start_node_name: String, input_amount: f64){
+    pub fn log_results_default_kusama(result_log: Vec<PathNode>, start_node_name: String, input_amount: BigDecimal){
         let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
         // Get the current timestamp
         let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
@@ -59,7 +60,7 @@ impl ResultLogger {
         let time = chrono::Local::now().format("%H-%M-%S").to_string();
     
         // Construct the directory path for the current date
-        let log_folder_path = format!("default_log_data/kusama/{}/{}", date, input_amount);
+        let log_folder_path = format!("default_log_data/kusama/{}/{}", date, input_amount.to_string());
     
         // Create a directory for the current date if it doesn't exist
         match std::fs::create_dir_all(&log_folder_path) {
@@ -75,7 +76,7 @@ impl ResultLogger {
         file.write_all(json.as_bytes()).expect("Failed to write data");
     
         // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
-        let best_path_value = result_log[result_log.len()-1].path_value;
+        let best_path_value = &result_log[result_log.len()-1].path_value;
         let result_log_string = format!("{} {} - {}", timestamp, start_node_name, best_path_value);
         let mut file = OpenOptions::new()
             .append(true)
@@ -87,7 +88,7 @@ impl ResultLogger {
         // result_log.clone()
     }
     
-    pub fn log_results_default_polkadot(result_log: Vec<PathNode>, start_node_name: String, input_amount: f64){
+    pub fn log_results_default_polkadot(result_log: Vec<PathNode>, start_node_name: String, input_amount: BigDecimal){
         let json = serde_json::to_string_pretty(&result_log.clone()).unwrap();
         // Get the current timestamp
         let timestamp = chrono::Local::now().format("%Y-%m-%d___%H-%M-%S").to_string();
@@ -95,7 +96,7 @@ impl ResultLogger {
         let time = chrono::Local::now().format("%H-%M-%S").to_string();
     
         // Construct the directory path for the current date
-        let log_folder_path = format!("default_log_data/polkadot/{}/{}", date, input_amount);
+        let log_folder_path = format!("default_log_data/polkadot/{}/{}", date, input_amount.to_string());
     
         // Create a directory for the current date if it doesn't exist
         match std::fs::create_dir_all(&log_folder_path) {
@@ -111,7 +112,7 @@ impl ResultLogger {
         file.write_all(json.as_bytes()).expect("Failed to write data");
     
         // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
-        let best_path_value = result_log[result_log.len()-1].path_value;
+        let best_path_value = &result_log[result_log.len()-1].path_value;
         let result_log_string = format!("{} {} - {}", timestamp, start_node_name, best_path_value);
         let mut file = OpenOptions::new()
             .append(true)
@@ -133,7 +134,7 @@ impl ResultLogger {
             let path_node = PathNode{
                 node_key: node.borrow().get_asset_key(),
                 asset_name: node.borrow().get_asset_name(),
-                path_value: path_values[i].clone(),
+                path_value: path_values[i].to_string(),
                 path_identifier: path_value_types[i].clone(),
                 path_data: path_datas[i].clone(),
             };
@@ -165,7 +166,7 @@ impl ResultLogger {
         file.write_all(json.as_bytes()).expect("Failed to write data");
     
         // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
-        let best_path_value = result_log[result_log.len()-1].path_value;
+        let best_path_value = &result_log[result_log.len()-1].path_value;
         let result_log_string = format!("{} {} - {}", timestamp, start_node.get_asset_name(), best_path_value);
         let mut file = OpenOptions::new()
             .append(true)
@@ -203,7 +204,7 @@ impl ResultLogger {
         file.write_all(json.as_bytes()).expect("Failed to write data");
     
         // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
-        let best_path_value = path[path.len()-1].path_value;
+        let best_path_value = &path[path.len()-1].path_value;
         let result_log_string = format!("{} {} - {}", timestamp, asset_name, best_path_value);
         let mut file = OpenOptions::new()
             .append(true)
@@ -223,7 +224,7 @@ impl ResultLogger {
             let path_node = PathNode{
                 node_key: node.borrow().get_asset_key(),
                 asset_name: node.borrow().get_asset_name(),
-                path_value: path_values[i].clone(),
+                path_value: path_values[i].to_string(),
                 path_identifier: path_value_types[i].clone(),
                 path_data: path_datas[i].clone(),
             };
@@ -256,7 +257,7 @@ impl ResultLogger {
         file.write_all(json.as_bytes()).expect("Failed to write data");
     
         // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
-        let best_path_value = result_log[result_log.len()-1].path_value;
+        let best_path_value = &result_log[result_log.len()-1].path_value;
         let result_log_string = format!("{} {} - {}", timestamp, target_node.get_asset_name(), best_path_value);
         let mut file = OpenOptions::new()
             .append(true)
@@ -278,7 +279,7 @@ impl ResultLogger {
             let path_node = PathNode{
                 node_key: node.borrow().get_asset_key(),
                 asset_name: node.borrow().get_asset_name(),
-                path_value: path_values[i].clone(),
+                path_value: path_values[i].to_string(),
                 path_identifier: path_value_types[i].clone(),
                 path_data: path_datas[i].clone(),
             };
@@ -311,7 +312,7 @@ impl ResultLogger {
         file.write_all(json.as_bytes()).expect("Failed to write data");
     
         // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
-        let best_path_value = result_log[result_log.len()-1].path_value;
+        let best_path_value = &result_log[result_log.len()-1].path_value;
         let result_log_string = format!("{} {} - {}", timestamp, target_node.get_asset_name(), best_path_value);
         let mut file = OpenOptions::new()
             .append(true)
@@ -333,7 +334,7 @@ impl ResultLogger {
             let path_node = PathNode{
                 node_key: node.borrow().get_asset_key(),
                 asset_name: node.borrow().get_asset_name(),
-                path_value: path_values[i].clone(),
+                path_value: path_values[i].to_string(),
                 path_identifier: path_value_types[i].clone(),
                 path_data: path_datas[i].clone(),
 
@@ -366,7 +367,7 @@ impl ResultLogger {
         file.write_all(json.as_bytes()).expect("Failed to write data");
     
         // let log_path = format!("result_log.txt", start_node.get_asset_name(), timestamp);
-        let best_path_value = result_log[result_log.len()-1].path_value;
+        let best_path_value = &result_log[result_log.len()-1].path_value;
         let result_log_string = format!("{} {} - {}", timestamp, start_node.get_asset_name(), best_path_value);
         let mut file = OpenOptions::new()
             .append(true)
