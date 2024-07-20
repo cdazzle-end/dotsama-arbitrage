@@ -12,7 +12,7 @@ use bigdecimal::BigDecimal;
 // use token_graph::TokenGraph;
 // use token_graph::calculate_swap;
 use futures::future::join_all;
-
+mod fee_book;
 mod asset_registry_2;
 mod liq_pool_registry_2;
 mod adjacency_table_2;
@@ -605,6 +605,29 @@ pub fn sync_search_default_polkadot(){
 
 }
 
+pub fn one_search_default_polkadot(){
+    let start_key = "2030{\"Token2\":\"0\"}".to_string();
+    let destination_key = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+    // let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
+    // let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
+    // let list = AdjacencyTable2::build_table_2(&lp_registry);
+    // let graph = TokenGraph2::build_graph_2(asset_registry, list);
+
+    // let start_node: &Rc<RefCell<GraphNode>> = &graph.get_node(start_key.clone()).clone();
+    // let start_node_asset_name = start_node.borrow().get_asset_name();
+
+    let input_amount = BigDecimal::from(1);
+    let (value, display, path) = search_best_path_a_to_b_sync_polkadot(start_key, destination_key, input_amount);
+    println!("Display: {}", display);
+    println!("***** Path Nodes *****");
+    for node in path{
+        let path_data: PathData = node.path_data;
+        print!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
+        println!(" || {} {:?} {:?}", path_data.path_type, path_data.lp_id, path_data.xcm_reserve_values);
+    }
+}
+
+
 // ******************* PROBLEM FUNCTION CALLS THIS FUNCTION *************
 pub async fn search_best_path_a_to_b_async(relay: String, start_key: String, destination_key: String, input_amount: BigDecimal) -> (BigDecimal, String, Vec<PathNode>){
     let mut asset_registry;
@@ -771,6 +794,83 @@ pub async fn test_stable_swap(){
 
 
 }
+
+pub async fn test_asset_location(){
+    let mut asset_registry = AssetRegistry2::build_asset_registry();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry(&mut asset_registry);
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    // let graph = TokenGraph2::build_graph_2(&asset_registry, list);
+
+    for(key,value) in &asset_registry.asset_map{
+        // let display_string = key.clone() + " " + &value.iter().map(|x| x.borrow().get_asset_name().to_string()).collect::<Vec<String>>().join(", ");
+        // keys.push(display_string);
+        println!("----------------------");
+        println!("Asset key: {}", key);
+        let asset = value[0].borrow();
+        let asset_location = asset.get_asset_location();
+        // println!("Asset location: {:?}", asset_location);
+        if let Some(location) = asset_location{
+            println!("Asset location: {:?}", location);
+            let chain_id = location.get_parachain_id();
+            println!("Chain id: {:?}", chain_id);
+        }
+    }
+
+
+}
+
+pub async fn test_graph(){
+    let mut asset_registry = AssetRegistry2::build_asset_registry_polkadot();
+    let lp_registry = LiqPoolRegistry2::build_liqpool_registry_polkadot(&mut asset_registry);
+    let list = AdjacencyTable2::build_table_2(&lp_registry);
+    let graph = TokenGraph2::build_graph_2(asset_registry, list);
+
+    // graph.display_bnc_stable_pairs();
+
+    // let asset_key_1 = "{\"Token2\":\"0\"}".to_string();
+    // let asset_key_2 = "{\"VToken2\":\"0\"}".to_string();
+    let asset_key_2 = "INTR".to_string();
+    let asset_key_1 = "IBTC".to_string();
+    let chain_id = 2000;
+    let pool_id = "0".to_string();
+    let input_amount = 1 as f64;
+
+    // graph.calculate_bnc_stable_swap(asset_key_1, asset_key_2, chain_id, pool_id, input_amount);
+    // graph.calculate_aca_stable_swap(asset_key_1, asset_key_2, chain_id, pool_id, input_amount);
+    // println!("Get test asset");
+    // let asset_id = "UNQ";
+    // let asset_id_string = serde_json::to_string(asset_id).unwrap();
+    // let asset_key = "2037".to_string() + asset_id;
+    // let test_asset = graph.asset_registry.get_asset_by_id(2037, asset_key.as_str()).unwrap();
+    let test_node_one = graph.get_asset_by_chain_and_symbol(2032, asset_key_1).unwrap();
+    let test_node_two = graph.get_asset_by_chain_and_symbol(2032, asset_key_2).unwrap();
+
+    let fee_amount = BigInt::from_str("112586400").unwrap();
+
+    println!("Finding path amount from {} {} -> {}", test_node_two.borrow().get_asset_key_and_symbol(), fee_amount, test_node_one.borrow().get_asset_key_and_symbol());
+
+    // let path_amount_between_nodes = graph.get_path_bfs(test_node_two, test_node_one, fee_amount).unwrap();
+    let path_amount = graph.find_path_between_nodes_on_chain(test_node_two, test_node_one, fee_amount).unwrap();
+    println!("Path amount between nodes: {}", path_amount);
+    // test_asset.borrow().display_asset();
+
+    // let asset_location = test_asset.borrow().get_asset_location().unwrap();
+    // println!("Asset location: {:?}", asset_location);
+
+    // let assets_at_location = graph.asset_registry.get_assets_at_location(asset_location);
+    // println!("Assets at location: {}", assets_at_location.len());
+    // for asset in assets_at_location{
+    //     asset.borrow().display_asset();
+    // }
+
+    // graph.asset_registry.display_all_assets();
+
+    
+
+    // graph.display_graph_3();
+    // graph.test_all_fees();
+
+} 
 
 pub async fn test_ticks(){
     let test_tick = BigInt::from(-214375);

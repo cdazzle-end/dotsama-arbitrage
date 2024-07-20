@@ -16,13 +16,13 @@ pub struct AssetRegistry2{
     pub asset_location_map: HashMap<AssetLocation, Vec<AssetPointer>>
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct Asset{
     pub token_data: TokenData,
     pub asset_location: Option<AssetLocation>,
 }
 
-#[derive(PartialEq, Eq, Hash, Clone, Debug)]
+#[derive(PartialEq, Eq, Hash, Clone, Debug, Deserialize, Serialize)]
 pub struct AssetLocation{
     pub here: bool,
     pub xtype: Option<String>,
@@ -37,7 +37,7 @@ pub enum TokenData{
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct MyAssetJson {
-    network: serde_json::Value,
+    network: String,
     chain: u64,
     localId: serde_json::Value,
     name: String,
@@ -126,7 +126,7 @@ impl AssetRegistry2{
     }
 
     pub fn build_asset_registry_polkadot() -> AssetRegistry2{
-        let chains = vec!["aca", "bnc_polkadot", "glmr", "hdx", "para", "other_polkadot"];
+        let chains = vec!["aca", "bnc_polkadot", "glmr", "hdx", "para", "other_polkadot", "glmr_evm", "asset_hub_polkadot"];
         let parsed_files = chains
             .into_iter()
             .map(|chain| {
@@ -143,19 +143,23 @@ impl AssetRegistry2{
             .unwrap();
 
         
-        let path = Path::new("../assets/ignore_list.json");
+        let path = Path::new("../../../polkadot_assets/assets/ignore_list.json");
         let mut buf = vec![];
         let mut file = File::open(path).unwrap();
         file.read_to_end(&mut buf).unwrap();
         let parsed_ignore_file: Value = serde_json::from_str(str::from_utf8(&buf).unwrap()).unwrap();
         let ignore_list_assets: Vec<MyAssetRegistryObject> = serde_json::from_value(parsed_ignore_file).unwrap();
-        let ignore_list_locations: Vec<String> = ignore_list_assets.into_iter().map(|asset| {
+        let ignore_list_locations: Vec<String> = ignore_list_assets.iter().map(|asset| {
             let ignore_asset_location = parse_asset_location(&asset);
             let ignore_asset = Rc::new(RefCell::new(Asset::new(asset.tokenData.clone(), ignore_asset_location)));
             let location_string = ignore_asset.borrow().get_asset_location_string().clone();
             location_string
         }).collect();
-        
+        let ignore_list_asset_keys: Vec<String> = ignore_list_assets.into_iter().map(|asset| {
+            let ignore_asset = Rc::new(RefCell::new(Asset::new(asset.tokenData.clone(), None)));
+            let map_key = ignore_asset.borrow().get_map_key();
+            map_key
+        }).collect();
 
         let mut asset_map: HashMap<String, Vec<AssetPointer>> = HashMap::new();
         let mut asset_location_map: HashMap<AssetLocation, Vec<AssetPointer>> = HashMap::new();
@@ -164,13 +168,24 @@ impl AssetRegistry2{
             for asset in asset_array{
                 let asset_location = parse_asset_location(&asset);
                 // println!("{:?}", asset.tokenData);
-                let new_asset = Rc::new(RefCell::new(Asset::new(asset.tokenData, asset_location)));
+                let mut new_asset = Rc::new(RefCell::new(Asset::new(asset.tokenData, asset_location)));
                 let map_key = new_asset.borrow().get_map_key();
+
+                // *****************************
                 // if ignore_list_locations.contains(&new_asset.borrow().get_asset_location_string()){
                 //     println!("Ignoring asset: {}", map_key);
                 //     println!("asset_location: {:?}", new_asset.borrow().get_asset_location_string());
                 //     continue;
                 // }
+                if ignore_list_asset_keys.contains(&map_key){
+                    println!("Ignoring asset: {}", map_key);
+
+                    // Remove asset location so it wont be added to xcm adjacent nodes
+                    new_asset.borrow_mut().asset_location = None;
+                    // continue;
+                }
+                // ******************************
+
                 asset_map.entry(map_key).or_insert(vec![]).push(new_asset.clone());
 
                 if let Some(location) = new_asset.borrow().asset_location.clone() {
@@ -263,6 +278,8 @@ impl AssetRegistry2{
             println!("{}", key);
         }
     }
+
+    // 
     pub fn get_asset_by_id(&self, chain_id: u64, local_id: &str) -> Option<Rc<RefCell<Asset>>>{
         let map_key = chain_id.to_string() + local_id;
         // self.asset_map.get(&map_key).map(|x| x[0].clone())
@@ -304,6 +321,12 @@ impl Asset{
         match &self.token_data {
             TokenData::MyAsset(data) => &data.symbol,
             TokenData::CexAsset(data) => &data.assetTicker,
+        }
+    }
+    pub fn get_relay_chain(&self) -> String {
+        match &self.token_data {
+            TokenData::MyAsset(data) => data.network.clone(),
+            TokenData::CexAsset(data) => data.chain.clone(),
         }
     }
 
@@ -369,6 +392,17 @@ impl Asset{
             None => String::new()
         }
     }
+
+    pub fn get_origin_chain_id(&self) -> Option<u64> {
+        match &self.asset_location{
+            Some(location) => location.get_parachain_id(),
+            None => None
+        }
+        // match &self.token_data {
+        //     TokenData::MyAsset(data) => Some(data.chain),
+        //     TokenData::CexAsset(_) => None,
+        // }
+    }
     pub fn is_cex_token(&self) -> bool {
         match &self.token_data {
             TokenData::MyAsset(_) => false,
@@ -402,6 +436,21 @@ impl AssetLocation{
     pub fn new(here: bool, xtype: Option<String>, properties: Option<Vec<String>>) -> AssetLocation{
         AssetLocation{
             here, xtype, properties
+        }
+    }
+
+    pub fn get_parachain_id(&self) -> Option<u64> {
+        if self.here {
+            return Some(0);
+        }
+        match &self.properties {
+            Some(properties) => {
+                let parachain_property = properties.iter().find(|x| x.contains("Parachain"));
+                let parachain_id = parachain_property.map(|x| x.split(":").last().unwrap()).unwrap();
+                let parachain_id = parachain_id.replace(['{','}','\\','"'], "").parse::<u64>().unwrap();
+                Some(parachain_id)
+            },
+            None => None,
         }
     }
 }

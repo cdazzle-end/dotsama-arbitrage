@@ -1,0 +1,5 @@
+TRANSFER FEE DATA
+- When xcm transfer an asset, if the fee is taken from the asset being transfered (native chain asset), no need to reserve any amount to reimburse the fee payment later.
+Just subtract it from the edge calculation
+- If the asset transferred is not the fee asset, then when calculating xcm edge, convert the fee amount from the fee asset to an amount of the transferred asset, and reserve it in the wallet to be used
+to swap back to the fee asset later. Log the amount of the asset being reserved, and subtract if from the edge calculation
