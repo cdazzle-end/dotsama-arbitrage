@@ -529,7 +529,7 @@ impl TokenGraph2{
             xcm_reserve_values: vec![],
         };
 
-        starting_node.borrow_mut().path_value_types.push(0);
+        starting_node.borrow_mut().path_value_types.push(PathType::Xcm);
         starting_node.borrow_mut().path_datas.push(path_data);
         starting_node.borrow_mut().best_path.push(Rc::clone(&starting_node));
 
@@ -629,7 +629,7 @@ impl TokenGraph2{
                             adjacent_pair.xcm_node.borrow_mut().path_values = current_node.borrow().path_values.clone();
                             adjacent_pair.xcm_node.borrow_mut().path_values.push(current_node.borrow().best_path_value_display(&self));
                             adjacent_pair.xcm_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
-                            adjacent_pair.xcm_node.borrow_mut().path_value_types.push(0);
+                            adjacent_pair.xcm_node.borrow_mut().path_value_types.push(PathType::Xcm);
 
                             // let reserve_string = reserve_amount.to_string();
                             let xcm_fee_amounts = vec![start_node_fee_amount.to_string(), middle_node_fee_amount.to_string()];
@@ -699,9 +699,9 @@ impl TokenGraph2{
                             };
                             
                             let path_value_type = match dex_type.as_str(){
-                                "Dex" => 1,
-                                "Omnipool" => 4,
-                                _ => 1
+                                "Dex" => PathType::Dex,
+                                "Omnipool" => PathType::Omnipool,
+                                _ => PathType::Xcm
                             };
 
                             adjacent_node.borrow_mut().path_value_types.push(path_value_type);
@@ -759,7 +759,7 @@ impl TokenGraph2{
                             let formatted_path_value = adjacent_node.borrow().best_path_value_display(&self).clone();
                             adjacent_node.borrow_mut().path_values.push(formatted_path_value);
                             adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
-                            adjacent_node.borrow_mut().path_value_types.push(3);
+                            adjacent_node.borrow_mut().path_value_types.push(PathType::DexV3);
 
                             let dex_type = dex_pool.get_dex_type().unwrap();
                             let pool_id = dex_pool.get_pool_id();
@@ -801,7 +801,7 @@ impl TokenGraph2{
                             let formatted_path_value = cex_pair.pool_nodes.borrow().best_path_value_display(&self).clone();
                             cex_pair.pool_nodes.borrow_mut().path_values.push(formatted_path_value);
                             cex_pair.pool_nodes.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
-                            cex_pair.pool_nodes.borrow_mut().path_value_types.push(100);
+                            cex_pair.pool_nodes.borrow_mut().path_value_types.push(PathType::Cex);
                             
                             if !test && !is_destination_node{
                                 node_queue.push_back(Rc::clone(&cex_pair.pool_nodes));
@@ -843,7 +843,7 @@ impl TokenGraph2{
                                 let formatted_path_value = adjacent_node.borrow().best_path_value_display(&self).clone();
                                 adjacent_node.borrow_mut().path_values.push(formatted_path_value);
                                 adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
-                                adjacent_node.borrow_mut().path_value_types.push(2);
+                                adjacent_node.borrow_mut().path_value_types.push(PathType::Stable);
 
                                 let pool_id = stable_pool.get_pool_id();
                                 let new_path_data: PathData = PathData{
@@ -892,7 +892,7 @@ impl TokenGraph2{
                                 let formatted_path_value = adjacent_node.borrow().best_path_value_display(&self).clone();
                                 adjacent_node.borrow_mut().path_values.push(formatted_path_value);
                                 adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
-                                adjacent_node.borrow_mut().path_value_types.push(2);
+                                adjacent_node.borrow_mut().path_value_types.push(PathType::Stable);
 
                                 let pool_id = stable_pair.get_pool_id();
                                 let new_path_data: PathData = PathData{
@@ -940,7 +940,7 @@ impl TokenGraph2{
                                     let formatted_path_value = adjacent_node.borrow().best_path_value_display(&self).clone();
                                     adjacent_node.borrow_mut().path_values.push(formatted_path_value);
                                     adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
-                                    adjacent_node.borrow_mut().path_value_types.push(2);
+                                    adjacent_node.borrow_mut().path_value_types.push(PathType::Stable);
     
                                     let pool_id = stable_share_pool.get_pool_id();
                                     let new_path_data: PathData = PathData{
@@ -982,7 +982,7 @@ impl TokenGraph2{
                                     let formatted_path_value = adjacent_node.borrow().best_path_value_display(&self).clone();
                                     adjacent_node.borrow_mut().path_values.push(formatted_path_value);
                                     adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
-                                    adjacent_node.borrow_mut().path_value_types.push(2);
+                                    adjacent_node.borrow_mut().path_value_types.push(PathType::Stable);
     
                                     let pool_id = stable_share_pool.get_pool_id();
                                     let new_path_data: PathData = PathData{
@@ -1935,6 +1935,25 @@ pub fn add_cross_chain_assets_2(current_node: GraphNodePointer, node_map: &HashM
     }
 }
 //--------------------------------------------------------------------------------------------
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum PathType{
+    Xcm,
+    Dex,
+    Stable,
+    DexV3,
+    Omnipool,
+    Cex
+}
+// This is the object that we log at the end
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PathNode{
+    pub node_key: String,
+    pub asset_name: String,
+    pub path_value: String,
+    pub path_type: PathType, // Path traverseal type. Start, Dex, DexV3, Stable, Cex, Omnipool
+    pub path_data: PathData,
+    // pub path_id: String, // Any extra info like pool ID
+}
 
 #[derive(Debug, PartialEq)]
 pub struct GraphNode{
@@ -1949,10 +1968,14 @@ pub struct GraphNode{
     pub path_edges: Vec<((String,u128),(String, u128))>,
     pub best_path: Vec<GraphNodePointer>,
     pub path_values: Vec<BigDecimal>,
-    pub path_value_types: Vec<u64>,
+    // ** Maybe remove. 0 = Xcm, 1 = Dex,  2 = Stable (All forms of stable), 3 = DexV3 (PathData.path_type = pool name like uni3 or algebra), 4 = Omnipool, 100 = Cex (Not in use atm), 
+    pub path_value_types: Vec<PathType>, // logged as path_identifer
     pub path_datas: Vec<PathData>,
 
 }
+
+// Removing path value types (that indicate path traversal type)
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct PathData{
     pub path_type: String,

@@ -1,3 +1,4 @@
+use crate::token_graph_2::{PathData, PathType};
 use crate::{NodePath, PathNode};
 use std::fs::File;
 use std::io::prelude::*;
@@ -7,6 +8,8 @@ use serde::{Deserialize, Serialize};
 use std::str;
 use std::fs::OpenOptions;
 pub struct ResultLogger;
+
+
 
 impl ResultLogger {
     pub fn log(info: &str) {
@@ -135,7 +138,7 @@ impl ResultLogger {
                 node_key: node.borrow().get_asset_key(),
                 asset_name: node.borrow().get_asset_name(),
                 path_value: path_values[i].to_string(),
-                path_identifier: path_value_types[i].clone(),
+                path_type: path_value_types[i].clone(),
                 path_data: path_datas[i].clone(),
             };
             result_log.push(path_node);
@@ -225,7 +228,7 @@ impl ResultLogger {
                 node_key: node.borrow().get_asset_key(),
                 asset_name: node.borrow().get_asset_name(),
                 path_value: path_values[i].to_string(),
-                path_identifier: path_value_types[i].clone(),
+                path_type: path_value_types[i].clone(),
                 path_data: path_datas[i].clone(),
             };
             println!("{} : {}", node.borrow().get_asset_name(), path_values[i] );
@@ -280,7 +283,7 @@ impl ResultLogger {
                 node_key: node.borrow().get_asset_key(),
                 asset_name: node.borrow().get_asset_name(),
                 path_value: path_values[i].to_string(),
-                path_identifier: path_value_types[i].clone(),
+                path_type: path_value_types[i].clone(),
                 path_data: path_datas[i].clone(),
             };
             println!("{} : {}", node.borrow().get_asset_name(), path_values[i] );
@@ -335,7 +338,7 @@ impl ResultLogger {
                 node_key: node.borrow().get_asset_key(),
                 asset_name: node.borrow().get_asset_name(),
                 path_value: path_values[i].to_string(),
-                path_identifier: path_value_types[i].clone(),
+                path_type: path_value_types[i].clone(),
                 path_data: path_datas[i].clone(),
 
             };

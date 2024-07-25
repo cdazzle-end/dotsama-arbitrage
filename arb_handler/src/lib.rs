@@ -42,19 +42,11 @@ use tokio::{join, task};
 use std::fs::OpenOptions;
 
 use crate::asset_registry_2::Asset;
+use crate::token_graph_2::PathNode;
 // use std::io::prelude::*;
 type NodePath = Vec<Rc<RefCell<GraphNode>>>;
 
-// This is the object that we log at the end
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct PathNode{
-    pub node_key: String,
-    pub asset_name: String,
-    pub path_value: String,
-    pub path_identifier: u64, // 0 - 3 for transfer code
-    pub path_data: PathData,
-    // pub path_id: String, // Any extra info like pool ID
-}
+
 
 // pub fn build_sub_assets(){
 //     AssetRegistry::build_sub_asset_registry_from_file();
@@ -695,7 +687,7 @@ pub fn return_path_nodes(path: NodePath) -> Vec<PathNode> {
             node_key: node.borrow().get_asset_key(),
             asset_name: node.borrow().get_asset_name(),
             path_value: path_values[i].to_string(),
-            path_identifier: path_value_types[i].clone(),
+            path_type: path_value_types[i].clone(),
             path_data: path_datas[i].clone(),
         };
         result_log.push(path_node);

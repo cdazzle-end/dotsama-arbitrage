@@ -52,6 +52,13 @@ async fn main() {
                     .expect("Input amount must be a valid number");
                 async_search_best_path_a_to_b(key_1.to_string(), key_2.to_string(), input_amount_bd, "polkadot".to_string()).await;
             },
+            "search_best_path_a_to_b_polkadot" => {
+                let key_1 = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+                let key_2 = "2000{\"NativeAssetId\":{\"Token\":\"DOT\"}}".to_string();
+                let input_amount_bd = BigDecimal::from_str("1")
+                    .expect("Input amount must be a valid number");
+                async_search_best_path_a_to_b(key_1.to_string(), key_2.to_string(), input_amount_bd, "polkadot".to_string()).await;
+            },
             "fallback_search_a_to_b_kusama" if args.len() == 5 => {
                 let key_1 = &args[2];
                 let key_2 = &args[3];

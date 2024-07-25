@@ -471,37 +471,38 @@ impl LiqPoolRegistry2{
 
                         if lp.as_object().unwrap().contains_key("exchange"){
                             pool_type = PoolType::Cex;
-                            let lp_data: CexLpJson = serde_json::from_value(lp.clone()).map_err(|e| e).unwrap();
-                            let asset = asset_registry.get_asset_by_key(&(lp_data.exchange.clone() + lp_data.assetTicker.as_str())).unwrap();
-                            let usdt = asset_registry.get_asset_by_key(&(lp_data.exchange.clone() + "USDT")).unwrap();
-                            Some(LiqPool2{
-                                chain_id: 0,
-                                exchange: Some(lp_data.exchange),
-                                prices: Some((lp_data.price[0], lp_data.price[1])),
-                                price_decimals: Some((lp_data.priceDecimals[0], lp_data.priceDecimals[1])),
-                                contract_address: None,
-                                pool_id: None,
-                                assets: vec![asset, usdt],
-                                liquidity: vec![],
-                                a: None,
-                                a_precision: None,
-                                token_precisions: None,
-                                total_supply: None,
-                                abi: None,
-                                dex_type: None,
-                                fee_rate: None,
-                                current_tick: None,
-                                active_liquidity: None,
-                                initialized_ticks: None,
-                                lower_ticks: None,
-                                upper_ticks: None,
-                                // pool_id: None,
-                                share_issuance: None,
-                                swap_fee: None,
-                                pool_share_asset: None,
-                                token_rates: None,
-                                token_shares: None
-                            })
+                            // let lp_data: CexLpJson = serde_json::from_value(lp.clone()).map_err(|e| e).unwrap();
+                            // let asset = asset_registry.get_asset_by_key(&(lp_data.exchange.clone() + lp_data.assetTicker.as_str())).unwrap();
+                            // let usdt = asset_registry.get_asset_by_key(&(lp_data.exchange.clone() + "USDT")).unwrap();
+                            // let cex_pool = Some(LiqPool2{
+                            //     chain_id: 0,
+                            //     exchange: Some(lp_data.exchange),
+                            //     prices: Some((lp_data.price[0], lp_data.price[1])),
+                            //     price_decimals: Some((lp_data.priceDecimals[0], lp_data.priceDecimals[1])),
+                            //     contract_address: None,
+                            //     pool_id: None,
+                            //     assets: vec![asset, usdt],
+                            //     liquidity: vec![],
+                            //     a: None,
+                            //     a_precision: None,
+                            //     token_precisions: None,
+                            //     total_supply: None,
+                            //     abi: None,
+                            //     dex_type: None,
+                            //     fee_rate: None,
+                            //     current_tick: None,
+                            //     active_liquidity: None,
+                            //     initialized_ticks: None,
+                            //     lower_ticks: None,
+                            //     upper_ticks: None,
+                            //     // pool_id: None,
+                            //     share_issuance: None,
+                            //     swap_fee: None,
+                            //     pool_share_asset: None,
+                            //     token_rates: None,
+                            //     token_shares: None
+                            // });
+                            None
                         } else if lp.as_object().unwrap().contains_key("a") {
                             pool_type = PoolType::Stable;
                             let lp_data: StableLpJson = serde_json::from_value(lp.clone()).map_err(|e| e).unwrap();
@@ -519,70 +520,70 @@ impl LiqPoolRegistry2{
                                 let stable_pool: StableData = create_stable_pool(&lp_data, asset_registry, relay.clone());
                                 formatted_lps.push(LiquidityPool::Stable(stable_pool));
                             }
-                            let contract_address = lp_data.contractAddress;
-                            let pool_assets = lp_data.poolAssets;
-                            let token_shares = lp_data.tokenShares;
-                            let token_rates = lp_data.tokenRates;
-                            // let total_supply = lp_data.totalSupply;
-                            let liquidity_stats = lp_data.liquidityStats.iter().map(
-                                |x| x.as_str().parse().map_err(|e| e).unwrap()
-                            ).collect();
-                            let assets = pool_assets.into_iter().filter_map(|asset| {
-                                let asset_id = serde_json::to_string(&asset).map_err(|e| e).unwrap();
-                                asset_registry.get_asset_by_id(chain_id, asset_id.as_str())
-                            }).collect::<Vec<_>>();
+                            // let contract_address = lp_data.contractAddress;
+                            // let pool_assets = lp_data.poolAssets;
+                            // let token_shares = lp_data.tokenShares;
+                            // let token_rates = lp_data.tokenRates;
+                            // // let total_supply = lp_data.totalSupply;
+                            // let liquidity_stats = lp_data.liquidityStats.iter().map(
+                            //     |x| x.as_str().parse().map_err(|e| e).unwrap()
+                            // ).collect();
+                            // let assets = pool_assets.into_iter().filter_map(|asset| {
+                            //     let asset_id = serde_json::to_string(&asset).map_err(|e| e).unwrap();
+                            //     asset_registry.get_asset_by_id(chain_id, asset_id.as_str())
+                            // }).collect::<Vec<_>>();
 
-                            let pool_id = lp_data.poolId;
-                            let pool_share_asset = if chain_id == 2034{
-                                // println!("Chain id: {} | Pool ID: {}", chain_id.clone(), pool_id.clone().unwrap());
-                                let asset = asset_registry.get_asset_by_id(chain_id, &serde_json::to_string(&pool_id.clone().unwrap()).unwrap()).unwrap();
-                                Some(asset)
-                            } else {
-                                None
+                            // let pool_id = lp_data.poolId;
+                            // let pool_share_asset = if chain_id == 2034{
+                            //     // println!("Chain id: {} | Pool ID: {}", chain_id.clone(), pool_id.clone().unwrap());
+                            //     let asset = asset_registry.get_asset_by_id(chain_id, &serde_json::to_string(&pool_id.clone().unwrap()).unwrap()).unwrap();
+                            //     Some(asset)
+                            // } else {
+                            //     None
                             
-                            };
-                            let share_issuance = lp_data.shareIssuance;
-                            let swap_fee = lp_data.swapFee;
+                            // };
+                            // let share_issuance = lp_data.shareIssuance;
+                            // let swap_fee = lp_data.swapFee;
 
-                            let formatted_token_rates: Option<Vec<TokenRate>> = match token_rates{
-                                Some(token_rates) => Some(token_rates.iter().map(|y| TokenRate{numerator: y.numerator.parse().map_err(|e| e).unwrap(), denominator: y.denominator.parse().map_err(|e| e).unwrap()}).collect()),
-                                None => None
-                            };
-                            let formatted_token_shares: Option<Vec<u128>> = match token_shares{
-                                Some(token_shares) => Some(token_shares.iter().map(|y| y.parse().map_err(|e| e).unwrap()).collect()),
-                                None => None
-                            };
+                            // let formatted_token_rates: Option<Vec<TokenRate>> = match token_rates{
+                            //     Some(token_rates) => Some(token_rates.iter().map(|y| TokenRate{numerator: y.numerator.parse().map_err(|e| e).unwrap(), denominator: y.denominator.parse().map_err(|e| e).unwrap()}).collect()),
+                            //     None => None
+                            // };
+                            // let formatted_token_shares: Option<Vec<u128>> = match token_shares{
+                            //     Some(token_shares) => Some(token_shares.iter().map(|y| y.parse().map_err(|e| e).unwrap()).collect()),
+                            //     None => None
+                            // };
                             
-                            let pool = Some(LiqPool2 {
-                                chain_id,
-                                contract_address: contract_address.clone(),
-                                pool_id: pool_id.clone(),
-                                assets: assets,
-                                liquidity: liquidity_stats,
-                                a: Some(lp_data.futureA.parse().unwrap()),
-                                a_precision: Some(lp_data.aPrecision),
-                                token_precisions: Some(lp_data.tokenPrecisions),
-                                exchange: None,
-                                prices: None,
-                                price_decimals: None,
-                                total_supply: Some(lp_data.totalSupply.parse().map_err(|e| e).unwrap()),
-                                abi: None,
-                                dex_type: None,
-                                fee_rate: None,
-                                current_tick: None,
-                                active_liquidity: None,
-                                initialized_ticks: None,
-                                lower_ticks: None,
-                                upper_ticks: None,
-                                // pool_id: pool_id,
-                                share_issuance: share_issuance,
-                                swap_fee: Some(swap_fee),
-                                pool_share_asset,
-                                token_shares: formatted_token_shares,
-                                token_rates: formatted_token_rates
+                            // let pool = Some(LiqPool2 {
+                            //     chain_id,
+                            //     contract_address: contract_address.clone(),
+                            //     pool_id: pool_id.clone(),
+                            //     assets: assets,
+                            //     liquidity: liquidity_stats,
+                            //     a: Some(lp_data.futureA.parse().unwrap()),
+                            //     a_precision: Some(lp_data.aPrecision),
+                            //     token_precisions: Some(lp_data.tokenPrecisions),
+                            //     exchange: None,
+                            //     prices: None,
+                            //     price_decimals: None,
+                            //     total_supply: Some(lp_data.totalSupply.parse().map_err(|e| e).unwrap()),
+                            //     abi: None,
+                            //     dex_type: None,
+                            //     fee_rate: None,
+                            //     current_tick: None,
+                            //     active_liquidity: None,
+                            //     initialized_ticks: None,
+                            //     lower_ticks: None,
+                            //     upper_ticks: None,
+                            //     // pool_id: pool_id,
+                            //     share_issuance: share_issuance,
+                            //     swap_fee: Some(swap_fee),
+                            //     pool_share_asset,
+                            //     token_shares: formatted_token_shares,
+                            //     token_rates: formatted_token_rates
 
-                            });
-                            pool
+                            // });
+                            None
                         }  else if lp.as_object().unwrap().contains_key("currentTick") {
                             
                             
@@ -596,11 +597,6 @@ impl LiqPoolRegistry2{
                                 if asset_pointer.is_none(){
                                     asset_not_registered = true;
                                 }
-
-
-                                // if asset_id.starts_with("\"0x"){
-                                //     contains_erc = true;
-                                // }
                             });
                             
                             if !asset_not_registered{
@@ -611,64 +607,65 @@ impl LiqPoolRegistry2{
                             }
 
 
-                            let chain_id = lp_data.chainId;
+                            // let chain_id = lp_data.chainId;
 
-                            // println!("Adding {} LP", chain_id.clone());
-                            let dex_type = lp_data.dexType;
-                            let contract_address = lp_data.contractAddress;
-                            let abi = lp_data.abi;
-                            let pool_assets = lp_data.poolAssets;
-                            let liquidity_stats = lp_data.liquidityStats;
-                            let fee_rate = lp_data.feeRate;
-                            let current_tick = lp_data.currentTick;
-                            let active_liquidity = lp_data.activeLiquidity;
-                            let lower_tick_data = lp_data.lowerTicks;
-                            let upper_tick_data = lp_data.upperTicks;
-                            // println!("Lower tick data: {:?}", lower_tick_data);
-                            // println!("Upper tick data: {:?}", upper_tick_data);
+                            // // println!("Adding {} LP", chain_id.clone());
+                            // let dex_type = lp_data.dexType;
+                            // let contract_address = lp_data.contractAddress;
+                            // let abi = lp_data.abi;
+                            // let pool_assets = lp_data.poolAssets;
+                            // let liquidity_stats = lp_data.liquidityStats;
+                            // let fee_rate = lp_data.feeRate;
+                            // let current_tick = lp_data.currentTick;
+                            // let active_liquidity = lp_data.activeLiquidity;
+                            // let lower_tick_data = lp_data.lowerTicks;
+                            // let upper_tick_data = lp_data.upperTicks;
+                            // // println!("Lower tick data: {:?}", lower_tick_data);
+                            // // println!("Upper tick data: {:?}", upper_tick_data);
 
-                            let lower_ticks = lower_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.clone(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
-                            let upper_ticks = upper_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.clone(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
+                            // let lower_ticks = lower_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.clone(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
+                            // let upper_ticks = upper_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.clone(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
                             
-                            // let liquidity_0 = liquidity_stats[0].as_str().parse().map_err(|e| e).unwrap();
-                            // let liquidity_1 = liquidity_stats[1].as_str().parse().map_err(|e| e).unwrap();
-                            let assets = pool_assets.into_iter().filter_map(|asset| {
-                                let asset_id = serde_json::to_string(&asset).map_err(|e| e).unwrap();
-                                asset_registry.get_asset_by_id(chain_id, asset_id.as_str())
-                            }).collect::<Vec<_>>();
-                            if assets.len() == 2 {
-                                Some(LiqPool2 {
-                                    chain_id,
-                                    contract_address: contract_address.clone(),
-                                    pool_id: contract_address.clone(),
-                                    assets: vec![assets[0].clone(), assets[1].clone()],
-                                    liquidity: vec![0],
-                                    exchange: None,
-                                    prices: None,
-                                    price_decimals: None,
-                                    a: None,
-                                    a_precision: None,
-                                    token_precisions: None,
-                                    total_supply: None,
-                                    abi: Some(abi.unwrap()),
-                                    dex_type: Some(dex_type),
-                                    fee_rate: fee_rate,
-                                    current_tick: Some(current_tick.unwrap().parse().map_err(|e| e).unwrap()),
-                                    active_liquidity: active_liquidity,
-                                    initialized_ticks: lp_data.initializedTicks,
-                                    lower_ticks: lower_ticks,
-                                    upper_ticks: upper_ticks,
-                                    // pool_id: None,
-                                    share_issuance: None,
-                                    swap_fee: None,
-                                    pool_share_asset: None,
-                                    token_shares: None,
-                                    token_rates: None
+                            // // let liquidity_0 = liquidity_stats[0].as_str().parse().map_err(|e| e).unwrap();
+                            // // let liquidity_1 = liquidity_stats[1].as_str().parse().map_err(|e| e).unwrap();
+                            // let assets = pool_assets.into_iter().filter_map(|asset| {
+                            //     let asset_id = serde_json::to_string(&asset).map_err(|e| e).unwrap();
+                            //     asset_registry.get_asset_by_id(chain_id, asset_id.as_str())
+                            // }).collect::<Vec<_>>();
+                            // if assets.len() == 2 {
+                            //     let pool = Some(LiqPool2 {
+                            //         chain_id,
+                            //         contract_address: contract_address.clone(),
+                            //         pool_id: contract_address.clone(),
+                            //         assets: vec![assets[0].clone(), assets[1].clone()],
+                            //         liquidity: vec![0],
+                            //         exchange: None,
+                            //         prices: None,
+                            //         price_decimals: None,
+                            //         a: None,
+                            //         a_precision: None,
+                            //         token_precisions: None,
+                            //         total_supply: None,
+                            //         abi: Some(abi.unwrap()),
+                            //         dex_type: Some(dex_type),
+                            //         fee_rate: fee_rate,
+                            //         current_tick: Some(current_tick.unwrap().parse().map_err(|e| e).unwrap()),
+                            //         active_liquidity: active_liquidity,
+                            //         initialized_ticks: lp_data.initializedTicks,
+                            //         lower_ticks: lower_ticks,
+                            //         upper_ticks: upper_ticks,
+                            //         // pool_id: None,
+                            //         share_issuance: None,
+                            //         swap_fee: None,
+                            //         pool_share_asset: None,
+                            //         token_shares: None,
+                            //         token_rates: None
                                     
-                                })
-                            } else {
-                                None
-                            }
+                            //     });
+                            None
+                            // } else {
+                            //     None
+                            // }
                         } else {
                             let lp_data: MyLpJson = serde_json::from_value(lp.clone()).map_err(|e| e).unwrap();
                             // println!("{:?}", lp_data.clone());
@@ -684,10 +681,6 @@ impl LiqPoolRegistry2{
                                     if asset_pointer.is_none(){
                                         asset_not_registered = true;
                                     }
-                                
-                                    // if asset_id.starts_with("\"0x"){
-                                    //     contains_erc = true;
-                                    // }
                                 });
                                 if !asset_not_registered{
                                     let glmr_dex: DexData = create_dex_pool(&lp_data, asset_registry, relay.clone());
@@ -703,66 +696,60 @@ impl LiqPoolRegistry2{
 
 
                             // println!("Adding {} LP", chain_id.clone());
-                            let dex_type = lp_data.dexType;
-                            let contract_address = lp_data.contractAddress;
-                            // let abi = lp_data.abi;
-                            let pool_assets = lp_data.poolAssets;
-                            let liquidity_stats = lp_data.liquidityStats;
+                            // let dex_type = lp_data.dexType;
+                            // let contract_address = lp_data.contractAddress;
+                            // // let abi = lp_data.abi;
+                            // let pool_assets = lp_data.poolAssets;
+                            // let liquidity_stats = lp_data.liquidityStats;
   
-                            let liquidity_0 = liquidity_stats[0].as_str().parse().map_err(|e| e).unwrap();
-                            // println!("{}", liquidity_0);
-                            let liquidity_1 = liquidity_stats[1].as_str().parse().map_err(|e| e).unwrap();
-                            // println!("{}", liquidity_1);
-                            let assets = pool_assets.into_iter().filter_map(|asset| {
-                                let asset_id = serde_json::to_string(&asset).map_err(|e| e).unwrap();
-                                let asset_by_id = asset_registry.get_asset_by_id(chain_id, asset_id.as_str());
+                            // let liquidity_0 = liquidity_stats[0].as_str().parse().map_err(|e| e).unwrap();
+                            // // println!("{}", liquidity_0);
+                            // let liquidity_1 = liquidity_stats[1].as_str().parse().map_err(|e| e).unwrap();
+                            // // println!("{}", liquidity_1);
+                            // let assets = pool_assets.into_iter().filter_map(|asset| {
+                            //     let asset_id = serde_json::to_string(&asset).map_err(|e| e).unwrap();
+                            //     let asset_by_id = asset_registry.get_asset_by_id(chain_id, asset_id.as_str());
                                 
-                                asset_by_id
-                            }).collect::<Vec<_>>();
-                            if assets.len() == 2 {
-                                Some(LiqPool2 {
-                                    chain_id,
-                                    contract_address: contract_address.clone(),
-                                    pool_id: contract_address.clone(),
-                                    assets: vec![assets[0].clone(), assets[1].clone()],
-                                    liquidity: vec![liquidity_0, liquidity_1],
-                                    exchange: None,
-                                    prices: None,
-                                    price_decimals: None,
-                                    a: None,
-                                    a_precision: None,
-                                    token_precisions: None,
-                                    total_supply: None,
-                                    abi: None,
-                                    dex_type: Some(dex_type),
-                                    fee_rate: None,
-                                    current_tick: None,
-                                    active_liquidity: None,
-                                    initialized_ticks: None,
-                                    lower_ticks: None,
-                                    upper_ticks: None,
-                                    // pool_id: None,
-                                    share_issuance: None,
-                                    swap_fee: None,
-                                    pool_share_asset: None,
-                                    token_shares: None,
-                                    token_rates: None
+                            //     asset_by_id
+                            // }).collect::<Vec<_>>();
+                            // if assets.len() == 2 {
+                            //     Some(LiqPool2 {
+                            //         chain_id,
+                            //         contract_address: contract_address.clone(),
+                            //         pool_id: contract_address.clone(),
+                            //         assets: vec![assets[0].clone(), assets[1].clone()],
+                            //         liquidity: vec![liquidity_0, liquidity_1],
+                            //         exchange: None,
+                            //         prices: None,
+                            //         price_decimals: None,
+                            //         a: None,
+                            //         a_precision: None,
+                            //         token_precisions: None,
+                            //         total_supply: None,
+                            //         abi: None,
+                            //         dex_type: Some(dex_type),
+                            //         fee_rate: None,
+                            //         current_tick: None,
+                            //         active_liquidity: None,
+                            //         initialized_ticks: None,
+                            //         lower_ticks: None,
+                            //         upper_ticks: None,
+                            //         // pool_id: None,
+                            //         share_issuance: None,
+                            //         swap_fee: None,
+                            //         pool_share_asset: None,
+                            //         token_shares: None,
+                            //         token_rates: None
 
-                                })
-                            } else {
+                            //     })
+                            // } else {
                                 // println!("ELSE");
                                 None
-                            }
+                            // }
                         }
                         
                     }).collect::<Vec<_>>()
             }).collect::<Vec<_>>();
-
-            for pool in &lps{
-                if pool.chain_id == 2034{
-                    // pool.display_pool();
-                }
-            }
 
         LiqPoolRegistry2 { liq_pools: lps, lp_registry_reworked: formatted_lps }
     }
