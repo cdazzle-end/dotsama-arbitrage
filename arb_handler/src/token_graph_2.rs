@@ -762,6 +762,9 @@ impl TokenGraph2{
                             adjacent_node.borrow_mut().path_value_types.push(PathType::DexV3);
 
                             // REVIEW Dex type is == abi, so for V3 its algebra or uni3
+                            // Dex type should be PathType::DexV3
+                            // abi should be type of v3 pool
+                            // PathData.path_type should be abi
                             let dex_type = dex_pool.get_dex_type().unwrap();
                             let pool_id = dex_pool.get_pool_id();
                             let new_path_data: PathData = PathData{
@@ -2073,6 +2076,15 @@ pub trait Pool {
         match &self.get_liquidity(){
             LiquidityPool::Dex(pool_data) => Some(pool_data.dex_type.clone()),
             LiquidityPool::DexV3(pool_data) => pool_data.dex_type.clone(),
+            _ => panic!("Tried to get dex type from non-dex or dex3 liquidity"),
+        }
+    }
+
+    // REVIEW Should reformat GlmrLp to make dexType be DexV2 and include an abi like in dex3
+    fn get_abi(&self) -> Option<String>{
+        match &self.get_liquidity(){
+            LiquidityPool::Dex(pool_data) => Some(pool_data.dex_type.clone()),
+            LiquidityPool::DexV3(pool_data) => pool_data.abi.clone(),
             _ => panic!("Tried to get dex type from non-dex or dex3 liquidity"),
         }
     }
