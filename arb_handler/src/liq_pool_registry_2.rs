@@ -606,62 +606,6 @@ impl LiqPoolRegistry2{
                                 println!("Filter GLMR erc pool")
                             }
 
-
-                            // let chain_id = lp_data.chainId;
-
-                            // // println!("Adding {} LP", chain_id.clone());
-                            // let dex_type = lp_data.dexType;
-                            // let contract_address = lp_data.contractAddress;
-                            // let abi = lp_data.abi;
-                            // let pool_assets = lp_data.poolAssets;
-                            // let liquidity_stats = lp_data.liquidityStats;
-                            // let fee_rate = lp_data.feeRate;
-                            // let current_tick = lp_data.currentTick;
-                            // let active_liquidity = lp_data.activeLiquidity;
-                            // let lower_tick_data = lp_data.lowerTicks;
-                            // let upper_tick_data = lp_data.upperTicks;
-                            // // println!("Lower tick data: {:?}", lower_tick_data);
-                            // // println!("Upper tick data: {:?}", upper_tick_data);
-
-                            // let lower_ticks = lower_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.clone(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
-                            // let upper_ticks = upper_tick_data.as_ref().map(|x| x.iter().map(|y| TickData{tick: y.tick.clone(), liquidity_delta: y.liquidityDelta.as_str().parse().map_err(|e| e).unwrap()}).collect());
-                            
-                            // // let liquidity_0 = liquidity_stats[0].as_str().parse().map_err(|e| e).unwrap();
-                            // // let liquidity_1 = liquidity_stats[1].as_str().parse().map_err(|e| e).unwrap();
-                            // let assets = pool_assets.into_iter().filter_map(|asset| {
-                            //     let asset_id = serde_json::to_string(&asset).map_err(|e| e).unwrap();
-                            //     asset_registry.get_asset_by_id(chain_id, asset_id.as_str())
-                            // }).collect::<Vec<_>>();
-                            // if assets.len() == 2 {
-                            //     let pool = Some(LiqPool2 {
-                            //         chain_id,
-                            //         contract_address: contract_address.clone(),
-                            //         pool_id: contract_address.clone(),
-                            //         assets: vec![assets[0].clone(), assets[1].clone()],
-                            //         liquidity: vec![0],
-                            //         exchange: None,
-                            //         prices: None,
-                            //         price_decimals: None,
-                            //         a: None,
-                            //         a_precision: None,
-                            //         token_precisions: None,
-                            //         total_supply: None,
-                            //         abi: Some(abi.unwrap()),
-                            //         dex_type: Some(dex_type),
-                            //         fee_rate: fee_rate,
-                            //         current_tick: Some(current_tick.unwrap().parse().map_err(|e| e).unwrap()),
-                            //         active_liquidity: active_liquidity,
-                            //         initialized_ticks: lp_data.initializedTicks,
-                            //         lower_ticks: lower_ticks,
-                            //         upper_ticks: upper_ticks,
-                            //         // pool_id: None,
-                            //         share_issuance: None,
-                            //         swap_fee: None,
-                            //         pool_share_asset: None,
-                            //         token_shares: None,
-                            //         token_rates: None
-                                    
-                            //     });
                             None
                             // } else {
                             //     None
