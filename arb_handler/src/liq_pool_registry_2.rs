@@ -827,6 +827,7 @@ pub fn create_dex_pool(pool_json: &MyLpJson, asset_registry: &AssetRegistry2, re
 
 }
 
+// REVIEW V3 pool dex types. Should  be DexV3, and abi should be further specification. And should be consistant across program.
 pub fn create_dex_v3_pool(pool_json: &MyLpJson, asset_registry: &AssetRegistry2, relay: Relay) -> DexV3Data{
     
     let chain_id = pool_json.chainId;
