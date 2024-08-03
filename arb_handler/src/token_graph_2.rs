@@ -761,7 +761,7 @@ impl TokenGraph2{
                             adjacent_node.borrow_mut().path_value_types = current_node.borrow().path_value_types.clone();
                             adjacent_node.borrow_mut().path_value_types.push(PathType::DexV3);
 
-                            // REVIEW Dex type 
+                            // REVIEW Dex type is == abi, so for V3 its algebra or uni3
                             let dex_type = dex_pool.get_dex_type().unwrap();
                             let pool_id = dex_pool.get_pool_id();
                             let new_path_data: PathData = PathData{
