@@ -722,14 +722,7 @@ impl TokenGraph2{
                         }
                     },
                     NodePool::DexV3(dex_pool) =>  {
-                        // println!("Dex V3: {:?}", dex_pool.get_pool_id());
-                        // dex_pool.pool_nodes.iter().for_each(|node| {
-                        //     print!("{} {} | ", node.borrow().asset_key, node.borrow().get_asset_symbol());
-                        // });
-                        // println!("");
                         let path_value = calculate_dex_edge( node_pool, current_node.borrow().best_path_value.clone());
-
-
 
                         let input_index = dex_pool.base_asset_index;
                         let output_index = match input_index {
