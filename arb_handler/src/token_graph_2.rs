@@ -2726,6 +2726,14 @@ pub fn calculate_origin_xcm_edge(
                     None => panic!("Token graph cannot find asset node for Chain ID(Origin): {} | ID(fee_asset): {}", origin_node.borrow().get_chain_id(), fee_data.get_fee_asset_id()),
                 };
                 deposit_fee_amount = BigInt::from_str(fee_data.feeAmount.unwrap().as_str()).unwrap();
+
+                if deposit_fee_node.as_ptr().eq(&origin_node.as_ptr()){
+                    // fee_amount_to_subtract = transfer_fee_amount.clone();
+                    total_fees += deposit_fee_amount.clone();
+                } else {
+                    reserve_amount = token_graph.convert_transfer_fee_amount_to_current_node(deposit_fee_node.clone(), current_node.clone(), transfer_fee_amount.clone());
+                    total_fees += reserve_amount.clone();
+                }
             },
             None => {
 
