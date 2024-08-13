@@ -2719,7 +2719,11 @@ pub fn calculate_origin_xcm_edge(
         let deposit_fee_data = fee_book.get_deposit_fee_data(origin_node.clone());
         match deposit_fee_data {
             Some(fee_data) => {
-
+                let deposit_fee_node_option = token_graph.get_asset_by_chain_and_id(origin_node.borrow().get_chain_id(), fee_data.get_fee_asset_id());
+                let deposit_fee_node = match deposit_fee_node_option {
+                    Some(node) => node,
+                    None => panic!("Token graph cannot find asset node for Chain ID(Origin): {} | ID(fee_asset): {}", origin_node.borrow().get_chain_id(), fee_data.get_fee_asset_id()),
+                };
             },
             None => {
 
