@@ -600,7 +600,7 @@ impl TokenGraph2{
                         // ************** Deposit fee data **************
                         // Get deposit fee data and subtract it from total output
                         // FUCKen unless deposit fee is different asset, ex Transferring multiassets from hydra -> asset hub
-                        // Then needs to be treated similar 
+                        // Then needs to be treated similar to transfer fee data when fee is different
                         let deposit_fee_data = &self.fee_book.get_deposit_fee_data(adjacent_pair.xcm_node.clone());
                         let mut deposit_fee_amount = BigInt::zero();
                         if let Some(deposit_fee_data) = deposit_fee_data{
