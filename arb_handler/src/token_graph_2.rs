@@ -2715,6 +2715,17 @@ pub fn calculate_origin_xcm_edge(
     let mut transfer_fee_amount = BigInt::from(0);
     // Account for fees from transfer through home chain
     if start_chain != asset_origin_chain && dest_chain != asset_origin_chain {
+        // Get deposit data. If fee asset is different then transferred asset, calculate reserve. Else subtract fee normally 
+        let deposit_fee_data = fee_book.get_deposit_fee_data(origin_node.clone());
+        match deposit_fee_data {
+            Some(fee_data) => {
+
+            },
+            None => {
+
+            }
+        }
+
         let deposit_fee_amount: BigInt = match fee_book.get_deposit_fee_data(origin_node.clone()) {
             Some(fee_data) => {
                 BigInt::from_str(fee_data.feeAmount.unwrap().as_str()).unwrap()
