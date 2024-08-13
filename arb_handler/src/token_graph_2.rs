@@ -2724,6 +2724,7 @@ pub fn calculate_origin_xcm_edge(
                     Some(node) => node,
                     None => panic!("Token graph cannot find asset node for Chain ID(Origin): {} | ID(fee_asset): {}", origin_node.borrow().get_chain_id(), fee_data.get_fee_asset_id()),
                 };
+                transfer_fee_amount = BigInt::from_str(fee_data.feeAmount.unwrap().as_str()).unwrap();
             },
             None => {
 
