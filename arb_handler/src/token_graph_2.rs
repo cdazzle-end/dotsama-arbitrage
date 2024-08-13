@@ -2712,6 +2712,7 @@ pub fn calculate_origin_xcm_edge(
 
     let mut total_fees = BigInt::from(0);
     let mut reserve_amount = BigInt::from(0);
+    let mut deposit_fee_amount = BigInt::from(0);
     let mut transfer_fee_amount = BigInt::from(0);
     // Account for fees from transfer through home chain
     if start_chain != asset_origin_chain && dest_chain != asset_origin_chain {
@@ -2724,7 +2725,7 @@ pub fn calculate_origin_xcm_edge(
                     Some(node) => node,
                     None => panic!("Token graph cannot find asset node for Chain ID(Origin): {} | ID(fee_asset): {}", origin_node.borrow().get_chain_id(), fee_data.get_fee_asset_id()),
                 };
-                transfer_fee_amount = BigInt::from_str(fee_data.feeAmount.unwrap().as_str()).unwrap();
+                deposit_fee_amount = BigInt::from_str(fee_data.feeAmount.unwrap().as_str()).unwrap();
             },
             None => {
 
