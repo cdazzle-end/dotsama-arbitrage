@@ -595,7 +595,14 @@ impl TokenGraph2{
                         // println!("1.(T) fee: {} | reserve: {}", fee_amount_to_subtract, start_node_reserve_amount);
 
                         let asset_origin_node = self.get_asset_origin_node(current_node.clone()).unwrap();
-                        let (mut xcm_output_amount, middle_node_reserve_amount, middle_node_fee_amount) = calculate_origin_xcm_edge(&self, &self.fee_book, current_node.clone(), asset_origin_node.clone(), adjacent_pair, xcm_input_amount.clone());
+                        let (mut xcm_output_amount, middle_node_reserve_amount, middle_node_fee_amount) = calculate_origin_xcm_edge(
+                            &self,
+                            &self.fee_book, 
+                            current_node.clone(), 
+                            asset_origin_node.clone(), 
+                            adjacent_pair, 
+                            xcm_input_amount.clone()
+                        );
 
                         // ************** Deposit fee data **************
                         // Get deposit fee data and subtract it from total output
