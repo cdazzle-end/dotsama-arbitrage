@@ -595,7 +595,7 @@ impl TokenGraph2{
                         // println!("1.(T) fee: {} | reserve: {}", fee_amount_to_subtract, start_node_reserve_amount);
 
                         let asset_origin_node = self.get_asset_origin_node(current_node.clone()).unwrap();
-                        let (mut xcm_output_amount, middle_node_reserve_amount, middle_node_fee_amount) = calculate_origin_xcm_edge(
+                        let (mut xcm_output_amount, middle_node_reserve_amount, middle_node_fee_amount, middle_node_deposit_reserve) = calculate_origin_xcm_edge(
                             &self,
                             &self.fee_book, 
                             current_node.clone(), 
@@ -603,6 +603,8 @@ impl TokenGraph2{
                             adjacent_pair, 
                             xcm_input_amount.clone()
                         );
+
+                        // 
 
                         // ************** Deposit fee data **************
                         // Get deposit fee data and subtract it from total output
@@ -2690,7 +2692,7 @@ pub fn calculate_origin_xcm_edge(
     origin_node: GraphNodePointer, 
     adjacent_pair: &Xcm, 
     input_amount: BigInt
-    ) -> (BigInt, BigInt, BigInt){
+    ) -> (BigInt, BigInt, BigInt, BigInt){ // Returns total_xcm_output (after fee deduction), transfer_reserve_amount, transfer_fee_amount, deposit_reserve_amount
     let relay_chain = current_node.borrow().get_relay_chain();
     let start_chain = current_node.borrow().get_chain_id();
     let dest_chain = adjacent_pair.xcm_node.borrow().get_chain_id();
@@ -2716,43 +2718,39 @@ pub fn calculate_origin_xcm_edge(
     let mut deposit_fee_amount = BigInt::from(0);
     let mut transfer_fee_amount = BigInt::from(0);
     // Account for fees from transfer through home chain
+    // If not transferring through home chain then skip fee deductions for this section
     if start_chain != asset_origin_chain && dest_chain != asset_origin_chain {
         // Get deposit data. If fee asset is different then transferred asset, calculate reserve. Else subtract fee normally from transferred amount
+        // If no deposit fee data then skip
         let deposit_fee_data = fee_book.get_deposit_fee_data(origin_node.clone());
-        match deposit_fee_data {
-            Some(fee_data) => {
-                let deposit_fee_node_option = token_graph.get_asset_by_chain_and_id(origin_node.borrow().get_chain_id(), fee_data.get_fee_asset_id());
-                let deposit_fee_node = match deposit_fee_node_option {
-                    Some(node) => node,
-                    None => panic!("Token graph cannot find asset node for Chain ID(Origin): {} | ID(fee_asset): {}", origin_node.borrow().get_chain_id(), fee_data.get_fee_asset_id()),
-                };
-                deposit_fee_amount = BigInt::from_str(fee_data.feeAmount.unwrap().as_str()).unwrap();
+        if let Some(fee_data) = deposit_fee_data {
+            let deposit_fee_node_option = token_graph.get_asset_by_chain_and_id(origin_node.borrow().get_chain_id(), fee_data.get_fee_asset_id());
+            let deposit_fee_node = match deposit_fee_node_option {
+                Some(node) => node,
+                None => panic!("Token graph cannot find asset node for Chain ID(Origin): {} | ID(fee_asset): {}", origin_node.borrow().get_chain_id(), fee_data.get_fee_asset_id()),
+            };
+            deposit_fee_amount = BigInt::from_str(fee_data.feeAmount.unwrap().as_str()).unwrap();
 
-                if deposit_fee_node.as_ptr().eq(&origin_node.as_ptr()){
-                    // fee_amount_to_subtract = transfer_fee_amount.clone();
-                    total_fees += deposit_fee_amount.clone();
-                } else {
-                    deposit_reserve_amount = token_graph.convert_transfer_fee_amount_to_current_node(deposit_fee_node.clone(), current_node.clone(), transfer_fee_amount.clone());
-                    total_fees += deposit_reserve_amount.clone();
-                }
-            },
-            None => {
-
+            if deposit_fee_node.as_ptr().eq(&origin_node.as_ptr()){
+                // fee_amount_to_subtract = transfer_fee_amount.clone();
+                total_fees += deposit_fee_amount.clone();
+            } else {
+                deposit_reserve_amount = token_graph.convert_transfer_fee_amount_to_current_node(deposit_fee_node.clone(), current_node.clone(), deposit_fee_amount.clone());
+                total_fees += deposit_reserve_amount.clone();
             }
         }
 
-        let deposit_fee_amount: BigInt = match fee_book.get_deposit_fee_data(origin_node.clone()) {
-            Some(fee_data) => {
-                BigInt::from_str(fee_data.feeAmount.unwrap().as_str()).unwrap()
-            }, 
-            None => BigInt::from(0)
-        };
-        // println!("2. (D) fee: {}", deposit_fee_amount);
-        total_fees += deposit_fee_amount;
 
+        // let deposit_fee_amount: BigInt = match fee_book.get_deposit_fee_data(origin_node.clone()) {
+        //     Some(fee_data) => {
+        //         BigInt::from_str(fee_data.feeAmount.unwrap().as_str()).unwrap()
+        //     }, 
+        //     None => BigInt::from(0)
+        // };
+        // total_fees += deposit_fee_amount;
+
+        // If no transfer fee data then skip
         let transfer_fee_data = fee_book.get_transfer_fee_data(origin_node.clone());
-        let mut fee_amount_to_subtract = BigInt::from(0);
-
         if let Some(fee_data) = transfer_fee_data {
             let transfer_fee_node_option = token_graph.get_asset_by_chain_and_id(origin_node.borrow().get_chain_id(), fee_data.get_fee_asset_id());
             let transfer_fee_node = match transfer_fee_node_option {
@@ -2771,8 +2769,9 @@ pub fn calculate_origin_xcm_edge(
             }
         };
 
-        // println!("2. (T) fee: {} | reserve: {}", fee_amount_to_subtract, reserve_amount);
     }
+
+
 
     // if start_chain == asset_origin_chain || dest_chain == asset_origin_chain {
     //     // Transfer is away from home chain, or to home chain
@@ -2785,7 +2784,7 @@ pub fn calculate_origin_xcm_edge(
 
 
     let xcm_output = input_amount.checked_sub(&total_fees).unwrap();
-    (xcm_output, transfer_reserve_amount, transfer_fee_amount)
+    (xcm_output, transfer_reserve_amount, transfer_fee_amount, deposit_reserve_amount)
 }
 
 pub fn get_sqrt_ratio_at_tick(tick: i32) -> BigInt {
