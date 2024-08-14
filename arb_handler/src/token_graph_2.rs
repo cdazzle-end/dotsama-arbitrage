@@ -2711,7 +2711,8 @@ pub fn calculate_origin_xcm_edge(
     let data: HashMap<String, XcmFeeData> = serde_json::from_str(&file_content).unwrap();
 
     let mut total_fees = BigInt::from(0);
-    let mut reserve_amount = BigInt::from(0);
+    let mut deposit_reserve_amount = BigInt::from(0);
+    let mut transfer_reserve_amount = BigInt::from(0);
     let mut deposit_fee_amount = BigInt::from(0);
     let mut transfer_fee_amount = BigInt::from(0);
     // Account for fees from transfer through home chain
@@ -2731,8 +2732,8 @@ pub fn calculate_origin_xcm_edge(
                     // fee_amount_to_subtract = transfer_fee_amount.clone();
                     total_fees += deposit_fee_amount.clone();
                 } else {
-                    reserve_amount = token_graph.convert_transfer_fee_amount_to_current_node(deposit_fee_node.clone(), current_node.clone(), transfer_fee_amount.clone());
-                    total_fees += reserve_amount.clone();
+                    deposit_reserve_amount = token_graph.convert_transfer_fee_amount_to_current_node(deposit_fee_node.clone(), current_node.clone(), transfer_fee_amount.clone());
+                    total_fees += deposit_reserve_amount.clone();
                 }
             },
             None => {
@@ -2765,8 +2766,8 @@ pub fn calculate_origin_xcm_edge(
                 // fee_amount_to_subtract = transfer_fee_amount.clone();
                 total_fees += transfer_fee_amount.clone();
             } else {
-                reserve_amount = token_graph.convert_transfer_fee_amount_to_current_node(transfer_fee_node.clone(), current_node.clone(), transfer_fee_amount.clone());
-                total_fees += reserve_amount.clone();
+                transfer_reserve_amount = token_graph.convert_transfer_fee_amount_to_current_node(transfer_fee_node.clone(), current_node.clone(), transfer_fee_amount.clone());
+                total_fees += transfer_reserve_amount.clone();
             }
         };
 
@@ -2784,7 +2785,7 @@ pub fn calculate_origin_xcm_edge(
 
 
     let xcm_output = input_amount.checked_sub(&total_fees).unwrap();
-    (xcm_output, reserve_amount, transfer_fee_amount)
+    (xcm_output, transfer_reserve_amount, transfer_fee_amount)
 }
 
 pub fn get_sqrt_ratio_at_tick(tick: i32) -> BigInt {
