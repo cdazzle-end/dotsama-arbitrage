@@ -573,29 +573,29 @@ impl TokenGraph2{
                         // Transfer Data: (fee) When fee asset is native, subtract fee from output amount
                         // Transfer Data: (reserve) subtract as fee, but also log
                         let transfer_fee_data = &self.fee_book.get_transfer_fee_data(current_node.clone());
-                        let mut start_node_reserve_amount = BigInt::zero();
-                        let mut start_node_fee_amount = BigInt::zero();
+                        let mut start_node_transfer_reserve_amount = BigInt::zero();
+                        let mut start_node_transfer_fee_amount = BigInt::zero();
                         // let mut fee_amount_to_subtract = BigInt::zero();
 
                         // If transfer fee exists in fee book
                         if let Some(fee_data) = transfer_fee_data {
                             let fee_node = &self.get_asset_by_chain_and_id(current_node.borrow().get_chain_id(), fee_data.get_fee_asset_id()).unwrap();
-                            start_node_fee_amount = BigInt::from_str(fee_data.clone().feeAmount.unwrap().as_str()).unwrap();
+                            start_node_transfer_fee_amount = BigInt::from_str(fee_data.clone().feeAmount.unwrap().as_str()).unwrap();
 
                             // println!("Fee node: {} | Current node: {}", fee_node.borrow().asset_key, current_node.borrow().asset_key);
                             if fee_node.as_ptr().eq(&current_node.as_ptr()){
                                 // start_node_fee_amount = fee_amount.clone();
-                                xcm_input_amount = xcm_input_amount.clone() - start_node_fee_amount.clone();
+                                xcm_input_amount = xcm_input_amount.clone() - start_node_transfer_fee_amount.clone();
                             } else {
                             // transfer asset != fee asset
-                                start_node_reserve_amount = self.convert_transfer_fee_amount_to_current_node(fee_node.clone(), current_node.clone(), start_node_fee_amount.clone());
-                                xcm_input_amount = xcm_input_amount.clone() - start_node_reserve_amount.clone();
+                                start_node_transfer_reserve_amount = self.convert_transfer_fee_amount_to_current_node(fee_node.clone(), current_node.clone(), start_node_transfer_fee_amount.clone());
+                                xcm_input_amount = xcm_input_amount.clone() - start_node_transfer_reserve_amount.clone();
                             }
                         }
                         // println!("1.(T) fee: {} | reserve: {}", fee_amount_to_subtract, start_node_reserve_amount);
 
                         let asset_origin_node = self.get_asset_origin_node(current_node.clone()).unwrap();
-                        let (mut xcm_output_amount, middle_node_reserve_amount, middle_node_fee_amount, middle_node_deposit_reserve) = calculate_origin_xcm_edge(
+                        let (mut xcm_output_amount, middle_node_transfer_reserve_amount, middle_node_transfer_fee_amount, middle_node_deposit_reserve) = calculate_origin_xcm_edge(
                             &self,
                             &self.fee_book, 
                             current_node.clone(), 
@@ -643,13 +643,13 @@ impl TokenGraph2{
                             adjacent_pair.xcm_node.borrow_mut().path_value_types.push(PathType::Xcm);
 
                             // let reserve_string = reserve_amount.to_string();
-                            let xcm_fee_amounts = vec![start_node_fee_amount.to_string(), middle_node_fee_amount.to_string()];
-                            let reserve_amounts = vec![start_node_reserve_amount.to_string(), middle_node_reserve_amount.to_string()];
+                            let xcm_transfer_fee_amounts = vec![start_node_transfer_fee_amount.to_string(), middle_node_transfer_fee_amount.to_string()];
+                            let transfer_reserve_amounts = vec![start_node_transfer_reserve_amount.to_string(), middle_node_transfer_reserve_amount.to_string()];
                             let new_path_data: PathData = PathData{
                                 path_type: "Xcm".to_string(),
                                 lp_id: None,
-                                xcm_fee_amounts,
-                                xcm_reserve_values: reserve_amounts,
+                                xcm_fee_amounts: xcm_transfer_fee_amounts,
+                                xcm_reserve_values: transfer_reserve_amounts,
                             };
 
                             adjacent_pair.xcm_node.borrow_mut().path_datas = current_node.borrow().path_datas.clone();
