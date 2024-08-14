@@ -616,11 +616,31 @@ impl TokenGraph2{
                         // Get deposit fee data and subtract it from total output
                         // FUCKen unless deposit fee is different asset, ex Transferring multiassets from hydra -> asset hub
                         // Then needs to be treated similar to transfer fee data when fee is different
+                        // let deposit_fee_data = &self.fee_book.get_deposit_fee_data(adjacent_pair.xcm_node.clone());
+                        // let mut deposit_fee_amount = BigInt::zero();
+                        // if let Some(deposit_fee_data) = deposit_fee_data{
+                        //     deposit_fee_amount = BigInt::from_str(deposit_fee_data.clone().feeAmount.unwrap().as_str()).unwrap();
+                        //     xcm_output_amount = xcm_output_amount.clone() - deposit_fee_amount.clone();
+                        // }
+
+                        let mut destination_deposit_fee_amount = BigInt::from(0);
+                        let mut destination_deposit_reserve_amount = BigInt::from(0);
+
                         let deposit_fee_data = &self.fee_book.get_deposit_fee_data(adjacent_pair.xcm_node.clone());
-                        let mut deposit_fee_amount = BigInt::zero();
-                        if let Some(deposit_fee_data) = deposit_fee_data{
-                            deposit_fee_amount = BigInt::from_str(deposit_fee_data.clone().feeAmount.unwrap().as_str()).unwrap();
-                            xcm_output_amount = xcm_output_amount.clone() - deposit_fee_amount.clone();
+                        if let Some(fee_data) = deposit_fee_data {
+                            let deposit_fee_node_option = &self.get_asset_by_chain_and_id(adjacent_pair.xcm_node.clone().borrow().get_chain_id(), fee_data.get_fee_asset_id());
+                            let deposit_fee_node = match deposit_fee_node_option {
+                                Some(node) => node,
+                                None => panic!("Token graph cannot find asset node for Chain ID(Origin): {} | ID(fee_asset): {}", adjacent_pair.xcm_node.clone().borrow().get_chain_id(), fee_data.get_fee_asset_id()),
+                            };
+                            destination_deposit_fee_amount = BigInt::from_str(fee_data.feeAmount.clone().unwrap().as_str()).unwrap();
+
+                            if deposit_fee_node.as_ptr().eq(&adjacent_pair.xcm_node.clone().as_ptr()){
+                                xcm_output_amount = xcm_output_amount.clone() - destination_deposit_fee_amount.clone();
+                            } else {
+                                destination_deposit_reserve_amount = self.convert_transfer_fee_amount_to_current_node(deposit_fee_node.clone(), current_node.clone(), destination_deposit_fee_amount.clone());
+                                xcm_output_amount = xcm_output_amount.clone() - destination_deposit_reserve_amount.clone();
+                            }
                         }
                         // println!("1. (D) fee: {}", deposit_fee_amount);
                         // ********************************************
@@ -651,6 +671,8 @@ impl TokenGraph2{
                             // let reserve_string = reserve_amount.to_string();
                             let xcm_transfer_fee_amounts = vec![start_node_transfer_fee_amount.to_string(), middle_node_transfer_fee_amount.to_string()];
                             let transfer_reserve_amounts = vec![start_node_transfer_reserve_amount.to_string(), middle_node_transfer_reserve_amount.to_string()];
+                            let deposit_fee_amounts = vec![middle_node_deposit_fee_amount, destination_deposit_fee_amount];
+                            let deposit_reserve_amounts = vec![middle_node_deposit_reserve_amount, destination_deposit_reserve_amount];
                             let new_path_data: PathData = PathData{
                                 path_type: "Xcm".to_string(),
                                 lp_id: None,
