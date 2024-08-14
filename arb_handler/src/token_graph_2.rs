@@ -26,6 +26,7 @@ use crate::asset_registry_2::{Asset, AssetLocation, TokenData};
 use crate::adjacency_table_2::{AdjacencyGroup, AdjacencyTable2,  GroupType, };
 use crate::fee_book::{ChainDepositData, ChainTransferData, DepositData, TransferData, TransferDepositFeeBook, XcmFeeData};
 
+use std::default::Default;
 use std::hash::{Hasher, Hash};
 use std::str;
 use std::io;
@@ -525,8 +526,7 @@ impl TokenGraph2{
         let path_data: PathData = PathData{
             path_type: "Start".to_string(),
             lp_id: None,
-            xcm_fee_amounts: vec![],
-            xcm_reserve_values: vec![],
+            ..Default::default()
         };
 
         starting_node.borrow_mut().path_value_types.push(PathType::Xcm);
@@ -671,13 +671,15 @@ impl TokenGraph2{
                             // let reserve_string = reserve_amount.to_string();
                             let xcm_transfer_fee_amounts = vec![start_node_transfer_fee_amount.to_string(), middle_node_transfer_fee_amount.to_string()];
                             let transfer_reserve_amounts = vec![start_node_transfer_reserve_amount.to_string(), middle_node_transfer_reserve_amount.to_string()];
-                            let deposit_fee_amounts = vec![middle_node_deposit_fee_amount, destination_deposit_fee_amount];
-                            let deposit_reserve_amounts = vec![middle_node_deposit_reserve_amount, destination_deposit_reserve_amount];
+                            let deposit_fee_amounts = vec![middle_node_deposit_fee_amount.to_string(), destination_deposit_fee_amount.to_string()];
+                            let deposit_reserve_amounts = vec![middle_node_deposit_reserve_amount.to_string(), destination_deposit_reserve_amount.to_string()];
                             let new_path_data: PathData = PathData{
                                 path_type: "Xcm".to_string(),
                                 lp_id: None,
                                 xcm_fee_amounts: xcm_transfer_fee_amounts,
                                 xcm_reserve_values: transfer_reserve_amounts,
+                                xcm_deposit_fee_amounts: deposit_fee_amounts,
+                                xcm_deposit_reserve_amounts: deposit_reserve_amounts
                             };
 
                             adjacent_pair.xcm_node.borrow_mut().path_datas = current_node.borrow().path_datas.clone();
@@ -748,8 +750,7 @@ impl TokenGraph2{
                             let new_path_data: PathData = PathData{
                                 path_type: dex_type,
                                 lp_id: pool_id.clone(), // Just for contract address on evm
-                                xcm_fee_amounts: vec![],
-                                xcm_reserve_values: vec![],
+                                ..Default::default()
                             };
 
                             adjacent_node.borrow_mut().path_datas = current_node.borrow().path_datas.clone();
@@ -803,8 +804,7 @@ impl TokenGraph2{
                             let new_path_data: PathData = PathData{
                                 path_type: dex_abi,
                                 lp_id: pool_id.clone(),
-                                xcm_fee_amounts: vec![],
-                                xcm_reserve_values: vec![],
+                                ..Default::default()
                             };
                             adjacent_node.borrow_mut().path_datas = current_node.borrow().path_datas.clone();
                             adjacent_node.borrow_mut().path_datas.push(new_path_data);
@@ -886,8 +886,7 @@ impl TokenGraph2{
                                 let new_path_data: PathData = PathData{
                                     path_type: "Stable".to_string(),
                                     lp_id: pool_id.clone(),
-                                    xcm_fee_amounts: vec![],
-                                    xcm_reserve_values: vec![],
+                                    ..Default::default()
                                 };
     
                                 adjacent_node.borrow_mut().path_datas = current_node.borrow().path_datas.clone();
@@ -935,8 +934,7 @@ impl TokenGraph2{
                                 let new_path_data: PathData = PathData{
                                     path_type: "Stable".to_string(),
                                     lp_id: pool_id.clone(),
-                                    xcm_fee_amounts: vec![],
-                                    xcm_reserve_values: vec![],
+                                    ..Default::default()
                                 };
     
                                 adjacent_node.borrow_mut().path_datas = current_node.borrow().path_datas.clone();
@@ -983,8 +981,7 @@ impl TokenGraph2{
                                     let new_path_data: PathData = PathData{
                                         path_type: "StableShare".to_string(),
                                         lp_id: pool_id.clone(),
-                                        xcm_fee_amounts: vec![],
-                                        xcm_reserve_values: vec![],
+                                        ..Default::default()
                                     };
         
                                     adjacent_node.borrow_mut().path_datas = current_node.borrow().path_datas.clone();
@@ -1025,8 +1022,7 @@ impl TokenGraph2{
                                     let new_path_data: PathData = PathData{
                                         path_type: "StableShare".to_string(),
                                         lp_id: pool_id.clone(),
-                                        xcm_fee_amounts: vec![],
-                                        xcm_reserve_values: vec![],
+                                        ..Default::default()
                                     };
         
                                     adjacent_node.borrow_mut().path_datas = current_node.borrow().path_datas.clone();
@@ -2012,14 +2008,31 @@ pub struct GraphNode{
 }
 
 // Removing path value types (that indicate path traversal type)
-
+// REVIEW Structure of this could be better broken down into different types.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct PathData{
+pub struct PathData {
     pub path_type: String,
     pub lp_id: Option<String>,
+    #[serde(default)]
     pub xcm_fee_amounts: Vec<String>,
+    #[serde(default)]
     pub xcm_reserve_values: Vec<String>,
-    
+    #[serde(default)]
+    pub xcm_deposit_fee_amounts: Vec<String>,
+    #[serde(default)]
+    pub xcm_deposit_reserve_amounts: Vec<String>,
+}
+impl Default for PathData {
+    fn default() -> Self {
+        PathData {
+            path_type: String::new(),
+            lp_id: None,
+            xcm_fee_amounts: Vec::new(),
+            xcm_reserve_values: Vec::new(),
+            xcm_deposit_fee_amounts: Vec::new(),
+            xcm_deposit_reserve_amounts: Vec::new(),
+        }
+    }
 }
 // #[derive(Debug, PartialEq)]
 // pub struct AdjacentNodePair{
