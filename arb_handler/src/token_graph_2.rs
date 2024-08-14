@@ -669,14 +669,14 @@ impl TokenGraph2{
                             adjacent_pair.xcm_node.borrow_mut().path_value_types.push(PathType::Xcm);
 
                             // let reserve_string = reserve_amount.to_string();
-                            let xcm_transfer_fee_amounts = vec![start_node_transfer_fee_amount.to_string(), middle_node_transfer_fee_amount.to_string()];
+                            let transfer_fee_amounts = vec![start_node_transfer_fee_amount.to_string(), middle_node_transfer_fee_amount.to_string()];
                             let transfer_reserve_amounts = vec![start_node_transfer_reserve_amount.to_string(), middle_node_transfer_reserve_amount.to_string()];
                             let deposit_fee_amounts = vec![middle_node_deposit_fee_amount.to_string(), destination_deposit_fee_amount.to_string()];
                             let deposit_reserve_amounts = vec![middle_node_deposit_reserve_amount.to_string(), destination_deposit_reserve_amount.to_string()];
                             let new_path_data: PathData = PathData{
                                 path_type: "Xcm".to_string(),
                                 lp_id: None,
-                                xcm_fee_amounts: xcm_transfer_fee_amounts,
+                                xcm_fee_amounts: transfer_fee_amounts,
                                 xcm_reserve_values: transfer_reserve_amounts,
                                 xcm_deposit_fee_amounts: deposit_fee_amounts,
                                 xcm_deposit_reserve_amounts: deposit_reserve_amounts
