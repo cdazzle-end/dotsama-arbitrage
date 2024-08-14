@@ -595,7 +595,13 @@ impl TokenGraph2{
                         // println!("1.(T) fee: {} | reserve: {}", fee_amount_to_subtract, start_node_reserve_amount);
 
                         let asset_origin_node = self.get_asset_origin_node(current_node.clone()).unwrap();
-                        let (mut xcm_output_amount, middle_node_transfer_reserve_amount, middle_node_transfer_fee_amount, middle_node_deposit_reserve) = calculate_origin_xcm_edge(
+                        let (
+                            mut xcm_output_amount, 
+                            middle_node_transfer_reserve_amount, 
+                            middle_node_transfer_fee_amount, 
+                            middle_node_deposit_reserve_amount, 
+                            middle_node_deposit_fee_amount
+                         ) = calculate_origin_xcm_edge(
                             &self,
                             &self.fee_book, 
                             current_node.clone(), 
@@ -2692,7 +2698,7 @@ pub fn calculate_origin_xcm_edge(
     origin_node: GraphNodePointer, 
     adjacent_pair: &Xcm, 
     input_amount: BigInt
-    ) -> (BigInt, BigInt, BigInt, BigInt){ // Returns total_xcm_output (after fee deduction), transfer_reserve_amount, transfer_fee_amount, deposit_reserve_amount
+    ) -> (BigInt, BigInt, BigInt, BigInt, BigInt){ // Returns total_xcm_output (after fee deduction), transfer_reserve_amount, transfer_fee_amount, deposit_reserve_amount, deposit_fee_amount
     let relay_chain = current_node.borrow().get_relay_chain();
     let start_chain = current_node.borrow().get_chain_id();
     let dest_chain = adjacent_pair.xcm_node.borrow().get_chain_id();
@@ -2713,10 +2719,11 @@ pub fn calculate_origin_xcm_edge(
     let data: HashMap<String, XcmFeeData> = serde_json::from_str(&file_content).unwrap();
 
     let mut total_fees = BigInt::from(0);
-    let mut deposit_reserve_amount = BigInt::from(0);
-    let mut transfer_reserve_amount = BigInt::from(0);
     let mut deposit_fee_amount = BigInt::from(0);
+    let mut deposit_reserve_amount = BigInt::from(0);
     let mut transfer_fee_amount = BigInt::from(0);
+    let mut transfer_reserve_amount = BigInt::from(0);
+
     // Account for fees from transfer through home chain
     // If not transferring through home chain then skip fee deductions for this section
     if start_chain != asset_origin_chain && dest_chain != asset_origin_chain {
@@ -2784,7 +2791,7 @@ pub fn calculate_origin_xcm_edge(
 
 
     let xcm_output = input_amount.checked_sub(&total_fees).unwrap();
-    (xcm_output, transfer_reserve_amount, transfer_fee_amount, deposit_reserve_amount)
+    (xcm_output, transfer_reserve_amount, transfer_fee_amount, deposit_reserve_amount, deposit_fee_amount)
 }
 
 pub fn get_sqrt_ratio_at_tick(tick: i32) -> BigInt {
