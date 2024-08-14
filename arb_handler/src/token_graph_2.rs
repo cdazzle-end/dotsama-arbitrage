@@ -2748,11 +2748,6 @@ pub fn calculate_origin_xcm_edge(
     // -- yes: transfer to home chain
     // -- no: transfer to home then dest
 
-    let xcm_fee_book_path = format!("./../../../xcm-test/feeBook.json");
-    let file_content = fs::read_to_string(xcm_fee_book_path).unwrap();
-
-    // let data: HashMap<String, XcmFeeData> = serde_json::from_str(&file_content).unwrap();
-
     let mut total_fees = BigInt::from(0);
     let mut deposit_fee_amount = BigInt::from(0);
     let mut deposit_reserve_amount = BigInt::from(0);
