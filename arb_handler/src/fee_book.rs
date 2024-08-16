@@ -57,19 +57,11 @@ pub struct TransferData {
     pub transferAmount: Option<String>,
     pub transferDecimals: Option<String>,
     pub transferAssetSymbol: Option<String>,
-    // #[serde(deserialize_with = "deserialize_to_string")]
     transferAssetId: serde_json::Value,
     pub feeAmount: Option<String>,
     pub feeDecimals: Option<String>,
     pub feeAssetSymbol: Option<String>,
-    // #[serde(deserialize_with = "deserialize_to_string")]
     feeAssetId: serde_json::Value,
-}
-impl TransferData{
-    pub fn get_fee_asset_id(&self) -> String {
-        // serde_json::to_string(&self.feeAssetId.clone()).unwrap()
-        self.feeAssetId.clone().to_string().clone()
-    }
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DepositData {
@@ -77,12 +69,15 @@ pub struct DepositData {
     pub feeAmount: Option<String>,
     pub feeDecimals: Option<String>,
     pub feeAssetSymbol: Option<String>,
-    // #[serde(deserialize_with = "deserialize_to_string")]
     feeAssetId: serde_json::Value,
+}
+impl TransferData{
+    pub fn get_fee_asset_id(&self) -> String {
+        self.feeAssetId.clone().to_string().clone()
+    }
 }
 impl DepositData{
     pub fn get_fee_asset_id(&self) -> String {
-        // serde_json::to_string(&self.feeAssetId.clone()).unwrap()
         self.feeAssetId.clone().to_string().clone()
     }
 }
