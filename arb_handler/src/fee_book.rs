@@ -52,19 +52,6 @@ pub struct ChainDepositData {
     #[serde(flatten)]
     pub assets: HashMap<String, DepositData>,
 }
-// #[derive(Debug, Serialize, Deserialize)]
-// struct TransferData {
-//     transfer_amount: Option<String>,
-//     transfer_decimals: Option<String>,
-//     transfer_asset_symbol: Option<String>,
-//     #[serde(deserialize_with = "deserialize_to_string")]
-//     transfer_asset_id: String,
-//     fee_amount: Option<String>,
-//     fee_decimals: Option<String>,
-//     fee_asset_symbol: Option<String>,
-//     #[serde(deserialize_with = "deserialize_to_string")]
-//     fee_asset_id: String,
-// }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransferData {
     pub transferAmount: Option<String>,
