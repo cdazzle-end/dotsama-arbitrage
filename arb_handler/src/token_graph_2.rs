@@ -24,7 +24,7 @@ use crate::liq_pool_registry_2::{LiquidityPool, TickData, TokenRate, BncStableDa
 use crate::AssetRegistry2;
 use crate::asset_registry_2::{Asset, AssetLocation, TokenData};
 use crate::adjacency_table_2::{AdjacencyGroup, AdjacencyTable2,  GroupType, };
-use crate::fee_book::{ChainDepositData, ChainTransferData, DepositData, TransferData, TransferDepositFeeBook, XcmFeeData};
+use crate::fee_book::{TransferDepositFeeBook, XcmFeeData};
 
 use std::default::Default;
 use std::hash::{Hasher, Hash};

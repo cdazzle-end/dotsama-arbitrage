@@ -35,41 +35,64 @@ pub struct XcmFeeData {
     pub decimals: String,
 }
 
+// #[derive(Debug, Deserialize)]
+// pub struct TransferDepositFeeBook{
+//     #[serde(rename = "polkadot-transfer")]
+//     pub polkadot_transfer: HashMap<String, ChainTransferData>,
+//     #[serde(rename = "polkadot-deposit")]
+//     pub polkadot_deposit: HashMap<String, ChainDepositData>,
+// }
 #[derive(Debug, Deserialize)]
 pub struct TransferDepositFeeBook{
     #[serde(rename = "polkadot-transfer")]
-    pub polkadot_transfer: HashMap<String, ChainTransferData>,
+    pub polkadot_transfer: HashMap<String, ChainTransferDepositData>,
     #[serde(rename = "polkadot-deposit")]
-    pub polkadot_deposit: HashMap<String, ChainDepositData>,
+    pub polkadot_deposit: HashMap<String, ChainTransferDepositData>,
 }
+// #[derive(Debug, Serialize, Deserialize)]
+// pub struct ChainTransferData {
+//     #[serde(flatten)]
+//     pub assets: HashMap<String, XcmTransferData>,
+// }
+// #[derive(Debug, Serialize, Deserialize)]
+// pub struct ChainDepositData {
+//     #[serde(flatten)]
+//     pub assets: HashMap<String, XcmTransferData>,
+// }
+
+// #[derive(Debug, Serialize, Deserialize)]
+// pub struct ChainTransferData {
+//     #[serde(flatten)]
+//     pub assets: HashMap<String, TransferData>,
+// }
+// #[derive(Debug, Serialize, Deserialize)]
+// pub struct ChainDepositData {
+//     #[serde(flatten)]
+//     pub assets: HashMap<String, DepositData>,
+// }
+// #[derive(Debug, Clone, Serialize, Deserialize)]
+// pub struct TransferData {
+//     pub transferAmount: Option<String>,
+//     pub transferDecimals: Option<String>,
+//     pub transferAssetSymbol: Option<String>,
+//     transferAssetId: serde_json::Value,
+//     pub feeAmount: Option<String>,
+//     pub feeDecimals: Option<String>,
+//     pub feeAssetSymbol: Option<String>,
+//     feeAssetId: serde_json::Value,
+// }
+// #[derive(Debug, Clone, Serialize, Deserialize)]
+// pub struct DepositData {
+//     pub depositAmount: Option<String>,
+//     pub feeAmount: Option<String>,
+//     pub feeDecimals: Option<String>,
+//     pub feeAssetSymbol: Option<String>,
+//     feeAssetId: serde_json::Value,
+// }
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ChainTransferData {
+pub struct ChainTransferDepositData {
     #[serde(flatten)]
-    pub assets: HashMap<String, TransferData>,
-}
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ChainDepositData {
-    #[serde(flatten)]
-    pub assets: HashMap<String, DepositData>,
-}
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TransferData {
-    pub transferAmount: Option<String>,
-    pub transferDecimals: Option<String>,
-    pub transferAssetSymbol: Option<String>,
-    transferAssetId: serde_json::Value,
-    pub feeAmount: Option<String>,
-    pub feeDecimals: Option<String>,
-    pub feeAssetSymbol: Option<String>,
-    feeAssetId: serde_json::Value,
-}
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DepositData {
-    pub depositAmount: Option<String>,
-    pub feeAmount: Option<String>,
-    pub feeDecimals: Option<String>,
-    pub feeAssetSymbol: Option<String>,
-    feeAssetId: serde_json::Value,
+    pub assets: HashMap<String, XcmTransferData>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct XcmTransferData {
@@ -82,16 +105,16 @@ pub struct XcmTransferData {
     pub feeAssetSymbol: Option<String>,
     feeAssetId: serde_json::Value,
 }
-impl TransferData{
-    pub fn get_fee_asset_id(&self) -> String {
-        self.feeAssetId.clone().to_string().clone()
-    }
-}
-impl DepositData{
-    pub fn get_fee_asset_id(&self) -> String {
-        self.feeAssetId.clone().to_string().clone()
-    }
-}
+// impl TransferData{
+//     pub fn get_fee_asset_id(&self) -> String {
+//         self.feeAssetId.clone().to_string().clone()
+//     }
+// }
+// impl DepositData{
+//     pub fn get_fee_asset_id(&self) -> String {
+//         self.feeAssetId.clone().to_string().clone()
+//     }
+// }
 impl XcmTransferData{
     pub fn get_fee_asset_id(&self) -> String {
         self.feeAssetId.clone().to_string().clone()
