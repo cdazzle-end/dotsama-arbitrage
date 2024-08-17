@@ -71,12 +71,28 @@ pub struct DepositData {
     pub feeAssetSymbol: Option<String>,
     feeAssetId: serde_json::Value,
 }
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct XcmTransferData {
+    pub xcmAmount: Option<String>,
+    pub xcmDecimals: Option<String>,
+    pub xcmAssetSymbol: Option<String>,
+    xcmAssetId: serde_json::Value,
+    pub feeAmount: Option<String>,
+    pub feeDecimals: Option<String>,
+    pub feeAssetSymbol: Option<String>,
+    feeAssetId: serde_json::Value,
+}
 impl TransferData{
     pub fn get_fee_asset_id(&self) -> String {
         self.feeAssetId.clone().to_string().clone()
     }
 }
 impl DepositData{
+    pub fn get_fee_asset_id(&self) -> String {
+        self.feeAssetId.clone().to_string().clone()
+    }
+}
+impl XcmTransferData{
     pub fn get_fee_asset_id(&self) -> String {
         self.feeAssetId.clone().to_string().clone()
     }
