@@ -104,6 +104,7 @@ pub struct XcmTransferData {
     pub feeDecimals: Option<String>,
     pub feeAssetSymbol: Option<String>,
     feeAssetId: serde_json::Value,
+    pub node: Option<String>
 }
 // impl TransferData{
 //     pub fn get_fee_asset_id(&self) -> String {
