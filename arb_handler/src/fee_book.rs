@@ -147,7 +147,7 @@ impl TransferDepositFeeBook {
         let fee_book: TransferDepositFeeBook = serde_json::from_str(&data).unwrap();
         fee_book
     }
-    pub fn get_transfer_fee_data(&self, node: GraphNodePointer) -> Option<TransferData> {
+    pub fn get_transfer_fee_data(&self, node: GraphNodePointer) -> Option<XcmTransferData> {
 
         let location = node.borrow().get_asset_location();
 
@@ -225,7 +225,7 @@ impl TransferDepositFeeBook {
     //     }
     // }
 
-    pub fn get_deposit_fee_data(&self, node: GraphNodePointer) -> Option<DepositData> {
+    pub fn get_deposit_fee_data(&self, node: GraphNodePointer) -> Option<XcmTransferData> {
         let location = node.borrow().get_asset_location();
         match location {
             Some(x) => {
@@ -240,7 +240,7 @@ impl TransferDepositFeeBook {
                         let asset_data = data.assets.get(asset_id.as_str());
                         match asset_data {
                             Some(data) => {
-                                let amount = data.depositAmount.clone();
+                                let amount = data.xcmAmount.clone();
                                 let fee_asset_symbol = data.feeAssetSymbol.clone();
                                 // print!("Deposit Data: Found asset data *** Chain id: {} | Asset fee key: {:?} | ", chain_id, asset_id.as_str());
                                 // println!("Fee asset symbol: {:?} | amount: {:?}", fee_asset_symbol, amount);
@@ -262,8 +262,8 @@ impl TransferDepositFeeBook {
         }
     }
     
-    pub fn get_all_transfer_fee_data(&self) -> Vec<(String, &ChainTransferData)> {
-        let mut data: Vec<(String, &ChainTransferData)> = Vec::new();
+    pub fn get_all_transfer_fee_data(&self) -> Vec<(String, &ChainTransferDepositData)> {
+        let mut data: Vec<(String, &ChainTransferDepositData)> = Vec::new();
         for (chain_id, chain_data) in self.polkadot_transfer.iter() {
             // for (chain, asset) in chain_data.assets.iter() {
             //     data.push((chain.clone(), asset.clone()));
@@ -273,8 +273,8 @@ impl TransferDepositFeeBook {
         data
     }
 
-    pub fn get_all_deposit_fee_data(&self) -> Vec<(String, &ChainDepositData)> {
-        let mut data: Vec<(String, &ChainDepositData)> = Vec::new();
+    pub fn get_all_deposit_fee_data(&self) -> Vec<(String, &ChainTransferDepositData)> {
+        let mut data: Vec<(String, &ChainTransferDepositData)> = Vec::new();
         for (chain_id, chain_data) in self.polkadot_deposit.iter() {
             data.push((chain_id.clone(), chain_data));
         }
