@@ -615,7 +615,7 @@ pub fn one_search_default_polkadot(){
     for node in path{
         let path_data: PathData = node.path_data;
         print!("{}: {} {}", node.node_key, node.asset_name, node.path_value);
-        println!(" || {} {:?} {:?}", path_data.path_type, path_data.lp_id, path_data.xcm_reserve_values);
+        println!(" || {} {:?} {:?}", path_data.path_type, path_data.lp_id, path_data.xcm_transfer_reserve_amounts);
     }
 }
 

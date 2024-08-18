@@ -676,8 +676,8 @@ impl TokenGraph2{
                             let new_path_data: PathData = PathData{
                                 path_type: "Xcm".to_string(),
                                 lp_id: None,
-                                xcm_fee_amounts: transfer_fee_amounts,
-                                xcm_reserve_values: transfer_reserve_amounts,
+                                xcm_transfer_fee_amounts: transfer_fee_amounts,
+                                xcm_transfer_reserve_amounts: transfer_reserve_amounts,
                                 xcm_deposit_fee_amounts: deposit_fee_amounts,
                                 xcm_deposit_reserve_amounts: deposit_reserve_amounts
                             };
@@ -2014,9 +2014,9 @@ pub struct PathData {
     pub path_type: String,
     pub lp_id: Option<String>,
     #[serde(default)]
-    pub xcm_fee_amounts: Vec<String>,
+    pub xcm_transfer_fee_amounts: Vec<String>,
     #[serde(default)]
-    pub xcm_reserve_values: Vec<String>,
+    pub xcm_transfer_reserve_amounts: Vec<String>,
     #[serde(default)]
     pub xcm_deposit_fee_amounts: Vec<String>,
     #[serde(default)]
@@ -2027,8 +2027,8 @@ impl Default for PathData {
         PathData {
             path_type: String::new(),
             lp_id: None,
-            xcm_fee_amounts: Vec::new(),
-            xcm_reserve_values: Vec::new(),
+            xcm_transfer_fee_amounts: Vec::new(),
+            xcm_transfer_reserve_amounts: Vec::new(),
             xcm_deposit_fee_amounts: Vec::new(),
             xcm_deposit_reserve_amounts: Vec::new(),
         }
