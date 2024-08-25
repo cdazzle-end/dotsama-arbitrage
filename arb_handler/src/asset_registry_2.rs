@@ -68,7 +68,7 @@ pub struct MyAssetRegistryObject {
 // New asset registry files for statemine, crust, kintsugi...
 impl AssetRegistry2{
     pub fn build_asset_registry() -> AssetRegistry2{
-        let chains = vec!["kar", "bnc_kusama", "movr", "hko", "mgx", "bsx", "other"];
+        let chains = vec!["kar", "bnc_kusama", "movr", "hko", "mgx", "bsx", "other_kusama"];
         let parsed_files = chains
             .into_iter()
             .map(|chain| {
