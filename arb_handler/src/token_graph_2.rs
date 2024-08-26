@@ -63,7 +63,7 @@ impl TokenGraph2{
             add_adjacent_assets_2(Rc::clone(&current_node), &node_map, &adjacency_table);
             add_cross_chain_assets_2(current_node, &node_map, &asset_registry);
         }
-        let xcm_transfer_and_deposit_fee_book = format!("./../../../xcm-test/newEventFeeBook.json");
+        let xcm_transfer_and_deposit_fee_book = format!("./../../../xcm-test/data/newEventFeeBook.json");
         let xcm_transfer_and_deposit_fees = fs::read_to_string(xcm_transfer_and_deposit_fee_book.clone()).unwrap();
         let fee_book: TransferDepositFeeBook = serde_json::from_str(&xcm_transfer_and_deposit_fees).unwrap();
 
