@@ -1967,6 +1967,25 @@ pub fn add_cross_chain_assets_2(current_node: GraphNodePointer, node_map: &HashM
         }
     }
 }
+
+#[derive(Debug, PartialEq)]
+pub struct GraphNode{
+    pub asset: AssetPointer,
+    // pub adjacent_nodes: Vec<(GraphNodePointer, ((u128, u128), (u128,u128)))>,
+    // pub adjacent_pairs: Vec<AdjacentNodePair>,
+    pub adjacent_node_pools: Vec<NodePool>,
+    pub asset_key: String,
+    pub pred: Option<GraphNodePointer>,
+    pub best_path_value: BigInt,
+    pub best_path_value_display: f64,
+    pub path_edges: Vec<((String,u128),(String, u128))>,
+    pub best_path: Vec<GraphNodePointer>,
+    pub path_values: Vec<BigDecimal>,
+    // ** Maybe remove. 0 = Xcm, 1 = Dex,  2 = Stable (All forms of stable), 3 = DexV3 (PathData.path_type = pool name like uni3 or algebra), 4 = Omnipool, 100 = Cex (Not in use atm), 
+    pub path_value_types: Vec<PathType>, // logged as path_identifer
+    pub path_datas: Vec<PathData>,
+
+}
 //--------------------------------------------------------------------------------------------
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum PathType{
@@ -1988,24 +2007,6 @@ pub struct PathNode{
     // pub path_id: String, // Any extra info like pool ID
 }
 
-#[derive(Debug, PartialEq)]
-pub struct GraphNode{
-    pub asset: AssetPointer,
-    // pub adjacent_nodes: Vec<(GraphNodePointer, ((u128, u128), (u128,u128)))>,
-    // pub adjacent_pairs: Vec<AdjacentNodePair>,
-    pub adjacent_node_pools: Vec<NodePool>,
-    pub asset_key: String,
-    pub pred: Option<GraphNodePointer>,
-    pub best_path_value: BigInt,
-    pub best_path_value_display: f64,
-    pub path_edges: Vec<((String,u128),(String, u128))>,
-    pub best_path: Vec<GraphNodePointer>,
-    pub path_values: Vec<BigDecimal>,
-    // ** Maybe remove. 0 = Xcm, 1 = Dex,  2 = Stable (All forms of stable), 3 = DexV3 (PathData.path_type = pool name like uni3 or algebra), 4 = Omnipool, 100 = Cex (Not in use atm), 
-    pub path_value_types: Vec<PathType>, // logged as path_identifer
-    pub path_datas: Vec<PathData>,
-
-}
 
 // Removing path value types (that indicate path traversal type)
 // REVIEW Structure of this could be better broken down into different types.
