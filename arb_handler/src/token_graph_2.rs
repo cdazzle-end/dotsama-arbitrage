@@ -2488,7 +2488,7 @@ impl GraphNode{
 
 }
 
-pub fn filter_dex
+// pub fn filter_dex
 
 pub fn calculate_v2_dex_swap_formula(dex_pool: &DexPool, input_amount: BigInt) -> BigInt {
     // println!("Calculating V2 DEX swap");
